@@ -1,27 +1,24 @@
 name: Import Roadmap from CSV
 
 on:
-  workflow_dispatch:
+    workflow_dispatch:
 
 jobs:
-  import-roadmap:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
+    import-roadmap:
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v4
 
-      - name: Create issues from CSV file
-        uses: peter-evans/create-issue-from-file@v5
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          project: AutomateOS-Phase1
-          file: automateos-phase1.csv
-          # Map CSV columns to issue fields using the action's templating ({{Column}})
-          title: '{{Title}}'
-          body: '{{Body}}'
-          labels: '{{Labels}}'
-          project-field-values: |
-            Type,{{Type}}
-            Quarter,{{Quarter}}
-
-
-
+            - name: Create issues from CSV file
+              uses: peter-evans/create-issue-from-file@v5
+              with:
+                  token: ${{ secrets.GITHUB_TOKEN }}
+                  project: AutomateOS-Phase1
+                  file: automateos-phase1.csv
+                  # Map CSV columns to issue fields using the action's templating ({{Column}})
+                  title: '{{Title}}'
+                  body: '{{Body}}'
+                  labels: '{{Labels}}'
+                  project-field-values: |
+                      Type,{{Type}}
+                      Quarter,{{Quarter}}
