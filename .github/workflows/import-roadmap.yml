@@ -26,7 +26,7 @@ jobs:
 
                   token = os.environ.get('GITHUB_TOKEN')
                   repo = os.environ.get('GITHUB_REPOSITORY')
-                  path = 'automateos-phase1.csv'
+                  path = '.github/workflows/automateos-phase1.csv'
                   if not os.path.exists(path):
                       print(f'File not found at path: {path}')
                       sys.exit(1)
