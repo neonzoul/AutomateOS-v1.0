@@ -1,0 +1,36 @@
+Title,Type,Quarter,Labels,Body
+Objective 1: Workflow Builder Foundation,epic,Q4-2025,objective,Make AutomateOS visible as a Creator tool. Deliver Workflow Builder v0.1, Import/Export, Minimal credentials, Starter workflows, Dev log.
+Workflow Builder v0.1,user-story,Q4-2025,epic:builder,"As a creator, I want to drag & drop nodes on a canvas and configure them in a side panel so I can design workflows visually."
+Workflow Run Feedback,user-story,Q4-2025,epic:builder,"As a creator, I want to click 'Run' and see step statuses so I know if my workflow works."
+Import/Export Workflows,user-story,Q4-2025,epic:import-export,"As a creator, I want to export/import workflows as JSON so I can reuse them easily."
+Minimal Credentials,user-story,Q4-2025,epic:credentials,"As a creator, I want to add API keys inline or via .env so I can connect services securely."
+Starter Workflows,user-story,Q4-2025,epic:templates,"As a new user, I want 3 example workflows (Slack, Sheets, OpenAI) so I can see what's possible."
+Public Dev Log,user-story,Q4-2025,epic:community,"As a follower, I want weekly updates so I can track AutomateOS progress."
+
+Objective 2: Creator Experience,epic,Q1-2026,objective,Give creators ownership and ability to showcase and distribute templates.
+Creator Profiles,user-story,Q1-2026,epic:creator-profile,"As a creator, I want a simple profile page so I can showcase my templates."
+Template Gallery,user-story,Q1-2026,epic:gallery,"As a user, I want to browse templates and install in 1 click so I can start fast."
+Community Sharing,user-story,Q1-2026,epic:community,"As a creator, I want to share my template easily to Discord/GitHub so I can reach others."
+Starter Templates Expansion,user-story,Q1-2026,epic:templates,"As a user, I want 10 starter templates so I can explore variety."
+
+Objective 3: User Dashboard & SaaS Beta,epic,Q2-2026,objective,Open the path for users with dashboards and managed hosting.
+User Dashboard,user-story,Q2-2026,epic:dashboard,"As a user, I want to see my workflows and run logs so I can manage them."
+Authentication,user-story,Q2-2026,epic:auth,"As a user, I want to login and save workflows; as an org owner, I want roles for team management."
+AutomateOS.app Beta,user-story,Q2-2026,epic:saas,"As a user, I want a hosted version so I don’t need to self-host."
+Security Layer,user-story,Q2-2026,epic:credentials,"As a user, I want secrets encrypted at rest so my data is safe."
+Early Adopter Program,user-story,Q2-2026,epic:community,"As a creator, I want early access invites so I can test new features."
+
+Objective 4: Ecosystem Growth,epic,Q3-2026,objective,Seed the creator flywheel by allowing external template submissions and analytics.
+Template Submissions,user-story,Q3-2026,epic:gallery,"As a creator, I want to submit my template to the gallery so others can use it."
+Template Review,user-story,Q3-2026,epic:gallery,"As a reviewer, I want to approve/reject templates so quality stays high."
+Creator Analytics,user-story,Q3-2026,epic:analytics,"As a creator, I want to see downloads/installs so I can measure impact."
+Template Library Expansion,user-story,Q3-2026,epic:templates,"As a user, I want 20+ templates so I can find what I need."
+Community Growth,user-story,Q3-2026,epic:community,"As a community member, I want weekly calls/blogs so I stay engaged."
+
+Objective 5: AutomateOS v1 Launch,epic,Q4-2026,objective,Launch AutomateOS v1 with polish, billing prototype, and partner signal.
+Polished Workflow Builder,user-story,Q4-2026,epic:builder,"As a creator, I want polished drag/drop (snapping, animations) so building feels delightful."
+Contextual Tooltips,user-story,Q4-2026,epic:builder,"As a creator, I want tooltips so I never feel lost while building workflows."
+Stable SaaS,user-story,Q4-2026,epic:saas,"As a user, I want AutomateOS.app to run reliably so I can trust it for daily automation."
+Billing Prototype,user-story,Q4-2026,epic:billing,"As a user, I want a pay-as-you-go billing page so I know what I’ll pay."
+Ecosystem Milestone,user-story,Q4-2026,epic:templates,"As a creator, I want 30+ templates in gallery so I feel the ecosystem is alive."
+Public Launch,user-story,Q4-2026,epic:launch,"As a community member, I want an official announcement so I can share excitement."
