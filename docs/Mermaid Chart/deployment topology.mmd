@@ -1,0 +1,83 @@
+---
+config:
+  layout: elk
+---
+flowchart TB
+ subgraph GCP["GCP"]
+    direction TB
+        GCP_HDR["Google Cloud - Option A"]
+        CR_APP["Cloud Run: dev-web<br>Next.js"]
+        CR_API["Cloud Run: api-gateway"]
+        CR_ORCH["Cloud Run: orchestrator"]
+        CR_WEBH["Cloud Run: webhook"]
+        CR_WORK["Cloud Run: worker"]
+        CR_ENG["Cloud Run: engine Python"]
+        SQL[("Cloud SQL: Postgres")]
+        MEM[("Memorystore: Redis")]
+        SEC["Secret Manager"]
+  end
+ subgraph DO["DO"]
+    direction TB
+        DO_HDR["DigitalOcean - Option B"]
+        DO_NGINX["Nginx/Caddy TLS<br>:80 / :443"]
+        DO_APP["Container: dev-web"]
+        DO_API["Container: api-gateway"]
+        DO_ORCH["Container: orchestrator"]
+        DO_WEBH["Container: webhook"]
+        DO_WORK["Container: worker"]
+        DO_ENG["Container: engine Python"]
+        DO_PG[("Postgres")]
+        DO_REDIS[("Redis")]
+        DO_ENV[".env files / DO Secrets"]
+  end
+    GH["GitHub Actions<br>build · push · deploy"] -- build & push --> GHCR["GHCR - Container Registry<br>ghcr.io/owner/repo:*"]
+    CR_APP --> CR_API
+    CR_API --> SQL
+    CR_ORCH --> SQL & CR_ENG
+    CR_WEBH --> MEM
+    CR_WORK --> MEM & SQL
+    CR_API -.-> SEC
+    CR_ORCH -.-> SEC
+    CR_WORK -.-> SEC
+    DO_NGINX --> DO_APP
+    DO_APP --> DO_API
+    DO_API --> DO_PG
+    DO_ORCH --> DO_ENG & DO_PG
+    DO_WEBH --> DO_REDIS
+    DO_WORK --> DO_REDIS & DO_PG
+    DO_API -.-> DO_ENV
+    DO_ORCH -.-> DO_ENV
+    DO_WORK -.-> DO_ENV
+    GH -- "deploy-gcp.yml" --> GCP_HDR
+    GH -- "deploy-do.yml via SSH" --> DO_HDR
+    GCP_HDR -- pull images --> GHCR
+    DO_HDR -- pull images --> GHCR
+     GH:::ctrl
+     GHCR:::reg
+     GCP_HDR:::cloud
+     CR_APP:::cloud
+     CR_API:::cloud
+     CR_ORCH:::cloud
+     CR_WEBH:::cloud
+     CR_WORK:::cloud
+     CR_ENG:::cloud
+     SQL:::data
+     MEM:::data
+     SEC:::data
+     DO_HDR:::do
+     DO_NGINX:::do
+     DO_APP:::do
+     DO_API:::do
+     DO_ORCH:::do
+     DO_WEBH:::do
+     DO_WORK:::do
+     DO_ENG:::do
+     DO_PG:::data
+     DO_REDIS:::data
+     DO_ENV:::data
+    classDef ctrl fill:#fff3e9,stroke:#e84b4b,stroke-width:2,color:#222
+    classDef cloud fill:#eef7ff,stroke:#3b82f6,stroke-width:1.5
+    classDef do fill:#f3f7ff,stroke:#0ea5e9,stroke-width:1.5
+    classDef reg fill:#fff,stroke:#888,stroke-width:1.5,stroke-dasharray:4 2
+    classDef app fill:#f5f5f5,stroke:#666
+    classDef data fill:#fff,stroke:#555,stroke-dasharray:4 2

@@ -1,0 +1,55 @@
+flowchart LR
+  %% Layout
+  classDef app fill:#fff3e9,stroke:#e84b4b,stroke-width:2,color:#222
+  classDef svc fill:#f5f5f5,stroke:#888,stroke-width:1.5
+  classDef ext fill:#eef7ff,stroke:#3b82f6,stroke-width:1.5
+  classDef data fill:#fff,stroke:#555,stroke-dasharray: 4 2
+  classDef sec fill:#fff,stroke:#7A1E1E,stroke-width:1.5,stroke-dasharray: 3 3
+
+  subgraph Apps [Apps (Next.js)]
+    DEV[apps/dev-web<br/>Creator Studio]:::app
+    APP[apps/app-web<br/>User Dashboard]:::app
+  end
+
+  subgraph Services [Backend Services (Node/TS)]
+    APIGW[api-gateway<br/>Auth/RBAC, Templates, Workflows, Runs]:::svc
+    ORCH[orchestrator<br/>DAG compiler, dispatch]:::svc
+    WEBH[webhook<br/>Ingress, dedupe, enqueue]:::svc
+    WORK[worker<br/>Exec steps, retries, DLQ]:::svc
+  end
+
+  subgraph Engine [External Engine (Python)]
+    ENG[engine v0.1<br/>Execution runtime]:::ext
+  end
+
+  subgraph DataPlane [Data Plane]
+    DB[(Postgres)]:::data
+    Q[(Redis / Queue)]:::data
+    LOGS[(Run Logs / Append-only)]:::data
+  end
+
+  subgraph Secrets [Secrets & Config]
+    VAULT[Secret Manager / Env (AES-GCM at rest)]:::sec
+  end
+
+  DEV -->|Graph CRUD, Run| APIGW
+  APP -->|Gallery, Usage| APIGW
+
+  APIGW -->|enqueue run| ORCH
+  ORCH -->|dispatch DAG| ENG
+  ORCH -->|jobs| Q
+  WEBH -->|validated events| Q
+  WORK -->|consume jobs| Q
+  WORK -->|append steps/logs| DB
+  APIGW -->|CRUD templates/workflows| DB
+  APIGW -->|read usage & runs| DB
+  WORK -->|emit logs| LOGS
+
+  APIGW -.->|read| VAULT
+  ORCH -.->|read| VAULT
+  WORK  -.->|read| VAULT
+
+  ENG -->|status/results| ORCH
+  ORCH -->|run status| APIGW
+  APIGW -->|status/logs| DEV
+  APIGW -->|usage/logs| APP

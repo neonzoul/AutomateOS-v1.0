@@ -1,0 +1,67 @@
+flowchart LR
+  %% Styles
+  classDef mod fill:#fff3e9,stroke:#e84b4b,stroke-width:2,color:#222
+  classDef lib fill:#f5f5f5,stroke:#666
+  classDef svc fill:#eef7ff,stroke:#3b82f6
+  classDef data fill:#fff,stroke:#555,stroke-dasharray:4 2
+  classDef hdr fill:#fff,stroke:#000,stroke-dasharray:3 3,font-weight:bold
+
+  %% Frontend (Builder)
+  subgraph Builder
+    B_HDR["Builder (apps/dev-web — Workflow Builder)"]:::hdr
+    RF[Canvas<br/>React Flow]:::mod
+    REG[Node Registry<br/>types and factories]:::lib
+    INS[Inspector Panel<br/>form from Zod schema]:::lib
+    VALID[Schema Validator<br/>@automateos/schema Zod]:::lib
+    IO[Import / Export JSON]:::lib
+    RUN[Run Controller<br/>Start/Stop, status polling]:::lib
+  end
+
+  %% Shared package
+  subgraph Shared
+    S_HDR["@automateos/schema (shared package)"]:::hdr
+    ZOD[WorkflowSchema<br/>NodeSchema, EdgeSchema]:::data
+  end
+
+  %% Backend slice
+  subgraph Backend
+    BE_HDR["Backend Services"]:::hdr
+    APIGW[api-gateway<br/>/v1/runs, /v1/workflows]:::svc
+    ORCH[orchestrator<br/>DAG compiler, secrets]:::svc
+    ENG[engine Python<br/>/execute]:::svc
+  end
+
+  %% Data plane
+  subgraph DataPlane
+    DP_HDR["Data Plane & Secrets"]:::hdr
+    DB[(Postgres<br/>workflows, runs, steps, logs)]:::data
+    REDIS[(Redis / Queue)]:::data
+    SECRETS[(Secrets Store<br/>AES-GCM at rest)]:::data
+  end
+
+  %% Edges (Builder)
+  RF --- REG
+  RF --- INS
+  INS --> VALID
+  IO --> VALID
+  RF --> IO
+
+  %% Run path
+  RUN --> APIGW
+  APIGW --> ORCH
+  ORCH --> ENG
+  ORCH --> REDIS
+  APIGW --> DB
+  ENG --> ORCH
+  ORCH --> DB
+
+  %% Secrets
+  ORCH -.-> SECRETS
+
+  %% Validation
+  VALID --> ZOD
+  ZOD --> VALID
+  RF -. uses .-> ZOD
+
+  %% Status loop back to UI
+  APIGW --> RUN

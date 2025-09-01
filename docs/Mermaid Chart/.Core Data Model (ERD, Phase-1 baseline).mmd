@@ -1,0 +1,130 @@
+---
+config:
+  layout: elk
+---
+erDiagram
+	direction TB
+	ORGS {
+		uuid id  ""  
+		string name  ""  
+		datetime created_at  ""  
+	}
+	USERS {
+		uuid id  ""  
+		string email  ""  
+		string name  ""  
+		datetime created_at  ""  
+	}
+	MEMBERSHIPS {
+		uuid id  ""  
+		uuid org_id  ""  
+		uuid user_id  ""  
+		enum role  ""  
+	}
+	PROFILES {
+		uuid id  ""  
+		uuid user_id  ""  
+		string display_name  ""  
+		string bio  ""  
+	}
+	TEMPLATES {
+		uuid id  ""  
+		uuid creator_user_id  ""  
+		string name  ""  
+		string tags  ""  
+		datetime created_at  ""  
+		datetime published_at  ""  
+	}
+	TEMPLATE_VERSIONS {
+		uuid id  ""  
+		uuid template_id  ""  
+		int version  ""  
+		jsonb graph_json  ""  
+		datetime created_at  ""  
+	}
+	INSTALLATIONS {
+		uuid id  ""  
+		uuid org_id  ""  
+		uuid template_id  ""  
+		uuid template_version_id  ""  
+		datetime created_at  ""  
+	}
+	WORKFLOWS {
+		uuid id  ""  
+		uuid org_id  ""  
+		string name  ""  
+	}
+	WORKFLOW_VERSIONS {
+		uuid id  ""  
+		uuid workflow_id  ""  
+		int version  ""  
+		jsonb graph_json  ""  
+	}
+	RUNS {
+		uuid id  ""  
+		uuid org_id  ""  
+		uuid workflow_version_id  ""  
+		enum status  ""  
+		datetime started_at  ""  
+		datetime finished_at  ""  
+		string idempotency_key  ""  
+	}
+	RUN_STEPS {
+		uuid id  ""  
+		uuid run_id  ""  
+		string node_id  ""  
+		enum status  ""  
+		datetime started_at  ""  
+		datetime finished_at  ""  
+	}
+	RUN_LOGS {
+		uuid id  ""  
+		uuid run_id  ""  
+		uuid run_step_id  ""  
+		datetime ts  ""  
+		enum level  ""  
+		string message  ""  
+	}
+	SECRETS {
+		uuid id  ""  
+		uuid org_id  ""  
+		string name  ""  
+		bytes enc_value  ""  
+		datetime created_at  ""  
+	}
+	AUDIT_LOGS {
+		uuid id  ""  
+		uuid org_id  ""  
+		uuid actor_user_id  ""  
+		string action  ""  
+		string resource_type  ""  
+		uuid resource_id  ""  
+		jsonb meta  ""  
+		datetime ts  ""  
+	}
+	USAGE_EVENTS {
+		uuid id  ""  
+		uuid org_id  ""  
+		uuid run_id  ""  
+		string kind  ""  
+		float amount  ""  
+		datetime ts  ""  
+	}
+	ORGS||--o{USERS:"memberships"
+	ORGS||--o{MEMBERSHIPS:"has"
+	USERS||--o{MEMBERSHIPS:"joins"
+	USERS||--o{PROFILES:"has"
+	TEMPLATES||--o{TEMPLATE_VERSIONS:"versions"
+	USERS||--o{TEMPLATES:"creator"
+	ORGS||--o{INSTALLATIONS:"has"
+	TEMPLATES||--o{INSTALLATIONS:"installed_from"
+	TEMPLATE_VERSIONS||--o{INSTALLATIONS:"pins_version"
+	WORKFLOWS||--o{WORKFLOW_VERSIONS:"versions"
+	ORGS||--o{WORKFLOWS:"owns"
+	WORKFLOW_VERSIONS||--o{RUNS:"produces"
+	ORGS||--o{RUNS:"owns"
+	RUNS||--o{RUN_STEPS:"has"
+	RUNS||--o{RUN_LOGS:"has"
+	ORGS||--o{SECRETS:"has"
+	ORGS||--o{AUDIT_LOGS:"writes"
+	ORGS||--o{USAGE_EVENTS:"accumulates"
