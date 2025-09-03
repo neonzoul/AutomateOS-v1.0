@@ -8,98 +8,126 @@
 
 ---
 
-## 🟢 Sprint 1 (Weeks 1–2) — Repo & Builder Scaffold
+## 🟢 Sprint 1 — Scaffold & Canvas (Weeks 1–2)
 
-**Focus:** Monorepo ready, UI skeleton running.
+**Goal:** Developer foundation, first visible canvas.
 
-- Scaffold `dev-web` app (Next.js + Tailwind + shadcn/ui).
-- Create shared packages: `ui`, `workflow-schema`, `logger`.
-- Add drag/drop canvas (React Flow or similar).
-- Add 2 basic nodes: Start + HTTP (mock only).
-- CI/CD pipeline with lint, typecheck, build.
-    
-    **Deliverable:** A blank workflow canvas where nodes can be placed & connected.
-    
+**Strategic focus:** Repo & Builder Scaffold
 
----
+✅ **Deliverable:** Blank workflow canvas, nodes can be placed & connected.
 
-## 🟢 Sprint 2 (Weeks 3–4) — Node Config & Engine Integration
+**Technical tasks (Sprint A)**
 
-**Focus:** Make workflows actually executable.
-
-- Side-panel config editor for nodes (form inputs instead of JSON).
-- Wire orchestrator → external Engine v0.1 (via REST).
-- Run workflow from UI (button) → engine executes.
-- Show success/fail in builder (status indicator).
-    
-    **Deliverable:** A workflow created in the builder can run end-to-end via engine.
-    
+- Install core deps: Zustand, React Flow, react-hook-form, zod (resolver), Framer Motion.
+- Scaffold monorepo: `dev-web`, shared `ui`, `workflow-schema`, `logger`.
+- Implement Zustand store (`nodes/edges + selection`).
+- Add Canvas + Inspector + RunPanel shells.
+- Implement StartNode + HttpNode components.
+- Node Registry (`NODE_SPECS`).
+- CI/CD pipeline basic checks.
 
 ---
 
-## 🟢 Sprint 3 (Weeks 5–6) — Import/Export + Templates
+## 🟢 Sprint 2 — Inspector & Engine Integration (Weeks 3–4)
 
-**Focus:** Let creators share workflows.
+**Goal:** Workflows actually run.
 
-- JSON export (download button).
-- JSON import (upload → render on canvas).
-- Seed 1 starter workflow (e.g., Slack notification).
-- Dev log #1 (show workflow export/import).
-    
-    **Deliverable:** Workflows can be exported/imported in 1 click.
-    
+**Strategic focus:** Node Config + Engine integration
+
+**Technical tasks (Sprint B)**
+
+- Generic Inspector rendering forms from node’s Zod schema.
+- `updateNodeConfig(nodeId, values)` mutates store + revalidates.
+- Validation: toasts / inline errors.
+- Wire orchestrator → external Engine v0.1 (REST).
+- Run workflow from UI → engine executes.
+- Show run status on nodes (success/fail).
+  ✅ **Deliverable:** Workflow built in UI executes end-to-end.
 
 ---
 
-## 🟢 Sprint 4 (Weeks 7–8) — Minimal Credentials
+## 🟢 Sprint 3 — Import/Export & Persistence (Weeks 5–6)
 
-**Focus:** Allow API keys safely.
+**Goal:** Share workflows.
 
-- Add `.env` support for developers.
-- Add inline API key config to node inspector.
+**Strategic focus:** Share workflows (JSON)
+
+**Technical tasks (Sprint C)**
+
+- `exportWorkflow()` → validated JSON (round-trip safe). (download)
+- `importWorkflow(file)` → validate & render on canvas. (upload → render)
+- Extend Zustand store to handle imported state.
+- Save/load via localStorage (dev convenience).
+- Seed 1 starter workflow (Slack notification).
+- Post Dev Log #1 (public).
+  ✅ **Deliverable:** Workflows export/import in 1 click.
+
+---
+
+## 🟢 Sprint 4 — Run Controller & Credentials (Weeks 7–8)
+
+**Goal:** Run real integrations safely.
+
+**Strategic focus:** Credentials + run feedback
+
+**Technical tasks (Sprint D)**
+
+- Run Controller: `startRun()` → POST `/v1/runs` (mock → real).
+- Poll run status → update node badges.
+- RunPanel: step list + logs.
+- Add `.env` support for devs.
+- Inline API key config in inspector.
 - Secure key storage in memory (AES-GCM).
-- Add `getCredential("name")` abstraction.
+- Abstraction: `getCredential("name")`.
 - Seed 2nd starter workflow (Google Sheets automation).
-    
-    **Deliverable:** Creators can run real integrations with their own API keys.
-    
+  ✅ **Deliverable:** Workflows with real credentials + live run feedback.
 
 ---
 
-## 🟢 Sprint 5 (Weeks 9–10) — Starter Workflows + UX Polish
+## 🟢 Sprint 5 — UX Polish & Starter Workflows (Weeks 9–10)
 
-**Focus:** Make it delightful, not just functional.
+**Goal:** Make it fun, not just functional.
 
-- Seed 3rd starter workflow (OpenAI API completion).
-- Add snapping lines, hover highlights (Apple-level micro interactions).
-- Add progress ticks on nodes when workflow runs.
-- Dev log #2 & #3 (show OpenAI + polished builder).
-    
-    **Deliverable:** 3 working starter workflows + UI feels “fun to use.”
-    
+**Strategic focus:** Delight + OpenAI demo
+
+**Technical tasks (Sprint E)**
+
+- Micro-interactions: UX polish: snap lines, hover glow, pulsing active nodes.
+- Keyboard shortcuts: delete, duplicate, align, zoom.
+- Node run progress (ticks, pulsing glow).
+- Focus styles, roles, aria-labels for accessibility.
+  - Motion system: smooth panel transitions.
+- Seed 3rd starter workflow (OpenAI completion).
+- Dev Logs #2 & #3 (showcase OpenAI + polish).
+  ✅ **Deliverable:** 3 working starter workflows + polished builder feel. (working starter workflows + GarageBand-like builder UX.)
 
 ---
 
-## 🟢 Sprint 6 (Weeks 11–12) — Demo Readiness & Community
+## 🟢 Sprint 6 — Hardening & Community Demo (Weeks 11–12)
 
-**Focus:** Package for first creators.
+**Goal:** Ship to first creators.
 
+**Strategic focus:** Demo readiness + community seeding
+
+**Technical tasks (Sprint F)**
+
+- Error boundaries around Canvas/Inspector/RunPanel.
+- Telemetry hooks (track node add/delete, run start/finish).
+- E2E test: import → run → status OK (Playwright).
 - Add sample workflows to repo (`/examples`).
-- Write quickstart docs (how to build, import, run).
-- Post weekly logs (reach ≥50 followers, ≥10 Discord members).
-- Dry-run demo: show building & running workflow in <5 minutes.
-    
-    **Deliverable:** A visible Workflow Builder v0.1 with starter workflows, import/export, credentials → ready to demo publicly.
-    
+- Write Quickstart docs. (build, import, run).
+- Weekly logs, reach ≥50 followers + ≥10 Discord members.
+- Dry-run demo: build & run workflow in <5 mins.
+  ✅ **Deliverable:** Workflow Builder v0.1 demo-ready + seeded community (with templates + minimal credentials.).
 
 ---
 
-# ✅ End of Q4/2025 = Success Criteria
+# ✅ End-of-Quarter Success
 
-- Builder v0.1 working (drag/drop + run).
-- Import/export JSON works.
-- Minimal credential handling in place.
+- Workflow Builder v0.1 runs workflows via engine (drag/drop + run).
+- Import/export JSON. (1-click).
+- **Minimal credentials** (.env + inline).
 - 3 starter workflows live (Slack, Sheets, OpenAI).
-- Community seeded (≥50 followers, ≥10 Discord members).
+- Early community seeded (≥50 followers, ≥10 Discord).
 
 ---
