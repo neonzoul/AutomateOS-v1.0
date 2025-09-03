@@ -1,0 +1,50 @@
+sequenceDiagram
+  %% compact, v9-friendly
+  autonumber
+  participant UI as dev-web (Builder)
+  participant API as api-gateway
+  participant OR as orchestrator
+  participant WK as worker
+  participant EN as engine (Python)
+  participant Q as Redis/Queue
+  participant DB as Postgres
+  participant SM as Secret Manager
+
+  %% Run creation
+  UI->>API: start run
+  Note right of API: POST /runs {workflowVersionId, inputs}
+  activate API
+  API->>DB: insert run (queued)
+  API->>OR: enqueue request
+  deactivate API
+
+  %% Plan/dispatch
+  activate OR
+  OR->>DB: load workflow & graph
+  OR->>SM: getCredential (masked)
+  OR->>Q: push DAG {run_id, steps}
+  Note over OR,Q: attach idempotency + retry metadata
+  deactivate OR
+
+  %% Execute step(s)
+  loop per step
+    activate WK
+    WK->>Q: pop job
+    WK->>EN: execute(step, secrets)
+    EN-->>WK: result (ok|error)
+    WK->>DB: append step + logs
+
+    alt ok
+      WK->>Q: push next step
+    else retries left
+      WK->>Q: requeue (backoff)
+    else exhausted
+      WK->>DB: mark run failed
+    end
+    deactivate WK
+  end
+
+  %% Status streaming & readback
+  OR-->>API: run events (optional)
+  API-->>UI: get status/logs
+  Note right of API: GET /runs/:id → {status, steps, logs}

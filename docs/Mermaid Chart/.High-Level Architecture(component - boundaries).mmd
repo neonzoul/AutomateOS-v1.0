@@ -1,0 +1,75 @@
+flowchart LR
+  %% Layout-safe palette (works on older Mermaid)
+  classDef app fill:#fff3e9,stroke:#e84b4b,stroke-width:2,color:#222
+  classDef svc fill:#f5f5f5,stroke:#888,stroke-width:1.5
+  classDef ext fill:#eef7ff,stroke:#3b82f6,stroke-width:1.5
+  classDef data fill:#fff,stroke:#555,stroke-dasharray:4 2
+  classDef sec fill:#fff,stroke:#7A1E1E,stroke-width:1.5,stroke-dasharray:3 3
+
+  %% Invisible column wrappers to control layout
+  subgraph C1[ ]
+    direction TB
+    subgraph Apps - Next.js
+      direction TB
+      DEV["apps/dev-web<br/>Creator Studio"]:::app
+      APP["apps/app-web<br/>User Dashboard"]:::app
+    end
+  end
+  style C1 fill:none,stroke:none
+
+  subgraph C2[ ]
+    direction TB
+    subgraph Backend Services - Node TS
+      direction TB
+      APIGW["API Gateway"]:::svc
+      ORCH["Orchestrator"]:::svc
+      WEBH["Webhook"]:::svc
+      WORK["Worker"]:::svc
+    end
+  end
+  style C2 fill:none,stroke:none
+
+  subgraph C3[ ]
+    direction TB
+    subgraph External Engine - Python
+      direction TB
+      ENG["Engine v0.1"]:::ext
+    end
+  end
+  style C3 fill:none,stroke:none
+
+  subgraph C4[ ]
+    direction TB
+    subgraph Data Plane
+      direction TB
+      DB["Postgres"]:::data
+      Q["Redis / Queue"]:::data
+      LOGS["Run Logs (append-only)"]:::data
+    end
+    subgraph Secrets & Config
+      direction TB
+      VAULT["Secret Manager / Env"]:::sec
+    end
+  end
+  style C4 fill:none,stroke:none
+
+  %% Primary request/response path
+  DEV --> APIGW
+  APP --> APIGW
+  APIGW --> ORCH
+  ORCH --> ENG
+  ENG --> ORCH
+  ORCH --> APIGW
+  APIGW --> DEV
+  APIGW --> APP
+
+  %% Data plane interactions
+  APIGW & WORK --> DB
+  WEBH & ORCH --> Q
+  WORK --> Q
+  WORK --> LOGS
+
+  %% Secrets reads (dotted)
+  APIGW -.-> VAULT
+  ORCH -.-> VAULT
+  WORK  -.-> VAULT

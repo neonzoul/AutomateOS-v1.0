@@ -1,0 +1,36 @@
+# Public ignore
+_*
+
+## Python Environment
+.venv/
+
+##- ***env files (can opt-in for committing if needed)
+.env*
+
+
+##- dependencies
+/node_modules
+
+##- typescript
+*.tsbuildinfo
+next-env.d.ts
+
+##- production
+/build
+
+##- OS generated files (misc)
+.DS_Store
+Thumbs.db
+*.pem
+
+##- debug Logs
+
+##- IDE files
+.vscode/
+.idea/
+*.swp
+
+
+##- Build output
+dist/
+.next/
