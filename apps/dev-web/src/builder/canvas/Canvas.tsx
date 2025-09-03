@@ -1,3 +1,5 @@
+// ::ORGANISM/CONTAINER:: CANVAS
+
 'use client';
 
 import React, { useCallback } from 'react';
@@ -8,6 +10,8 @@ import {
   MiniMap,
   BackgroundVariant,
   NodeTypes,
+  Panel,
+  useReactFlow,
 } from '@xyflow/react';
 import '@xyflow/react/dist/style.css';
 
@@ -16,11 +20,17 @@ import {
   useEdges,
   useReactFlowHandlers,
   useSelectionActions,
+  useGraphActions,
 } from '../../core/state';
 
-// Node types registry - empty for now, will be expanded
+import StartNode from './nodes/StartNode';
+import HttpNode from './nodes/HttpNode';
+import { NODE_SPECS } from '../registry/nodeSpecs';
+
+// Node types registry
 const nodeTypes: NodeTypes = {
-  // TODO: Add StartNode, HttpNode, etc.
+  start: StartNode,
+  http: HttpNode,
 };
 
 /**
@@ -34,6 +44,7 @@ export function Canvas() {
   const edges = useEdges();
   const { onNodesChange, onEdgesChange, onConnect } = useReactFlowHandlers();
   const { setSelectedNode } = useSelectionActions();
+  const { addNode } = useGraphActions();
 
   // Handle node selection
   const onNodeClick = useCallback(
@@ -47,6 +58,42 @@ export function Canvas() {
   const onPaneClick = useCallback(() => {
     setSelectedNode(null);
   }, [setSelectedNode]);
+
+  function ToolbarButtons() {
+    const { screenToFlowPosition } = useReactFlow();
+    const { addNode } = useGraphActions();
+
+    const addAtCursor = useCallback(
+      (evt: React.MouseEvent, type: 'start' | 'http') => {
+        const position = screenToFlowPosition({
+          x: evt.clientX,
+          y: evt.clientY,
+        });
+        const spec = NODE_SPECS[type];
+        addNode({ type, position, data: spec.defaultData });
+      },
+      [screenToFlowPosition, addNode]
+    );
+
+    return (
+      <Panel position="top-left">
+        <div className="flex gap-2 bg-white/80 backdrop-blur px-2 py-1 rounded border shadow-sm">
+          <button
+            className="px-2 py-1 text-sm rounded bg-emerald-500 text-white hover:bg-emerald-600"
+            onClick={(e) => addAtCursor(e, 'start')}
+          >
+            + Start
+          </button>
+          <button
+            className="px-2 py-1 text-sm rounded bg-indigo-500 text-white hover:bg-indigo-600"
+            onClick={(e) => addAtCursor(e, 'http')}
+          >
+            + HTTP
+          </button>
+        </div>
+      </Panel>
+    );
+  }
 
   return (
     <div className="h-full w-full" data-testid="canvas">
@@ -63,6 +110,7 @@ export function Canvas() {
         snapToGrid
         snapGrid={[16, 16]}
       >
+        <ToolbarButtons />
         {/* Background with dot pattern */}
         <Background
           variant={BackgroundVariant.Dots}
