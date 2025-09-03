@@ -365,6 +365,12 @@ export function Inspector() { ... }
  */
 ```
 
+## Summary
+
+- Use comments to **teach future readers** (and AI assistants).
+- Always explain _why_, not just _what_.
+- Keep comments up-to-date with code changes.
+
 ---
 
 # Appendix C — Example Route & Client
