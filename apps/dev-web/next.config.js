@@ -1,10 +1,10 @@
-// This configuration enables the standalone output mode for Next.js, application builds and runs. 
+// This configuration enables the standalone output mode for Next.js, application builds and runs.
 // [[like the "setting file" for web app deployment]]
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  output: 'standalone'
-}
+  output: 'standalone',
+};
 // The output: 'standalone' setting tells Next.js to create a self-contained, portable application.
 
 // --- BENEFITS ---
@@ -13,4 +13,4 @@ const nextConfig = {
 // Simplified CI/CD pipeline (no need to install deps in production)
 // Better performance in containerized environments
 
-module.exports = nextConfig
+export default nextConfig;
