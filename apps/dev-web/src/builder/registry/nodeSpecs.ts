@@ -39,6 +39,7 @@ export type NodeSpec<TConfig> = {
     label?: string;
     config?: TConfig;
   };
+  runtime?: { adapter: 'start' | 'http' };
 };
 
 export const NODE_SPECS = {
@@ -47,6 +48,7 @@ export const NODE_SPECS = {
     label: 'Start',
     description: 'Workflow entry point',
     configSchema: StartConfigSchema,
+    runtime: { adapter: 'start' as const },
     defaultData: { label: 'Start', config: {} },
   } satisfies NodeSpec<StartConfig>,
 
@@ -55,6 +57,7 @@ export const NODE_SPECS = {
     label: 'HTTP Request',
     description: 'Make an HTTP request',
     configSchema: HttpConfigSchema,
+    runtime: { adapter: 'http' as const },
     defaultData: {
       label: 'HTTP',
       config: { method: 'GET', url: 'https://api.example.com' },
