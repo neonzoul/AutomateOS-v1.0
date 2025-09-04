@@ -1,5 +1,6 @@
 import { ReactFlowProvider } from '@xyflow/react';
 import { Canvas } from '@/builder/canvas/Canvas';
+import { Inspector } from '@/builder/inspector/Inspector';
 
 /**
  * BuilderPage: Main workflow builder interface
@@ -19,14 +20,9 @@ export default function BuilderPage() {
 
       {/* Right: Inspector + Run panels */}
       <div className="w-80 bg-white border-l border-gray-200 flex flex-col">
-        {/* Inspector Panel Placeholder */}
-        <div className="flex-1 p-4 border-b border-gray-200">
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">
-            Inspector
-          </h3>
-          <div className="text-sm text-gray-500">
-            Select a node to configure its properties
-          </div>
+        {/* Inspector Panel */}
+        <div className="flex-1 border-b border-gray-200">
+          <Inspector />
         </div>
 
         {/* Run Panel Placeholder */}
