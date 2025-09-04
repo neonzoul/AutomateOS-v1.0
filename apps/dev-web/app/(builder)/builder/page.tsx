@@ -11,24 +11,25 @@ import { RunPanel } from '@/builder/run/RunPanel';
  */
 export default function BuilderPage() {
   return (
-    <div className="h-screen flex bg-gray-50">
+    <div
+      className="h-screen grid bg-gray-50"
+      style={{ gridTemplateColumns: '1fr 360px' }}
+    >
       {/* Left: Canvas area */}
-      <div className="flex-1 min-w-0">
+      <div className="min-w-0">
         <ReactFlowProvider>
           <Canvas />
         </ReactFlowProvider>
       </div>
 
       {/* Right: Inspector + Run panels */}
-      <div className="w-80 bg-white border-l border-gray-200 flex flex-col">
+      <div className="bg-white border-l border-gray-200 flex flex-col">
         {/* Inspector Panel */}
         <div className="flex-1 border-b border-gray-200">
           <Inspector />
         </div>
 
-        <div className="border-b border-gray-200">
-          <RunPanel />
-        </div>
+        <RunPanel />
       </div>
     </div>
   );

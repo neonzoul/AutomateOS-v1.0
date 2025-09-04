@@ -1,147 +1,32 @@
 @import 'tailwindcss';
 
-/* React Flow styles */
+/* React Flow base styles */
 @import '@xyflow/react/dist/style.css';
 
-/* Reset and base styles */
-* {
-  box-sizing: border-box;
-}
-
+/* App baseline */
 html,
 body {
+  height: 100%;
   margin: 0;
-  padding: 0;
   font-family:
-    -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
-}
-
-/* Builder layout */
-.builder-layout {
-  height: 100vh;
-  display: flex;
-  background-color: #f8fafc;
-}
-
-.canvas-area {
-  flex: 1;
-  min-width: 0;
-  position: relative;
-}
-
-.right-panel {
-  width: 320px;
-  background-color: white;
-  border-left: 1px solid #e2e8f0;
-  display: flex;
-  flex-direction: column;
-}
-
-.panel-section {
-  padding: 16px;
-}
-
-.panel-border {
-  border-bottom: 1px solid #e2e8f0;
-}
-
-/* Basic utility classes */
-.h-screen {
-  height: 100vh;
-}
-.flex {
-  display: flex;
-}
-.flex-1 {
-  flex: 1;
-}
-.flex-col {
-  flex-direction: column;
-}
-.min-w-0 {
-  min-width: 0;
-}
-.w-80 {
-  width: 320px;
-}
-.bg-gray-50 {
-  background-color: #f9fafb;
-}
-.bg-white {
-  background-color: white;
-}
-.border-l {
-  border-left: 1px solid #e5e7eb;
-}
-.border-b {
-  border-bottom: 1px solid #e5e7eb;
-}
-.border-gray-200 {
-  border-color: #e5e7eb;
-}
-.p-4 {
-  padding: 16px;
-}
-.mb-4 {
-  margin-bottom: 16px;
-}
-.h-48 {
-  height: 192px;
-}
-.space-y-2 > * + * {
-  margin-top: 8px;
-}
-.w-full {
-  width: 100%;
-}
-.px-4 {
-  padding-left: 16px;
-  padding-right: 16px;
-}
-.py-2 {
-  padding-top: 8px;
-  padding-bottom: 8px;
-}
-.bg-blue-600 {
-  background-color: #2563eb;
-}
-.text-white {
-  color: white;
-}
-.rounded-md {
-  border-radius: 6px;
-}
-.text-lg {
-  font-size: 18px;
-}
-.font-semibold {
-  font-weight: 600;
-}
-.text-gray-900 {
-  color: #111827;
-}
-.text-gray-500 {
-  color: #6b7280;
-}
-.text-sm {
-  font-size: 14px;
-}
-.hover\:bg-blue-700:hover {
-  background-color: #1d4ed8;
-}
-.disabled\:opacity-50:disabled {
-  opacity: 0.5;
+    system-ui,
+    -apple-system,
+    Segoe UI,
+    Roboto,
+    sans-serif;
+  background-color: #f9fafb; /* gray-50 */
 }
 
 /* React Flow customizations */
 .react-flow__node {
   cursor: pointer;
+  transition:
+    box-shadow 0.15s ease,
+    border-color 0.15s ease;
 }
 
-.react-flow__node.selected {
-  box-shadow: 0 0 0 2px #3b82f6;
-}
-
-.react-flow__edge.selected {
-  stroke: #3b82f6;
+/* Subtle hover styling */
+.react-flow__node:hover {
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+  border-color: #3b82f6; /* blue-500 */
 }
