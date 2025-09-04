@@ -1,6 +1,7 @@
 import { ReactFlowProvider } from '@xyflow/react';
 import { Canvas } from '@/builder/canvas/Canvas';
 import { Inspector } from '@/builder/inspector/Inspector';
+import { RunPanel } from '@/builder/run/RunPanel';
 
 /**
  * BuilderPage: Main workflow builder interface
@@ -25,20 +26,8 @@ export default function BuilderPage() {
           <Inspector />
         </div>
 
-        {/* Run Panel Placeholder */}
-        <div className="h-48 p-4">
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">
-            Run Controls
-          </h3>
-          <div className="space-y-2">
-            <button
-              className="w-full px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50"
-              disabled
-            >
-              Run Workflow
-            </button>
-            <div className="text-sm text-gray-500">Status: Ready</div>
-          </div>
+        <div className="border-b border-gray-200">
+          <RunPanel />
         </div>
       </div>
     </div>
