@@ -1,3 +1,5 @@
+'use client';
+
 import { ReactFlowProvider } from '@xyflow/react';
 import { Canvas } from '@/builder/canvas/Canvas';
 import { Inspector } from '@/builder/inspector/Inspector';
