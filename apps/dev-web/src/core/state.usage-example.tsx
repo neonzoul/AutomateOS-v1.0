@@ -1,7 +1,7 @@
 // Example usage of the enhanced AutomateOS Zustand store
 
 import React from 'react';
-import ReactFlow from '@xyflow/react';
+import { ReactFlow, Node, Edge, Connection } from '@xyflow/react';
 import {
   useNodes,
   useEdges,
@@ -28,7 +28,7 @@ export function BuilderCanvas() {
         onNodesChange={onNodesChange}
         onEdgesChange={onEdgesChange}
         onConnect={onConnect}
-        onNodeClick={(_, node) => setSelectedNode(node.id)}
+        onNodeClick={(_, node: Node) => setSelectedNode(node.id)}
         onPaneClick={() => setSelectedNode(null)}
         fitView
       />
