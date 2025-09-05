@@ -48,6 +48,7 @@ export interface BuilderState {
 
   addNode: (node: Omit<Node<NodeData>, 'id'> & { id?: string }) => void;
   removeNode: (nodeId: string) => void;
+  duplicateNode: (nodeId: string) => void;
   clearWorkflow: () => void;
 }
 
@@ -55,69 +56,145 @@ export interface BuilderState {
 const initialNodes: Node<NodeData>[] = [];
 const initialEdges: Edge[] = [];
 
+// === LocalStorage Persistence ===
+const STORAGE_KEY = 'automateos-builder-state';
+
+// Hydrate state from localStorage
+const getInitialState = () => {
+  if (typeof window === 'undefined') {
+    return { nodes: initialNodes, edges: initialEdges };
+  }
+
+  try {
+    const saved = localStorage.getItem(STORAGE_KEY);
+    if (saved) {
+      const parsed = JSON.parse(saved);
+      return {
+        nodes: parsed.nodes || initialNodes,
+        edges: parsed.edges || initialEdges,
+      };
+    }
+  } catch (error) {
+    console.warn('Failed to load builder state from localStorage:', error);
+  }
+
+  return { nodes: initialNodes, edges: initialEdges };
+};
+
 export const useBuilderStore = create<BuilderState>()(
   devtools(
-    subscribeWithSelector((set, get) => ({
-      nodes: initialNodes,
-      edges: initialEdges,
-      selectedNodeId: null,
+    subscribeWithSelector((set, get) => {
+      const { nodes, edges } = getInitialState();
 
-      onNodesChange: (changes) =>
-        set((s) => ({ nodes: applyNodeChanges(changes, s.nodes) })),
+      return {
+        nodes,
+        edges,
+        selectedNodeId: null,
 
-      onEdgesChange: (changes) =>
-        set((s) => ({ edges: applyEdgeChanges(changes, s.edges) })),
+        onNodesChange: (changes) =>
+          set((s) => ({ nodes: applyNodeChanges(changes, s.nodes) })),
 
-      onConnect: (connection: Connection) =>
-        set((s) => ({ edges: addEdge(connection, s.edges) })),
+        onEdgesChange: (changes) =>
+          set((s) => ({ edges: applyEdgeChanges(changes, s.edges) })),
 
-      setSelectedNode: (nodeId) => set({ selectedNodeId: nodeId }),
+        onConnect: (connection: Connection) =>
+          set((s) => ({ edges: addEdge(connection, s.edges) })),
 
-      updateNodeConfig: (nodeId, config) =>
-        set((s) => ({
-          nodes: s.nodes.map((n) =>
-            n.id === nodeId
-              ? {
-                  ...n,
-                  data: {
-                    ...(n.data ?? {}),
-                    config: {
-                      ...((n.data?.config as Record<string, unknown>) ?? {}),
-                      ...config,
+        setSelectedNode: (nodeId) => set({ selectedNodeId: nodeId }),
+
+        updateNodeConfig: (nodeId, config) =>
+          set((s) => ({
+            nodes: s.nodes.map((n) =>
+              n.id === nodeId
+                ? {
+                    ...n,
+                    data: {
+                      ...(n.data ?? {}),
+                      config: {
+                        ...((n.data?.config as Record<string, unknown>) ?? {}),
+                        ...config,
+                      },
                     },
-                  },
-                }
-              : n
-          ),
-        })),
+                  }
+                : n
+            ),
+          })),
 
-      addNode: (nodeInput) =>
-        set((s) => {
-          const id = nodeInput.id ?? nanoid(8);
-          const newNode: Node<NodeData> = {
-            ...nodeInput,
-            id,
-            type: nodeInput.type ?? 'default',
-            position: nodeInput.position ?? { x: 100, y: 100 },
-            data: nodeInput.data ?? {},
-          };
-          return { nodes: [...s.nodes, newNode] };
-        }),
+        addNode: (nodeInput) =>
+          set((s) => {
+            const id = nodeInput.id ?? nanoid(8);
+            const newNode: Node<NodeData> = {
+              ...nodeInput,
+              id,
+              type: nodeInput.type ?? 'default',
+              position: nodeInput.position ?? { x: 100, y: 100 },
+              data: nodeInput.data ?? {},
+            };
+            return { nodes: [...s.nodes, newNode] };
+          }),
 
-      removeNode: (nodeId) =>
-        set((s) => ({
-          nodes: s.nodes.filter((n) => n.id !== nodeId),
-          edges: s.edges.filter(
-            (e) => e.source !== nodeId && e.target !== nodeId
-          ),
-          selectedNodeId: s.selectedNodeId === nodeId ? null : s.selectedNodeId,
-        })),
+        removeNode: (nodeId) =>
+          set((s) => ({
+            nodes: s.nodes.filter((n) => n.id !== nodeId),
+            edges: s.edges.filter(
+              (e) => e.source !== nodeId && e.target !== nodeId
+            ),
+            selectedNodeId:
+              s.selectedNodeId === nodeId ? null : s.selectedNodeId,
+          })),
 
-      clearWorkflow: () => set({ nodes: [], edges: [], selectedNodeId: null }),
-    })),
+        duplicateNode: (nodeId) =>
+          set((s) => {
+            const node = s.nodes.find((n) => n.id === nodeId);
+            if (!node) return s;
+
+            const newId = nanoid(8);
+            const duplicatedNode: Node<NodeData> = {
+              ...structuredClone(node), // deep copy all fields
+              id: newId,
+              position: {
+                x: node.position.x + 40,
+                y: node.position.y + 40,
+              },
+            };
+
+            return {
+              nodes: [...s.nodes, duplicatedNode],
+              selectedNodeId: newId,
+            };
+          }),
+
+        clearWorkflow: () =>
+          set({ nodes: [], edges: [], selectedNodeId: null }),
+      };
+    }),
     { name: 'automateos-builder' }
   )
 );
+
+// === LocalStorage Auto-Save Subscription ===
+// Subscribe to nodes and edges changes and persist to localStorage
+if (typeof window !== 'undefined') {
+  let saveTimer: number | null = null;
+  const save = (payload: unknown) => {
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(payload));
+    } catch (error) {
+      console.warn('Failed to save builder state to localStorage:', error);
+    }
+  };
+
+  useBuilderStore.subscribe(
+    (state) => ({ nodes: state.nodes, edges: state.edges }),
+    (state) => {
+      if (saveTimer) window.clearTimeout(saveTimer);
+      saveTimer = window.setTimeout(() => save(state), 120);
+    },
+    {
+      equalityFn: shallow,
+    }
+  );
+}
 
 // === Performance-Optimized Selector Hooks ===
 
@@ -144,8 +221,9 @@ export const useReactFlowHandlers = () => {
 export const useGraphActions = () => {
   const addNode = useBuilderStore((s) => s.addNode);
   const removeNode = useBuilderStore((s) => s.removeNode);
+  const duplicateNode = useBuilderStore((s) => s.duplicateNode);
   const clearWorkflow = useBuilderStore((s) => s.clearWorkflow);
-  return { addNode, removeNode, clearWorkflow };
+  return { addNode, removeNode, duplicateNode, clearWorkflow };
 };
 
 export const useSelectionActions = () => {
