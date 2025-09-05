@@ -9,7 +9,7 @@ _*
 
 
 ##- dependencies
-/node_modules
+node_modules/
 
 ##- typescript
 *.tsbuildinfo
@@ -17,6 +17,9 @@ next-env.d.ts
 
 ##- production
 /build
+
+# Turborepo
+.turbo/
 
 ##- OS generated files (misc)
 .DS_Store
@@ -34,3 +37,4 @@ Thumbs.db
 ##- Build output
 dist/
 .next/
+.turbo/
