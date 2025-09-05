@@ -3,7 +3,8 @@
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  output: 'standalone',
+  // Temporarily disable standalone for Windows dev/CI compatibility
+  // output: 'standalone',
   eslint: {
     ignoreDuringBuilds: true,
   },
