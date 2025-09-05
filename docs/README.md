@@ -28,4 +28,4 @@ This is an open-source project. Please follow the guidelines in our technical do
 
 ---
 
-_Note: Private business documentation and strategic planning materials are kept in directories starting with `_` and are not included in the public repository._
+_Note: Private business documentation and strategic planning materials are kept in directories starting with `_` and are not included in the public repository.\_
