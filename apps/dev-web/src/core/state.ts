@@ -257,6 +257,21 @@ export const useSelectionActions = () => {
   return { setSelectedNode, updateNodeConfig };
 };
 
+// Run state selectors
+export const useRunState = () => {
+  const runStatus = useBuilderStore((s) => s.runStatus);
+  const currentRunId = useBuilderStore((s) => s.currentRunId);
+  const logs = useBuilderStore((s) => s.logs);
+  return { runStatus, currentRunId, logs };
+};
+
+export const useRunActions = () => {
+  const setRunStatus = useBuilderStore((s) => s.setRunStatus);
+  const appendLog = useBuilderStore((s) => s.appendLog);
+  const resetRun = useBuilderStore((s) => s.resetRun);
+  return { setRunStatus, appendLog, resetRun };
+};
+
 // === Builder-specific Actions ===
 
 // Add start node with validation (only one start node allowed)
