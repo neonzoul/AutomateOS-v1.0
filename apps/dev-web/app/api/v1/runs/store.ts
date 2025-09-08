@@ -28,8 +28,16 @@ interface MockRun {
   }>;
 }
 
-// In-memory storage
-const runs = new Map<string, MockRun>();
+// Global in-memory storage with development mode protection
+declare global {
+  var __mockRunStore: Map<string, MockRun> | undefined;
+}
+
+// Use global store to persist across Next.js module reloads in development
+const runs = globalThis.__mockRunStore ?? new Map<string, MockRun>();
+if (!globalThis.__mockRunStore) {
+  globalThis.__mockRunStore = runs;
+}
 
 /**
  * Create a new run with initial state
