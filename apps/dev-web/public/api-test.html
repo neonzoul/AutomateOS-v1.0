@@ -1,0 +1,159 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>API Test</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        margin: 40px;
+      }
+      .button {
+        padding: 10px 20px;
+        margin: 10px;
+        background: #007cba;
+        color: white;
+        border: none;
+        cursor: pointer;
+      }
+      .result {
+        background: #f5f5f5;
+        padding: 20px;
+        margin: 20px 0;
+        white-space: pre-wrap;
+      }
+      .success {
+        color: green;
+      }
+      .error {
+        color: red;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>API Endpoint Test</h1>
+
+    <button class="button" onclick="testPost()">Test POST /api/v1/runs</button>
+    <button class="button" onclick="testGet()" id="getBtn" disabled>
+      Test GET /api/v1/runs/:id
+    </button>
+    <button class="button" onclick="testPoll()" id="pollBtn" disabled>
+      Test Polling
+    </button>
+    <button class="button" onclick="clearLog()">Clear Log</button>
+
+    <div id="result" class="result">Ready to test...</div>
+
+    <script>
+      let currentRunId = null;
+      let logContent = 'Ready to test...\n';
+
+      function log(message, isError = false) {
+        const timestamp = new Date().toLocaleTimeString();
+        logContent += `[${timestamp}] ${message}\n`;
+        const resultDiv = document.getElementById('result');
+        resultDiv.textContent = logContent;
+        resultDiv.className = isError ? 'result error' : 'result success';
+        resultDiv.scrollTop = resultDiv.scrollHeight;
+      }
+
+      function clearLog() {
+        logContent = 'Log cleared.\n';
+        document.getElementById('result').textContent = logContent;
+        currentRunId = null;
+        document.getElementById('getBtn').disabled = true;
+        document.getElementById('pollBtn').disabled = true;
+      }
+
+      async function testPost() {
+        try {
+          log('🚀 Testing POST /api/v1/runs...');
+          const response = await fetch('/api/v1/runs', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ workflowVersionId: 'test-workflow' }),
+          });
+
+          const data = await response.json();
+
+          if (response.ok) {
+            currentRunId = data.id;
+            log(`✅ POST Success! Run ID: ${data.id}, Status: ${data.status}`);
+            document.getElementById('getBtn').disabled = false;
+            document.getElementById('pollBtn').disabled = false;
+          } else {
+            log(
+              `❌ POST Failed: ${response.status} - ${JSON.stringify(data)}`,
+              true
+            );
+          }
+        } catch (error) {
+          log(`❌ POST Error: ${error.message}`, true);
+        }
+      }
+
+      async function testGet() {
+        if (!currentRunId) {
+          log('❌ No run ID available. Create a run first.', true);
+          return;
+        }
+
+        try {
+          log(`🔍 Testing GET /api/v1/runs/${currentRunId}...`);
+          const response = await fetch(`/api/v1/runs/${currentRunId}`);
+          const data = await response.json();
+
+          if (response.ok) {
+            log(
+              `✅ GET Success! Status: ${data.status}, Steps: ${data.steps?.length || 0}, Logs: ${data.logs?.length || 0}`
+            );
+            if (data.status === 'succeeded') {
+              log('🎉 Run completed successfully!');
+            }
+          } else {
+            log(
+              `❌ GET Failed: ${response.status} - ${JSON.stringify(data)}`,
+              true
+            );
+          }
+        } catch (error) {
+          log(`❌ GET Error: ${error.message}`, true);
+        }
+      }
+
+      async function testPoll() {
+        if (!currentRunId) {
+          log('❌ No run ID available. Create a run first.', true);
+          return;
+        }
+
+        log('🔄 Starting polling test (5 requests with 1 second intervals)...');
+
+        for (let i = 1; i <= 5; i++) {
+          await new Promise((resolve) => setTimeout(resolve, 1000));
+
+          try {
+            log(`   Poll ${i}...`);
+            const response = await fetch(`/api/v1/runs/${currentRunId}`);
+            const data = await response.json();
+
+            if (response.ok) {
+              log(
+                `   Status: ${data.status}, Steps: ${data.steps?.length || 0}, Logs: ${data.logs?.length || 0}`
+              );
+              if (data.status === 'succeeded') {
+                log('🎉 Polling complete - run succeeded!');
+                break;
+              }
+            } else {
+              log(`   ❌ Poll ${i} failed: ${response.status}`, true);
+            }
+          } catch (error) {
+            log(`   ❌ Poll ${i} error: ${error.message}`, true);
+          }
+        }
+      }
+    </script>
+  </body>
+</html>
