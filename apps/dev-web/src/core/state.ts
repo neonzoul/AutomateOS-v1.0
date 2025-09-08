@@ -50,6 +50,17 @@ export interface BuilderState {
   removeNode: (nodeId: string) => void;
   duplicateNode: (nodeId: string) => void;
   clearWorkflow: () => void;
+
+  // === Run Slice ===
+  runStatus: 'idle' | 'queued' | 'running' | 'succeeded' | 'failed';
+  currentRunId: string | null;
+  logs: string[];
+  setRunStatus: (
+    status: BuilderState['runStatus'],
+    runId?: string | null
+  ) => void;
+  appendLog: (line: string) => void;
+  resetRun: () => void;
 }
 
 // === Initial Store State Interface ===
@@ -90,6 +101,9 @@ export const useBuilderStore = create<BuilderState>()(
         nodes,
         edges,
         selectedNodeId: null,
+        runStatus: 'idle',
+        currentRunId: null,
+        logs: [],
 
         onNodesChange: (changes) =>
           set((s) => ({ nodes: applyNodeChanges(changes, s.nodes) })),
@@ -166,6 +180,17 @@ export const useBuilderStore = create<BuilderState>()(
 
         clearWorkflow: () =>
           set({ nodes: [], edges: [], selectedNodeId: null }),
+
+        // === Run Slice Implementation ===
+        setRunStatus: (status, runId) =>
+          set((s) => ({
+            runStatus: status,
+            currentRunId:
+              typeof runId === 'undefined' ? s.currentRunId : (runId ?? null),
+          })),
+        appendLog: (line) => set((s) => ({ logs: [...s.logs, line] })),
+        resetRun: () =>
+          set({ runStatus: 'idle', currentRunId: null, logs: [] }),
       };
     }),
     { name: 'automateos-builder' }
@@ -266,6 +291,9 @@ export const resetBuilderStore = () =>
     nodes: [],
     edges: [],
     selectedNodeId: null,
+    runStatus: 'idle',
+    currentRunId: null,
+    logs: [],
   });
 
 // Debug helper (development only)

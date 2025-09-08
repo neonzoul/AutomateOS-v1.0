@@ -52,10 +52,14 @@ export function Canvas() {
   useEffect(() => {
     const isEditable = (el: EventTarget | null) => {
       const t = el as HTMLElement | null;
-      if (!t) return false;
-      const tag = t.tagName;
+      const active =
+        (typeof document !== 'undefined'
+          ? (document.activeElement as HTMLElement | null)
+          : null) || t;
+      if (!active) return false;
+      const tag = active.tagName;
       return (
-        t.isContentEditable ||
+        active.isContentEditable ||
         tag === 'INPUT' ||
         tag === 'TEXTAREA' ||
         tag === 'SELECT'
