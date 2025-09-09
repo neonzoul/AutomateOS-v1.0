@@ -15,6 +15,7 @@
     "test:e2e": "playwright test"
   },
   "dependencies": {
+    "@automateos/workflow-schema": "workspace:^",
     "@hookform/resolvers": "^5.2.1",
     "@xyflow/react": "^12.8.4",
     "framer-motion": "^12.23.12",
