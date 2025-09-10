@@ -106,6 +106,18 @@ test('import/export round-trip preserves node & edge identity', async ({
   const origNodeIds = [...initialGraph!.nodes.map((n: any) => n.id)].sort();
   const newNodeIds = [...importedGraph!.nodes.map((n: any) => n.id)].sort();
   expect(newNodeIds).toEqual(origNodeIds);
+  // Position & data equality (by id)
+  const posMap: Record<string, any> = {};
+  for (const n of initialGraph!.nodes as any[]) posMap[n.id] = n;
+  for (const n of importedGraph!.nodes as any[]) {
+    const orig = posMap[n.id];
+    expect(orig).toBeTruthy();
+    expect(n.position).toEqual(orig.position);
+    // Data object structural equality (shallow) if present
+    if (orig.data || n.data) {
+      expect(n.data).toEqual(orig.data);
+    }
+  }
   // Edge counts may be 0 or 1 depending on successful connect; just ensure not more than original
   expect(importedGraph!.edges.length).toBe(initialGraph!.edges.length);
 
@@ -116,4 +128,4 @@ test('import/export round-trip preserves node & edge identity', async ({
   }
 });
 
-// TODO: expose a deterministic window.__builderState accessor for stronger assertions instead of localStorage parsing.
+// NOTE: window.__getBuilderSnapshot provides deterministic state; positions & data now asserted.

@@ -30,6 +30,22 @@ import { NODE_SPECS } from '../registry/nodeSpecs';
 import { exportWorkflow, importWorkflow } from '../io/importExport';
 import { useBuilderStore } from '../../core/state';
 
+// Lightweight toast shim (replace with real UI system later)
+function notify(opts: {
+  type?: 'success' | 'error';
+  title: string;
+  message?: string;
+}) {
+  if (typeof window === 'undefined') return;
+  const color = opts.type === 'error' ? '#dc2626' : '#16a34a';
+  // eslint-disable-next-line no-console
+  console.log(
+    `[%c${opts.title}%c] ${opts.message ?? ''}`,
+    `color:${color};font-weight:bold;`,
+    'color:inherit;'
+  );
+}
+
 // Node types registry
 const nodeTypes: NodeTypes = {
   start: StartNode,
@@ -155,8 +171,13 @@ export function Canvas() {
     const onExport = async () => {
       try {
         await exportWorkflow({ nodes, edges, name: 'Workflow' });
+        notify({ title: 'Exported', message: 'Workflow JSON downloaded.' });
       } catch (e) {
-        console.error('Export failed', e);
+        notify({
+          type: 'error',
+          title: 'Export failed',
+          message: (e as any)?.message,
+        });
       }
     };
 
@@ -167,8 +188,17 @@ export function Canvas() {
         const wf = await importWorkflow(file);
         setGraph({ nodes: wf.nodes as any, edges: wf.edges as any });
         clearUiState();
+        notify({ title: 'Imported', message: 'Workflow loaded onto canvas.' });
       } catch (e) {
-        console.error('Import failed', e);
+        const err: any = e;
+        const code = err?.code;
+        const msg =
+          code === 'INVALID_JSON'
+            ? 'File is not valid JSON'
+            : code === 'INVALID_SCHEMA'
+              ? 'Schema validation failed'
+              : err?.message || 'Import failed';
+        notify({ type: 'error', title: 'Import error', message: msg });
       } finally {
         e.currentTarget.value = '';
       }
