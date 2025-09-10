@@ -212,3 +212,73 @@ Status: COMPLETE ✅
 - Replace localStorage usage in e2e test with snapshot bridge exclusively.
 - Add edge creation helper for deterministic Start→HTTP connection (drag source handle to target).
 - Introduce toast layer replacing console logs for import/export success/failure.
+
+---
+
+## 13. Post-Review Additions (Branch Audit: feat/sprint2-run-import)
+
+Additional findings after focused branch review and quick audit of implementation vs. spec:
+
+| Area | Observation | Action Recommendation |
+|------|-------------|------------------------|
+| HTTP headers schema | `headers: z.record(z.string(), z.string())` pattern is off (Zod expects `z.record(valueSchema)`). | Change to `headers: z.record(z.string()).optional()` for correct typing/inference. |
+| User feedback (toasts) | Import/Export currently rely on `console.error` (toolbars). | Replace with toast hook (`toast({ title, description, variant })`) for success/error parity with UX guidelines. |
+| Export filename naming | Hard-coded name `'Workflow'` in export call; loses semantic naming if workflow gains a user-defined title later. | Pass current `meta.name` from store if present; fallback to 'workflow'. |
+| Edge position / node displacement checks | Round-trip e2e asserts IDs & counts only; no positional equality ensures layout determinism. | Extend e2e to compare each node's `{x,y}` within tolerance (exact for now). |
+| Sensitive data guard | No explicit guard strips unintended secrets if future nodes add credential-like fields. | Add optional schema-level refinement or export-time key blacklist (`['apiKey','token','secret']`) to fail fast. |
+| Hydration mismatch |
+| Test bridge usage | New `window.__getBuilderSnapshot` works but localStorage fallback remains in older spec doc references. | Update all docs/tests to rely solely on snapshot bridge (remove localStorage parsing). |
+| Deterministic edge creation | Click-connect sometimes misses generating an edge. | Implement deterministic handle drag helper in e2e (query source handle then drag to target). |
+
+### Patch Snippets (Proposed)
+
+Headers schema fix (in `packages/workflow-schema/src/index.ts`):
+```ts
+// Before: headers: z.record(z.string(), z.string()).optional()
+headers: z.record(z.string()).optional(),
+```
+
+Toast wiring example (toolbar excerpt):
+```ts
+try {
+	await exportWorkflow({ nodes, edges, name: currentName });
+	toast({ title: 'Exported', description: 'Workflow JSON downloaded.' });
+} catch (e: any) {
+	toast({ title: 'Export failed', description: e.message, variant: 'destructive' });
+}
+```
+
+Node position assertion (Playwright augmentation):
+```ts
+const origPositions = initialGraph.nodes.map((n:any)=>({id:n.id,pos:n.position})).sort((a,b)=>a.id.localeCompare(b.id));
+const newPositions = importedGraph.nodes.map((n:any)=>({id:n.id,pos:n.position})).sort((a,b)=>a.id.localeCompare(b.id));
+expect(newPositions).toEqual(origPositions);
+```
+
+Secret key blacklist (optional in `exportWorkflow` sanitization step):
+```ts
+const SENSITIVE_KEYS = new Set(['apiKey','token','secret','password']);
+function stripSensitive(data:any){
+	if(!data || typeof data!=='object') return data;
+	const clone:any = Array.isArray(data)?[]:{};
+	for(const k of Object.keys(data)){
+		if(SENSITIVE_KEYS.has(k)) continue; // drop
+		clone[k] = data[k];
+	}
+	return clone;
+}
+```
+
+### Risk Callouts
+1. Future node types that inject large inline configs could bloat JSON (consider size warning/toast threshold >2MB).
+2. Hydration warnings, if unaddressed, can hide genuine regressions; prioritize stabilization early next sprint.
+3. Without positional assertions, subtle layout persistence bugs could slip in when adding auto-layout features.
+
+### Updated Follow-Up Priorities (Ordered)
+1. Hydration stabilization (suppress or defer dynamic state segments).
+2. Toast integration for Import/Export.
+3. Positional equality in e2e test.
+4. Deterministic edge creation helper.
+5. Headers schema correction + secret key blacklist.
+6. CI automation: Playwright browser install + artifact retention of exported JSON for traceability.
+
