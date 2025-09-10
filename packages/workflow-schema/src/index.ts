@@ -61,28 +61,50 @@ export const NodeSchema = z.discriminatedUnion('type', [
 
 // === Edge Schema ===
 
-export const EdgeSchema = z.object({
-  id: z.string(),
-  source: z.string(),
-  target: z.string(),
-  type: z.string().optional(),
-});
+export const EdgeSchema = z
+  .object({
+    id: z.string(),
+    source: z.string(),
+    target: z.string(),
+    sourceHandle: z.string().optional(),
+    targetHandle: z.string().optional(),
+    type: z.string().optional(),
+    data: z.record(z.string(), z.unknown()).optional(),
+  })
+  .strict();
 
-// === Workflow Schema ===
+// === Workflow Schema (Round-trip export/import) ===
+// NOTE: Day5 import/export introduces a stricter meta object ("meta") with
+// fixed literal version (1) + exportedAt timestamp for provenance. The legacy
+// "metadata" key is kept (deprecated) for any early callers; prefer "meta".
 
-export const WorkflowSchema = z.object({
-  nodes: z.array(NodeSchema),
-  edges: z.array(EdgeSchema),
-  metadata: z
-    .object({
-      name: z.string().optional(),
-      description: z.string().optional(),
-      version: z.string().optional(),
-      createdAt: z.string().optional(),
-      updatedAt: z.string().optional(),
-    })
-    .optional(),
-});
+export const WorkflowMetaSchema = z
+  .object({
+    name: z.string().default('Untitled'),
+    version: z.literal(1).default(1),
+    exportedAt: z.string().optional(), // ISO string added at export time
+  })
+  .strict();
+
+export const DeprecatedMetadataSchema = z
+  .object({
+    name: z.string().optional(),
+    description: z.string().optional(),
+    version: z.string().optional(),
+    createdAt: z.string().optional(),
+    updatedAt: z.string().optional(),
+  })
+  .partial()
+  .optional();
+
+export const WorkflowSchema = z
+  .object({
+    nodes: z.array(NodeSchema),
+    edges: z.array(EdgeSchema),
+    meta: WorkflowMetaSchema.optional(),
+    metadata: DeprecatedMetadataSchema, // backward compatibility
+  })
+  .strict();
 
 // === Type Exports ===
 
@@ -94,6 +116,7 @@ export type HttpNode = z.infer<typeof HttpNodeSchema>;
 export type WorkflowNode = z.infer<typeof NodeSchema>;
 export type WorkflowEdge = z.infer<typeof EdgeSchema>;
 export type Workflow = z.infer<typeof WorkflowSchema>;
+export type WorkflowMeta = z.infer<typeof WorkflowMetaSchema>;
 
 // === Node Spec Interface ===
 

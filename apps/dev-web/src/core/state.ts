@@ -50,6 +50,8 @@ export interface BuilderState {
   removeNode: (nodeId: string) => void;
   duplicateNode: (nodeId: string) => void;
   clearWorkflow: () => void;
+  setGraph: (graph: { nodes: Node<NodeData>[]; edges: Edge[] }) => void; // import/export helper
+  clearUiState: () => void; // resets selection + run state (import flow)
 
   // === Run Slice ===
   runStatus: 'idle' | 'queued' | 'running' | 'succeeded' | 'failed';
@@ -180,6 +182,16 @@ export const useBuilderStore = create<BuilderState>()(
 
         clearWorkflow: () =>
           set({ nodes: [], edges: [], selectedNodeId: null }),
+
+        setGraph: (graph) =>
+          set(() => ({ nodes: graph.nodes, edges: graph.edges })),
+        clearUiState: () =>
+          set(() => ({
+            selectedNodeId: null,
+            runStatus: 'idle',
+            currentRunId: null,
+            logs: [],
+          })),
 
         // === Run Slice Implementation ===
         setRunStatus: (status, runId) =>
