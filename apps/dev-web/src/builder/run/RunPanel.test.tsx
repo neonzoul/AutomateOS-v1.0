@@ -106,4 +106,70 @@ describe('RunPanel', () => {
       });
     });
   });
+
+  describe('Status pill mapping', () => {
+    it('shows queued status with blue styling', () => {
+      useBuilderStore.getState().setRunStatus('queued', 'test-run-123');
+      render(<RunPanel />);
+
+      const statusPill = screen.getByText('Queued (test-run-123)');
+      expect(statusPill).toHaveClass('text-yellow-600', 'bg-yellow-50');
+    });
+
+    it('shows running status with blue styling and pulse', () => {
+      useBuilderStore.getState().setRunStatus('running', 'test-run-456');
+      render(<RunPanel />);
+
+      const statusPill = screen.getByText('Running (test-run-456)');
+      expect(statusPill).toHaveClass('text-blue-600', 'bg-blue-50');
+    });
+
+    it('shows succeeded status with green styling', () => {
+      useBuilderStore.getState().setRunStatus('succeeded', 'test-run-789');
+      render(<RunPanel />);
+
+      const statusPill = screen.getByText('Succeeded (test-run-789)');
+      expect(statusPill).toHaveClass('text-green-600', 'bg-green-50');
+    });
+
+    it('shows failed status with red styling', () => {
+      useBuilderStore.getState().setRunStatus('failed', 'test-run-999');
+      render(<RunPanel />);
+
+      const statusPill = screen.getByText('Failed (test-run-999)');
+      expect(statusPill).toHaveClass('text-red-600', 'bg-red-50');
+    });
+  });
+
+  describe('Accessibility', () => {
+    it('has proper aria-label on run panel', () => {
+      render(<RunPanel />);
+
+      const panel = screen.getByLabelText('Run Panel');
+      expect(panel).toBeInTheDocument();
+    });
+
+    it('has descriptive title on run button', () => {
+      // When nodes are present
+      useBuilderStore.getState().addNode({
+        type: 'start',
+        position: { x: 0, y: 0 },
+        data: { label: 'Start' },
+      });
+
+      render(<RunPanel />);
+
+      const btn = screen.getByTestId('run-button');
+      expect(btn).toHaveAttribute('title', 'Start workflow run');
+    });
+
+    it('has descriptive title when run button is disabled', () => {
+      // No nodes, so button should be disabled
+      render(<RunPanel />);
+
+      const btn = screen.getByTestId('run-button') as HTMLButtonElement;
+      expect(btn).toHaveAttribute('title', 'Cannot run workflow');
+      expect(btn.disabled).toBe(true);
+    });
+  });
 });
