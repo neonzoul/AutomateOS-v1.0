@@ -5,6 +5,7 @@
 ## Quick Start
 
 ### Prerequisites
+
 - Node.js 20+
 - PNPM (`corepack enable`)
 - Docker (optional for local stack)
@@ -23,6 +24,27 @@ pnpm dev
 pnpm -C apps/dev-web dev
 pnpm -C services/api-gateway dev
 ```
+
+### Run Stack with Orchestrator + Engine (Sprint 2)
+
+Workflow execution prototype services can be started via Docker (Engine, Orchestrator, API Gateway) while running the builder locally:
+
+```bash
+# Terminal 1: start backend stack
+docker compose -f infra/docker-compose.dev.yml up --build
+
+# Terminal 2: start builder UI (ensure env)
+set NEXT_PUBLIC_API_BASE=http://localhost:8080 # Windows PowerShell use: $env:NEXT_PUBLIC_API_BASE="http://localhost:8080"
+pnpm -C apps/dev-web dev
+```
+
+Services exposed:
+
+- API Gateway: http://localhost:8080 (/v1/runs)
+- Engine (mock v0.1): http://localhost:8081
+- Orchestrator (internal): http://localhost:3002
+
+Click the Run button in the builder to post the current graph to the gateway and execute via Engine (Start + HTTP supported).
 
 ### With Docker
 
