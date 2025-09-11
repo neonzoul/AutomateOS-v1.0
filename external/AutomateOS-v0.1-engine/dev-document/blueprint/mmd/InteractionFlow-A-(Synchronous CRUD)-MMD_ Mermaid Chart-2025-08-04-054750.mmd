@@ -1,0 +1,10 @@
+sequenceDiagram
+    participant User
+    participant API_Server as API Server
+    participant Database
+
+    User->>+API_Server: POST /workflows with JWT
+    API_Server->>API_Server: Authenticate user & validate data
+    API_Server->>+Database: Write workflow definition
+    Database-->>-API_Server: Confirm write success
+    API_Server-->>-User: Send confirmation response (e.g., 201 Created)

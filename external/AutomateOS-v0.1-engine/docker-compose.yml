@@ -1,0 +1,41 @@
+services:
+    db:
+        image: postgres:15
+        environment:
+            - POSTGRES_USER=automateos
+            - POSTGRES_PASSWORD=automateos
+            - POSTGRES_DB=automateos_db
+        volumes:
+            - postgres_data:/var/lib/postgresql/data/
+        ports:
+            - '5432:5432'
+
+    redis:
+        image: redis:7
+
+    api:
+        build:
+            context: .
+            dockerfile: Dockerfile
+        ports:
+            - '8000:8000'
+        depends_on:
+            - db
+            - redis
+        environment:
+            - DATABASE_URL=postgresql+psycopg2://automateos:automateos@db:5432/automateos_db
+            - REDIS_URL=redis://redis:6379/0
+
+    worker:
+        build:
+            context: .
+            dockerfile: Dockerfile.worker
+        depends_on:
+            - redis
+            - db
+        environment:
+            - DATABASE_URL=postgresql+psycopg2://automateos:automateos@db:5432/automateos_db
+            - REDIS_URL=redis://redis:6379/0
+
+volumes:
+    postgres_data:
