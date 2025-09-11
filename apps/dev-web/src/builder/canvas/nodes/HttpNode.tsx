@@ -1,15 +1,21 @@
 // [Component]
 
 import React from 'react';
+import { useBuilderStore } from '../../../core/state';
 import { Handle, Position } from '@xyflow/react';
 
-type Props = {
-  data?: { label?: string; config?: { method?: string; url?: string } };
+type HttpNodeData = {
+  label?: string;
+  config?: { method?: string; url?: string };
 };
-
-export default function HttpNode({ data }: Props) {
+interface HttpNodeProps {
+  id: string;
+  data?: HttpNodeData;
+}
+export default function HttpNode({ data, id }: HttpNodeProps) {
   const method = data?.config?.method ?? 'GET';
   const url = data?.config?.url ?? '';
+  const status = useBuilderStore((s) => s.nodeRunStatuses[id] ?? 'idle');
 
   return (
     <div className="rounded-lg border border-indigo-300 bg-indigo-50 px-3 py-2 shadow-sm min-w-[180px]">
@@ -18,6 +24,11 @@ export default function HttpNode({ data }: Props) {
           {method}
         </span>
         <span>{data?.label ?? 'HTTP'}</span>
+        {status && (
+          <span className="text-[9px] px-1 rounded bg-white border border-indigo-300 text-indigo-700 uppercase tracking-wide">
+            {status}
+          </span>
+        )}
       </div>
       <div
         className="text-[10px] text-indigo-600 truncate max-w-[220px]"

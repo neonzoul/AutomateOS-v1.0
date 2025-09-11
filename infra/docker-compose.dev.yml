@@ -1,25 +1,49 @@
 services:
-  dev-web:
+  api-gateway:
     build:
       context: ..
-      dockerfile: apps/dev-web/Dockerfile
-    ports:
-      - '8080:3000'
+      dockerfile: services/api-gateway/Dockerfile
     environment:
-      - NODE_ENV=production
-      - NEXT_TELEMETRY_DISABLED=1
-    restart: unless-stopped
-    healthcheck:
-      test:
-        [
-          'CMD',
-          'wget',
-          '--no-verbose',
-          '--tries=1',
-          '--spider',
-          'http://localhost:3000',
-        ]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-      start_period: 40s
+      - NODE_ENV=development
+      - ORCHESTRATOR_BASE=http://orchestrator:3002
+    ports:
+      - '8080:3001' # public API base (matches docs)
+    depends_on:
+      - orchestrator
+  orchestrator:
+    build:
+      context: ..
+      dockerfile: services/orchestrator/Dockerfile
+    environment:
+      - NODE_ENV=development
+      - ENGINE_BASE=http://engine:8000
+    ports:
+      - '3002:3002'
+    depends_on:
+      - engine
+  engine:
+    build:
+      context: ..
+      dockerfile: external/AutomateOS-v0.1-engine/Dockerfile
+    environment:
+      - NODE_ENV=development
+      - PYTHONUNBUFFERED=1
+    ports:
+      - '8081:8000' # engine external port (docs use 8081)
+    # Dev-only: live mount source + enable autoreload to avoid rebuilds on each change
+    volumes:
+      - ../external/AutomateOS-v0.1-engine/main.py:/app/main.py:ro
+      - ../external/AutomateOS-v0.1-engine/app:/app/app:ro
+    command:
+      ['uvicorn', 'main:app', '--host', '0.0.0.0', '--port', '8000', '--reload']
+  # Optional: run dev-web outside docker (pnpm -C apps/dev-web dev)
+  # Uncomment below to containerize UI as well
+  # dev-web:
+  #   build:
+  #     context: ..
+  #     dockerfile: apps/dev-web/Dockerfile
+  #   environment:
+  #     - NODE_ENV=development
+  #     - NEXT_PUBLIC_API_BASE=http://localhost:8080
+  #   ports:
+  #     - '3000:3000'

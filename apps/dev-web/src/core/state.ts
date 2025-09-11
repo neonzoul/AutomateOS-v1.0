@@ -57,12 +57,20 @@ export interface BuilderState {
   runStatus: 'idle' | 'queued' | 'running' | 'succeeded' | 'failed';
   currentRunId: string | null;
   logs: string[];
+  nodeRunStatuses: Record<string, 'idle' | 'running' | 'succeeded' | 'failed'>;
   setRunStatus: (
     status: BuilderState['runStatus'],
     runId?: string | null
   ) => void;
   appendLog: (line: string) => void;
   resetRun: () => void;
+  setNodeRunStatuses: (
+    m: Record<string, 'idle' | 'running' | 'succeeded' | 'failed'>
+  ) => void;
+  updateNodeRunStatus: (
+    id: string,
+    status: 'running' | 'succeeded' | 'failed'
+  ) => void;
 }
 
 // === Initial Store State Interface ===
@@ -106,6 +114,7 @@ export const useBuilderStore = create<BuilderState>()(
         runStatus: 'idle',
         currentRunId: null,
         logs: [],
+        nodeRunStatuses: {},
 
         onNodesChange: (changes) =>
           set((s) => ({ nodes: applyNodeChanges(changes, s.nodes) })),
@@ -202,7 +211,17 @@ export const useBuilderStore = create<BuilderState>()(
           })),
         appendLog: (line) => set((s) => ({ logs: [...s.logs, line] })),
         resetRun: () =>
-          set({ runStatus: 'idle', currentRunId: null, logs: [] }),
+          set({
+            runStatus: 'idle',
+            currentRunId: null,
+            logs: [],
+            nodeRunStatuses: {},
+          }),
+        setNodeRunStatuses: (m) => set({ nodeRunStatuses: m }),
+        updateNodeRunStatus: (id, status) =>
+          set((s) => ({
+            nodeRunStatuses: { ...s.nodeRunStatuses, [id]: status },
+          })),
       };
     }),
     { name: 'automateos-builder' }
@@ -321,6 +340,7 @@ export const resetBuilderStore = () =>
     runStatus: 'idle',
     currentRunId: null,
     logs: [],
+    nodeRunStatuses: {},
   });
 
 // Debug helper (development only)

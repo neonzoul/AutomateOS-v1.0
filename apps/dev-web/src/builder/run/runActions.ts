@@ -3,6 +3,8 @@
 
 import { useBuilderStore } from '../../core/state';
 
+const API_BASE = process.env.NEXT_PUBLIC_API_BASE || 'http://localhost:8080';
+
 export type RunPollStatus = 'queued' | 'running' | 'succeeded' | 'failed';
 
 export type RunResponse = {
@@ -13,9 +15,9 @@ export type RunResponse = {
   logs?: Array<
     | string
     | {
-        timestamp: string;
+        ts: string;
         level: 'info' | 'warn' | 'error';
-        message: string;
+        msg: string;
         nodeId?: string;
       }
   >;
@@ -28,7 +30,8 @@ export type RunResponse = {
 export async function startRun(
   workflowJson: unknown
 ): Promise<{ runId: string }> {
-  const { setRunStatus, appendLog, resetRun } = useBuilderStore.getState();
+  const { setRunStatus, appendLog, resetRun, setNodeRunStatuses } =
+    useBuilderStore.getState();
 
   try {
     // Reset previous run state
@@ -36,12 +39,12 @@ export async function startRun(
     appendLog('Starting workflow run...');
 
     // Call API gateway to start run
-    const response = await fetch('/api/v1/runs', {
+    const response = await fetch(`${API_BASE}/v1/runs`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify(workflowJson),
+      body: JSON.stringify({ graph: workflowJson }),
     });
 
     if (!response.ok) {
@@ -51,7 +54,15 @@ export async function startRun(
     }
 
     const result = await response.json();
-    const runId = result.id;
+    const runId = result.runId || result.id;
+    // Initialize per-node statuses (queued)
+    const graph = workflowJson as any;
+    if (graph?.nodes) {
+      const map: Record<string, 'idle' | 'running' | 'succeeded' | 'failed'> =
+        {};
+      graph.nodes.forEach((n: any) => (map[n.id] = 'idle'));
+      setNodeRunStatuses(map);
+    }
 
     // Update state with run ID and initial status
     setRunStatus('queued', runId);
@@ -74,7 +85,8 @@ export async function startRun(
  * Updates store state as run progresses
  */
 export async function pollRun(runId: string): Promise<void> {
-  const { setRunStatus, appendLog } = useBuilderStore.getState();
+  const { setRunStatus, appendLog, updateNodeRunStatus } =
+    useBuilderStore.getState();
 
   let pollCount = 0;
   let lastLogCount = 0; // Track how many logs we've seen
@@ -91,16 +103,30 @@ export async function pollRun(runId: string): Promise<void> {
         return;
       }
 
-      const response = await fetch(`/api/v1/runs/${runId}`);
+      const response = await fetch(`${API_BASE}/v1/runs/${runId}`);
 
       if (!response.ok) {
         throw new Error(`Failed to poll run: ${response.status}`);
       }
 
-      const run: RunResponse = await response.json();
+      const run: RunResponse & { steps?: { id: string; status: string }[] } =
+        await response.json();
 
       // Update status
       setRunStatus(run.status);
+
+      // Update per-node statuses if steps present
+      if (Array.isArray((run as any).steps)) {
+        (run as any).steps.forEach((s: any) => {
+          if (
+            s.status === 'running' ||
+            s.status === 'succeeded' ||
+            s.status === 'failed'
+          ) {
+            updateNodeRunStatus(s.id, s.status);
+          }
+        });
+      }
 
       // Add only new logs (after lastLogCount)
       if (run.logs && run.logs.length > lastLogCount) {
@@ -110,7 +136,7 @@ export async function pollRun(runId: string): Promise<void> {
           const logMessage =
             typeof logObj === 'string'
               ? logObj
-              : `[${logObj.level?.toUpperCase() || 'INFO'}] ${logObj.message}`;
+              : `[${logObj.level?.toUpperCase() || 'INFO'}] ${logObj.msg || 'Unknown log'}`;
           appendLog(logMessage);
         });
         lastLogCount = run.logs.length;

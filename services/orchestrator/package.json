@@ -1,0 +1,22 @@
+{
+  "name": "@automateos/orchestrator",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "main": "src/index.ts",
+  "scripts": {
+    "dev": "tsx watch src/index.ts",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "fastify": "^4.28.1",
+    "zod": "^3.23.8",
+    "@automateos/workflow-schema": "workspace:*",
+    "@automateos/sdk-engine": "workspace:*"
+  },
+  "devDependencies": {
+    "tsx": "^4.16.2",
+    "typescript": "^5.4.0",
+    "vitest": "^1.6.0"
+  }
+}
