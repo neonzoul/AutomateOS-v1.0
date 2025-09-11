@@ -81,7 +81,7 @@ describe('RunPanel', () => {
     // Mock successful API response
     mockFetch.mockResolvedValueOnce({
       ok: true,
-      json: () => Promise.resolve({ id: 'test-run-123', status: 'queued' }),
+      json: () => Promise.resolve({ runId: 'test-run-123', status: 'queued' }),
     });
 
     // Add a test node
@@ -97,12 +97,12 @@ describe('RunPanel', () => {
     fireEvent.click(btn);
 
     await waitFor(() => {
-      expect(mockFetch).toHaveBeenCalledWith('/api/v1/runs', {
+      expect(mockFetch).toHaveBeenCalledWith('http://localhost:8080/v1/runs', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: expect.stringContaining('"nodes"'),
+        body: expect.stringContaining('"graph"'),
       });
     });
   });

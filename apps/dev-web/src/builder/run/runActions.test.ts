@@ -17,17 +17,18 @@ describe('runActions', () => {
       // Mock successful API response
       mockFetch.mockResolvedValueOnce({
         ok: true,
-        json: () => Promise.resolve({ id: 'test-run-123', status: 'queued' }),
+        json: () =>
+          Promise.resolve({ runId: 'test-run-123', status: 'queued' }),
       });
 
       const workflowJson = { nodes: [], edges: [] };
       const { runId } = await startRun(workflowJson);
 
       expect(runId).toBe('test-run-123');
-      expect(mockFetch).toHaveBeenCalledWith('/api/v1/runs', {
+      expect(mockFetch).toHaveBeenCalledWith('http://localhost:8080/v1/runs', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(workflowJson),
+        body: JSON.stringify({ graph: workflowJson }),
       });
 
       // Store state should be updated
