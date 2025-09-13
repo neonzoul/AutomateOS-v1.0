@@ -24,13 +24,6 @@ Open-source workflow automation platform documentation.
 - [Dev-Web Architecture](technical/dev-web/Architecture.md)
 - [Sprint 2 Summary](technical/Devlog/sprint2/Day10-Documentation-CI-Implementation-Summary.md)
 
-## 🎯 Sprint 2 Deliverables (Complete)
-
-- ✅ **Frozen API Contract** - Complete `/v1/runs` documentation with worked examples
-- ✅ **User Tutorial** - Visual step-by-step workflow creation guide
-- ✅ **Expanded CI** - Multi-package testing pipeline with unit + integration tests
-- ✅ **Quality Foundation** - Comprehensive test coverage and documentation
-
 ## 🤝 Contributing
 
 This is an open-source project. Please follow the guidelines in our technical documentation when contributing.
