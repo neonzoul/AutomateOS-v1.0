@@ -40,6 +40,9 @@ jobs:
         run: pnpm install --frozen-lockfile
         working-directory: apps/dev-web
 
+      - name: Install workspace dependencies
+        run: pnpm install --frozen-lockfile
+
       - name: Install Playwright Browsers
         run: pnpm exec playwright install --with-deps chromium
         working-directory: apps/dev-web
@@ -72,6 +75,7 @@ jobs:
         env:
           CI: true
           USE_MOCK_GATEWAY: true
+          NEXT_PUBLIC_API_BASE: 'http://localhost:3001'
 
       - name: Upload test results
         if: always()
