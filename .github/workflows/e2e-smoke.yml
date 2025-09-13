@@ -40,40 +40,40 @@ jobs:
         run: pnpm exec playwright install --with-deps chromium
         working-directory: apps/dev-web
 
-    - name: Build application
-      run: pnpm build
-      working-directory: apps/dev-web
+      - name: Build application
+        run: pnpm build
+        working-directory: apps/dev-web
 
-    - name: Start mock gateway
-      run: |
-        pnpm exec node mock-gateway.cjs &
-        echo $! > mock-gateway.pid
-        # Wait for mock gateway to be ready
-        npx wait-on http://localhost:3001/health --timeout 10000
-      working-directory: apps/dev-web
+      - name: Start mock gateway
+        run: |
+          pnpm exec node mock-gateway.cjs &
+          echo $! > mock-gateway.pid
+          # Wait for mock gateway to be ready
+          npx wait-on http://localhost:3001/health --timeout 10000
+        working-directory: apps/dev-web
 
-    - name: Start Next.js application
-      run: |
-        pnpm start &
-        echo $! > nextjs.pid
-        # Wait for Next.js to be ready
-        npx wait-on http://localhost:3000 --timeout 30000
-      working-directory: apps/dev-web
-      env:
-        PORT: 3000
+      - name: Start Next.js application
+        run: |
+          pnpm start &
+          echo $! > nextjs.pid
+          # Wait for Next.js to be ready
+          npx wait-on http://localhost:3000 --timeout 30000
+        working-directory: apps/dev-web
+        env:
+          PORT: 3000
 
-    - name: Run E2E smoke tests
-      run: pnpm test:e2e:mock
-      working-directory: apps/dev-web
-      env:
-        CI: true
-        USE_MOCK_GATEWAY: true
+      - name: Run E2E smoke tests
+        run: pnpm test:e2e:mock
+        working-directory: apps/dev-web
+        env:
+          CI: true
+          USE_MOCK_GATEWAY: true
 
       - name: Upload test results
-        uses: actions/upload-artifact@v4
         if: always()
+        uses: actions/upload-artifact@v4
         with:
-          name: playwright-report-${{ matrix.project }}
+          name: playwright-report
           path: apps/dev-web/playwright-report/
           retention-days: 5
 
