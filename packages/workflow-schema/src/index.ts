@@ -14,7 +14,7 @@ export const StartConfigSchema = z.object({}).strict();
 // HTTP node config schema
 export const HttpConfigSchema = z
   .object({
-    method: z.enum(['GET', 'POST', 'PUT', 'PATCH', 'DELETE']).default('GET'),
+    method: z.enum(['GET', 'POST', 'PUT', 'PATCH', 'DELETE']),
     url: z.string().url('Please enter a valid URL'),
     headers: z.record(z.string(), z.string()).optional(),
     body: z.string().optional(),

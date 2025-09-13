@@ -74,19 +74,19 @@ function HttpConfigForm({
 
   // Create a version of the schema with optional method for defaults
   const formDefaultValues: HttpConfig = {
-    method: currentConfig?.method || 'GET',
-    url: currentConfig?.url || '',
-    headers: currentConfig?.headers || {},
-    body: currentConfig?.body || '',
+    method: currentConfig?.method ?? 'GET',
+    url: currentConfig?.url ?? '',
+    headers: currentConfig?.headers ?? {},
+    body: currentConfig?.body ?? '',
   };
 
   const form = useForm<HttpConfig>({
     resolver: zodResolver(HttpConfigSchema),
     defaultValues: {
-      method: currentConfig?.method || 'GET',
-      url: currentConfig?.url || '',
-      headers: currentConfig?.headers || {},
-      body: currentConfig?.body || '',
+      method: currentConfig?.method ?? 'GET',
+      url: currentConfig?.url ?? '',
+      headers: currentConfig?.headers ?? {},
+      body: currentConfig?.body ?? '',
     },
     mode: 'onChange', // Validate on change for immediate feedback
   });
@@ -100,7 +100,12 @@ function HttpConfigForm({
   // Watch form changes and sync to store when valid
   React.useEffect(() => {
     const subscription = form.watch((values) => {
-      const result = HttpConfigSchema.safeParse(values);
+      // Ensure method has a value before validation
+      const validatedValues = {
+        ...values,
+        method: values.method || 'GET',
+      };
+      const result = HttpConfigSchema.safeParse(validatedValues);
       if (result.success) {
         updateNodeConfig(nodeId, result.data);
       }
@@ -109,7 +114,12 @@ function HttpConfigForm({
   }, [form, nodeId, updateNodeConfig]);
 
   const onSubmit = (data: any) => {
-    const validated = HttpConfigSchema.parse(data);
+    // Ensure method has a value before validation
+    const validatedData = {
+      ...data,
+      method: data.method || 'GET',
+    };
+    const validated = HttpConfigSchema.parse(validatedData);
     updateNodeConfig(nodeId, validated);
   };
   return (
