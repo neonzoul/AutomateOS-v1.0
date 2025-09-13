@@ -11,7 +11,11 @@ interface StartNodeProps {
 export default function StartNode({ data, id }: StartNodeProps) {
   const status = useBuilderStore((s) => s.nodeRunStatuses[id] ?? 'idle');
   return (
-    <div className="rounded-lg border border-emerald-300 bg-emerald-50 px-3 py-2 shadow-sm min-w-[120px] text-center">
+    <div
+      data-id="start"
+      data-node-id={id}
+      className="rounded-lg border border-emerald-300 bg-emerald-50 px-3 py-2 shadow-sm min-w-[120px] text-center"
+    >
       <div className="text-emerald-700 font-semibold">
         {data?.label ?? 'Start'}
       </div>
