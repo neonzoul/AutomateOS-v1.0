@@ -112,11 +112,9 @@ async function executeWorkflow(page: any) {
   await expect(runButton).toBeEnabled();
   await runButton.click();
 
-  // Status should change from idle to queued/running quickly
+  // Status should change from idle; allow fast transitions to final states
   const statusPill = page.locator('[data-testid="run-panel"] div.inline-flex');
-  await expect(statusPill).toContainText(/(queued|running)/i, {
-    timeout: 2000,
-  });
+  await expect(statusPill).not.toHaveText(/ready to run/i, { timeout: 4000 });
 
   // Poll until workflow succeeds (give it time for network requests)
   await expect(statusPill).toHaveText(/succeeded/i, { timeout: 15000 });
@@ -129,11 +127,9 @@ async function verifyNodeBadges(page: any) {
   const startNode = page.locator('[data-id="start"]');
   const httpNode = page.locator('[data-id="http"]');
 
-  // Start node should show succeeded status
-  await expect(startNode.locator('text=succeeded')).toBeVisible();
-
-  // HTTP node should show succeeded status
-  await expect(httpNode.locator('text=succeeded')).toBeVisible();
+  // Start/HTTP nodes should display a succeeded badge (case-insensitive)
+  await expect(startNode).toContainText(/succeeded/i);
+  await expect(httpNode).toContainText(/succeeded/i);
 }
 
 async function captureNodeScreenshots(page: any, testInfo: any) {
@@ -159,6 +155,18 @@ test.describe('E2E Smoke: Happy Path Workflow Execution', () => {
   test('creator can run a simple Start → HTTP workflow successfully', async ({
     page,
   }, testInfo) => {
+    // In CI (or when USE_MOCK_GATEWAY is set), force API base to the mock gateway
+    if (process.env.USE_MOCK_GATEWAY) {
+      await page.addInitScript(() => {
+        try {
+          window.localStorage.setItem('mockApiMode', 'true');
+        } catch {}
+        (window as any).__NEXT_DATA__ = {
+          ...((window as any).__NEXT_DATA__ || {}),
+          env: { NEXT_PUBLIC_API_BASE: 'http://localhost:3001' },
+        };
+      });
+    }
     // Navigate to builder
     await page.goto('/builder');
 

@@ -3,7 +3,21 @@
 
 import { useBuilderStore } from '../../core/state';
 
-const API_BASE = process.env.NEXT_PUBLIC_API_BASE || 'http://localhost:8080';
+// Resolve API base at runtime (client or server) to support CI overrides and mocks
+function getApiBase(): string {
+  // Prefer value injected into window during tests (set via addInitScript)
+  if (typeof window !== 'undefined') {
+    const injected = (window as any).__NEXT_DATA__?.env?.NEXT_PUBLIC_API_BASE;
+    if (injected) return injected as string;
+    try {
+      // Test helper: enable mock gateway if flag present
+      const mockMode = window.localStorage.getItem('mockApiMode');
+      if (mockMode === 'true') return 'http://localhost:3001';
+    } catch {}
+  }
+  // Fallbacks: build-time env or local dev gateway
+  return process.env.NEXT_PUBLIC_API_BASE || 'http://localhost:8081';
+}
 
 export type RunPollStatus = 'queued' | 'running' | 'succeeded' | 'failed';
 
@@ -42,7 +56,7 @@ export async function startRun(
     const idempotencyKey = `ui_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
 
     // Call API gateway to start run
-    const response = await fetch(`${API_BASE}/v1/runs`, {
+    const response = await fetch(`${getApiBase()}/v1/runs`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -118,7 +132,7 @@ export async function pollRun(runId: string): Promise<void> {
         return;
       }
 
-      const response = await fetch(`${API_BASE}/v1/runs/${runId}`);
+      const response = await fetch(`${getApiBase()}/v1/runs/${runId}`);
 
       // Guard against undefined or malformed response
       if (!response || typeof (response as any).ok !== 'boolean') {
@@ -129,21 +143,41 @@ export async function pollRun(runId: string): Promise<void> {
         throw new Error(`Failed to poll run: ${response.status}`);
       }
 
-      const run: RunResponse & { steps?: { id: string; status: string }[] } =
-        await response.json();
+      const run: RunResponse & {
+        steps?: { id: string; nodeId?: string; status: string }[];
+      } = await response.json();
 
       // Update status
       setRunStatus(run.status);
 
       // Update per-node statuses if steps present
       if (Array.isArray((run as any).steps)) {
+        const { nodes, nodeRunStatuses } = useBuilderStore.getState();
         (run as any).steps.forEach((s: any) => {
+          const status = s.status as
+            | 'running'
+            | 'succeeded'
+            | 'failed'
+            | string;
           if (
-            s.status === 'running' ||
-            s.status === 'succeeded' ||
-            s.status === 'failed'
+            status === 'running' ||
+            status === 'succeeded' ||
+            status === 'failed'
           ) {
-            updateNodeRunStatus(s.id, s.status);
+            // Determine which node to update:
+            // 1) exact id match
+            // 2) match by type when nodeId is a type label like 'start'/'http'
+            let targetId: string | undefined = undefined;
+            const stepNodeId = (s.nodeId || s.id) as string | undefined;
+            if (stepNodeId) {
+              if (nodeRunStatuses[stepNodeId] !== undefined) {
+                targetId = stepNodeId;
+              } else {
+                const matchByType = nodes.find((n) => n.type === stepNodeId);
+                if (matchByType) targetId = matchByType.id;
+              }
+            }
+            if (targetId) updateNodeRunStatus(targetId, status);
           }
         });
       }
@@ -179,9 +213,15 @@ export async function pollRun(runId: string): Promise<void> {
         }
       }
     } catch (error) {
+      // Be lenient to transient errors; log and retry once by scheduling next poll
       const message = error instanceof Error ? error.message : 'Unknown error';
       appendLog(`Polling error: ${message}`);
-      setRunStatus('failed');
+      // Don't immediately fail; schedule another attempt unless we've exceeded maxPolls
+      if (pollCount <= maxPolls) {
+        setTimeout(poll, 1000);
+      } else {
+        setRunStatus('failed');
+      }
     }
   };
 
