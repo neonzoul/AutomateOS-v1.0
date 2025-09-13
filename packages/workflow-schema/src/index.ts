@@ -109,7 +109,7 @@ export const WorkflowSchema = z
 // === Type Exports ===
 
 export type StartConfig = z.infer<typeof StartConfigSchema>;
-export type HttpConfig = z.infer<typeof HttpConfigSchema>;
+export type HttpConfig = z.output<typeof HttpConfigSchema>;
 export type BaseNodeData = z.infer<typeof BaseNodeDataSchema>;
 export type StartNode = z.infer<typeof StartNodeSchema>;
 export type HttpNode = z.infer<typeof HttpNodeSchema>;
@@ -124,7 +124,7 @@ export interface NodeSpec<TConfig> {
   type: string;
   label: string;
   description?: string;
-  configSchema: z.ZodType<TConfig>;
+  configSchema: z.ZodType<any, any, any>; // Allow flexible schema typing
   defaultData: {
     label?: string;
     config?: TConfig;
