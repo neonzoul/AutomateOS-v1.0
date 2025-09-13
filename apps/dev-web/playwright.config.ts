@@ -22,33 +22,66 @@ export default defineConfig({
 
     /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
     trace: 'on-first-retry',
+
+    /* Screenshot on failure for debugging */
+    screenshot: 'only-on-failure',
+
+    /* Video recording for failed tests */
+    video: 'retain-on-failure',
   },
 
   /* Configure projects for major browsers */
   projects: [
+    // Live environment tests (default for local development)
     {
-      name: 'chromium',
-      use: { ...devices['Desktop Chrome'] },
+      name: 'chromium-live',
+      use: {
+        ...devices['Desktop Chrome'],
+        storageState: undefined, // Fresh state for each test
+      },
+      testMatch: /.*\.spec\.ts/,
+      testIgnore: process.env.CI ? /smoke-happy-path\.spec\.ts/ : undefined,
     },
 
     {
-      name: 'firefox',
+      name: 'firefox-live',
       use: { ...devices['Desktop Firefox'] },
+      testMatch: /.*\.spec\.ts/,
+      testIgnore: process.env.CI ? /smoke-happy-path\.spec\.ts/ : undefined,
     },
 
+    // CI-safe tests with mocked backend
     {
-      name: 'webkit',
-      use: { ...devices['Desktop Safari'] },
+      name: 'chromium-mock',
+      use: {
+        ...devices['Desktop Chrome'],
+        extraHTTPHeaders: {
+          'X-Test-Mode': 'mock',
+        },
+      },
+      testMatch: /smoke-happy-path\.spec\.ts/,
+      testIgnore: process.env.CI ? undefined : /.*/, // Only run in CI
     },
 
-    /* Test against mobile viewports. */
+    // Mobile testing for smoke tests
     {
       name: 'Mobile Chrome',
       use: { ...devices['Pixel 5'] },
+      testMatch: /smoke-happy-path\.spec\.ts/,
     },
+
     {
       name: 'Mobile Safari',
       use: { ...devices['iPhone 12'] },
+      testMatch: /smoke-happy-path\.spec\.ts/,
+    },
+
+    // Webkit for comprehensive browser coverage (local only)
+    {
+      name: 'webkit',
+      use: { ...devices['Desktop Safari'] },
+      testMatch: /.*\.spec\.ts/,
+      testIgnore: process.env.CI ? /.*/ : undefined, // Skip webkit in CI
     },
 
     /* Test against branded browsers. */

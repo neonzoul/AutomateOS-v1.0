@@ -1,0 +1,118 @@
+name: E2E Smoke Tests
+
+on:
+  push:
+    branches: [main, develop, 'feat/*']
+  pull_request:
+    branches: [main, develop]
+  workflow_dispatch:
+
+jobs:
+  e2e-smoke:
+    timeout-minutes: 10
+    runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: false
+      matrix:
+        project: [chromium-mock]
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 8
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+        working-directory: apps/dev-web
+
+      - name: Install Playwright Browsers
+        run: pnpm exec playwright install --with-deps chromium
+        working-directory: apps/dev-web
+
+    - name: Build application
+      run: pnpm build
+      working-directory: apps/dev-web
+
+    - name: Start mock gateway
+      run: |
+        pnpm exec node mock-gateway.cjs &
+        echo $! > mock-gateway.pid
+        # Wait for mock gateway to be ready
+        npx wait-on http://localhost:3001/health --timeout 10000
+      working-directory: apps/dev-web
+
+    - name: Start Next.js application
+      run: |
+        pnpm start &
+        echo $! > nextjs.pid
+        # Wait for Next.js to be ready
+        npx wait-on http://localhost:3000 --timeout 30000
+      working-directory: apps/dev-web
+      env:
+        PORT: 3000
+
+    - name: Run E2E smoke tests
+      run: pnpm test:e2e:mock
+      working-directory: apps/dev-web
+      env:
+        CI: true
+        USE_MOCK_GATEWAY: true
+
+      - name: Upload test results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: playwright-report-${{ matrix.project }}
+          path: apps/dev-web/playwright-report/
+          retention-days: 5
+
+      - name: Upload test screenshots
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: playwright-screenshots-${{ matrix.project }}
+          path: apps/dev-web/test-results/
+          retention-days: 5
+
+      - name: Cleanup processes
+        if: always()
+        run: |
+          if [ -f mock-gateway.pid ]; then
+            kill $(cat mock-gateway.pid) || true
+          fi
+          if [ -f nextjs.pid ]; then
+            kill $(cat nextjs.pid) || true
+          fi
+        working-directory: apps/dev-web
+
+  e2e-live-local:
+    # Only run live tests on main branch or when specifically requested
+    if: github.ref == 'refs/heads/main' || contains(github.event.head_commit.message, '[run-live-e2e]')
+    timeout-minutes: 15
+    runs-on: ubuntu-latest
+
+    services:
+      # This would be where we'd set up the real services
+      # For now, we'll skip this job unless explicitly requested
+      placeholder:
+        image: alpine:latest
+        options: --entrypoint="" --command "echo 'Live E2E tests require full service stack'"
+
+    steps:
+      - name: Skip live tests
+        run: |
+          echo "Live E2E tests require the full service stack (API gateway + engine)"
+          echo "These tests are meant to run in a local development environment"
+          echo "To run locally: pnpm test:e2e:live"
+          exit 0
