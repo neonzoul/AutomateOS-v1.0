@@ -2,6 +2,9 @@ import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { startRun, pollRun, cancelRun } from './runActions';
 import { resetBuilderStore, useBuilderStore } from '../../core/state';
 
+// Test environment API base URL resolution (same as runActions.ts)
+const API_BASE = process.env.NEXT_PUBLIC_API_BASE || 'http://localhost:8080';
+
 // Mock fetch for testing
 const mockFetch = vi.fn();
 global.fetch = mockFetch;
@@ -25,7 +28,7 @@ describe('runActions', () => {
       const { runId } = await startRun(workflowJson);
 
       expect(runId).toBe('test-run-123');
-      expect(mockFetch).toHaveBeenCalledWith('http://localhost:8080/v1/runs', {
+      expect(mockFetch).toHaveBeenCalledWith(`${API_BASE}/v1/runs`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
