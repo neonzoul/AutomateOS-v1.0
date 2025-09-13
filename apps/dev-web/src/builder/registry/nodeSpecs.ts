@@ -1,46 +1,19 @@
 /**
  * Module: builder/registry/nodeSpecs.ts
  * Purpose: Define the Node Registry with Zod schemas and defaults for builder nodes (start, http).
- * Used by: Canvas (nodeTypes + add defaults), future Inspector (schema-driven forms).
+ * Used by: Canvas (nodeTypes + add defaults), Inspector (schema-driven forms).
  * Notes: Client-side validation only; never include secrets in node config.
  */
 import { z } from 'zod';
+import {
+  StartConfigSchema,
+  HttpConfigSchema,
+  type StartConfig,
+  type HttpConfig,
+  type NodeSpec as BaseNodeSpec,
+} from '@automateos/workflow-schema';
 
-// Generic node data shared shape
-export const BaseNodeDataSchema = z.object({
-  label: z.string().optional(),
-  config: z.record(z.string(), z.unknown()).optional(),
-});
-
-// Start node has no specific config
-export const StartConfigSchema = z.object({}).strict();
-
-// HTTP node config
-export const HttpConfigSchema = z
-  .object({
-    method: z.enum(['GET', 'POST', 'PUT', 'PATCH', 'DELETE']).default('GET'),
-    url: z.string().url(),
-    headers: z.record(z.string(), z.string()).optional(),
-    body: z.any().optional(),
-  })
-  .strict();
-
-export type StartConfig = z.infer<typeof StartConfigSchema>;
-export type HttpConfig = z.infer<typeof HttpConfigSchema>;
-
-export type NodeSpec<TConfig> = {
-  type: 'start' | 'http';
-  label: string;
-  description?: string;
-  // Zod schema to validate config
-  configSchema: z.ZodType<TConfig>;
-  // Default data for new nodes
-  defaultData: {
-    label?: string;
-    config?: TConfig;
-  };
-  runtime?: { adapter: 'start' | 'http' };
-};
+export type NodeSpec<TConfig> = BaseNodeSpec<TConfig>;
 
 export const NODE_SPECS = {
   start: {

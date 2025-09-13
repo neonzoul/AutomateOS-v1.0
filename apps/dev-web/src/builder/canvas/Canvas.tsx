@@ -27,6 +27,24 @@ import {
 import StartNode from './nodes/StartNode';
 import HttpNode from './nodes/HttpNode';
 import { NODE_SPECS } from '../registry/nodeSpecs';
+import { exportWorkflow, importWorkflow } from '../io/importExport';
+import { useBuilderStore } from '../../core/state';
+
+// Lightweight toast shim (replace with real UI system later)
+function notify(opts: {
+  type?: 'success' | 'error';
+  title: string;
+  message?: string;
+}) {
+  if (typeof window === 'undefined') return;
+  const color = opts.type === 'error' ? '#dc2626' : '#16a34a';
+  // eslint-disable-next-line no-console
+  console.log(
+    `[%c${opts.title}%c] ${opts.message ?? ''}`,
+    `color:${color};font-weight:bold;`,
+    'color:inherit;'
+  );
+}
 
 // Node types registry
 const nodeTypes: NodeTypes = {
@@ -52,19 +70,30 @@ export function Canvas() {
   useEffect(() => {
     const isEditable = (el: EventTarget | null) => {
       const t = el as HTMLElement | null;
-      if (!t) return false;
-      const tag = t.tagName;
-      return (
-        t.isContentEditable ||
-        tag === 'INPUT' ||
-        tag === 'TEXTAREA' ||
-        tag === 'SELECT'
-      );
+      const active =
+        (typeof document !== 'undefined'
+          ? (document.activeElement as HTMLElement | null)
+          : null) || t;
+      if (!active) return false;
+      const tag = active.tagName;
+      if (active.isContentEditable) return true;
+      if (active.getAttribute?.('contenteditable') === 'true') return true;
+      return tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT';
     };
 
     const handleKeyDown = (event: KeyboardEvent) => {
       // Only handle shortcuts when a node is selected and not editing
       if (!selectedNodeId || isEditable(event.target)) {
+        return;
+      }
+
+      // Explicit guard: if current active element is contentEditable, ignore shortcuts
+      const active = document.activeElement as HTMLElement | null;
+      if (
+        active &&
+        (active.isContentEditable ||
+          active.getAttribute('contenteditable') === 'true')
+      ) {
         return;
       }
 
@@ -104,7 +133,10 @@ export function Canvas() {
   function ToolbarButtons() {
     const { screenToFlowPosition } = useReactFlow();
     const { addNode, clearWorkflow } = useGraphActions();
+    const setGraph = useBuilderStore((s) => s.setGraph);
+    const clearUiState = useBuilderStore((s) => s.clearUiState);
     const nodes = useNodes();
+    const edges = useEdges(); // FIX: capture edges via hook at top-level (was illegally called inside handler)
     const hasStart = nodes.some((n) => n.type === 'start');
 
     const addAtCursor = useCallback(
@@ -114,10 +146,12 @@ export function Canvas() {
           return;
         }
 
-        const position = screenToFlowPosition({
-          x: evt.clientX,
-          y: evt.clientY,
+        // Offset so new node is not hidden beneath toolbar.
+        const base = screenToFlowPosition({
+          x: evt.clientX + 140, // push right of toolbar
+          y: evt.clientY + 40, // push below toolbar
         });
+        const position = base;
         const spec = NODE_SPECS[type];
         addNode({ type, position, data: spec.defaultData });
       },
@@ -133,6 +167,42 @@ export function Canvas() {
         clearWorkflow();
       }
     }, [clearWorkflow]);
+
+    const onExport = async () => {
+      try {
+        await exportWorkflow({ nodes, edges, name: 'Workflow' });
+        notify({ title: 'Exported', message: 'Workflow JSON downloaded.' });
+      } catch (e) {
+        notify({
+          type: 'error',
+          title: 'Export failed',
+          message: (e as any)?.message,
+        });
+      }
+    };
+
+    const onImport: React.ChangeEventHandler<HTMLInputElement> = async (e) => {
+      const file = e.target.files?.[0];
+      if (!file) return;
+      try {
+        const wf = await importWorkflow(file);
+        setGraph({ nodes: wf.nodes as any, edges: wf.edges as any });
+        clearUiState();
+        notify({ title: 'Imported', message: 'Workflow loaded onto canvas.' });
+      } catch (e) {
+        const err: any = e;
+        const code = err?.code;
+        const msg =
+          code === 'INVALID_JSON'
+            ? 'File is not valid JSON'
+            : code === 'INVALID_SCHEMA'
+              ? 'Schema validation failed'
+              : err?.message || 'Import failed';
+        notify({ type: 'error', title: 'Import error', message: msg });
+      } finally {
+        e.currentTarget.value = '';
+      }
+    };
 
     return (
       <Panel position="top-left">
@@ -154,6 +224,24 @@ export function Canvas() {
             onClick={(e) => addAtCursor(e, 'http')}
           >
             + HTTP
+          </button>
+          <div className="w-px bg-gray-300" />
+          <label className="px-2 py-1 text-sm rounded bg-slate-200 text-slate-700 hover:bg-slate-300 transition-colors cursor-pointer">
+            <input
+              type="file"
+              accept="application/json"
+              className="hidden"
+              onChange={onImport}
+              data-testid="import-input"
+            />
+            Import
+          </label>
+          <button
+            className="px-2 py-1 text-sm rounded bg-slate-500 text-white hover:bg-slate-600 transition-colors"
+            onClick={onExport}
+            data-testid="export-btn"
+          >
+            Export
           </button>
           <div className="w-px bg-gray-300" />
           <button
@@ -222,4 +310,25 @@ export function Canvas() {
       </ReactFlow>
     </div>
   );
+}
+
+// Dev/Test helper: expose builder store snapshots for Playwright (non-production)
+if (typeof window !== 'undefined' && process.env.NODE_ENV !== 'production') {
+  const w = window as any;
+  if (!w.__AOS_BUILDER_STORE_BOUND) {
+    try {
+      w.__getBuilderSnapshot = () => {
+        const s = useBuilderStore.getState();
+        return { nodes: s.nodes, edges: s.edges };
+      };
+      w.__subscribeBuilder = (cb: (s: any) => void) =>
+        useBuilderStore.subscribe((s) =>
+          cb({ nodes: s.nodes, edges: s.edges })
+        );
+      w.__AOS_BUILDER_STORE_BOUND = true;
+    } catch (e) {
+      // no-op: avoids crashing if module order changes in future
+      console.warn('[builder] failed to bind test bridge', e);
+    }
+  }
 }

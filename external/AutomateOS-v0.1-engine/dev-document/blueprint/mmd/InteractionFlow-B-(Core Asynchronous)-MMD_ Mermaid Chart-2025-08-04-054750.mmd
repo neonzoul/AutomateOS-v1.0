@@ -1,0 +1,23 @@
+sequenceDiagram
+    participant External_Service as External Service
+    participant API_Server as API Server
+    participant Job_Queue as Job Queue (Redis)
+    participant Worker
+    participant Database
+
+    External_Service->>+API_Server: Request to unique webhook URL
+    API_Server->>Job_Queue: Enqueue job (workflow ID + data)
+    API_Server-->>-External_Service: 202 Accepted (immediate response)
+
+    Note over Worker,Job_Queue: Worker polls the queue...
+    Worker->>+Job_Queue: Pick up new job
+    Job_Queue-->>-Worker: Job payload
+
+    Worker->>+Database: Read workflow definition
+    Database-->>-Worker: Return workflow steps
+
+    loop For Each Node in Workflow
+        Worker->>Worker: Execute node logic
+    end
+
+    Worker->>Database: Update execution history

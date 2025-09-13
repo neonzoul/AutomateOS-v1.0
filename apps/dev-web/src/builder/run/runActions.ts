@@ -1,0 +1,240 @@
+// Run action utilities for Sprint 2
+// Integrates with API gateway (/runs endpoints) for workflow execution
+
+import { useBuilderStore } from '../../core/state';
+
+// Resolve API base at runtime (client or server) to support CI overrides and mocks
+function getApiBase(): string {
+  // Prefer value injected into window during tests (set via addInitScript)
+  if (typeof window !== 'undefined') {
+    const injected = (window as any).__NEXT_DATA__?.env?.NEXT_PUBLIC_API_BASE;
+    if (injected) return injected as string;
+    try {
+      // Test helper: enable mock gateway if flag present
+      const mockMode = window.localStorage.getItem('mockApiMode');
+      if (mockMode === 'true') return 'http://localhost:3001';
+    } catch {}
+  }
+  // Fallbacks: build-time env or local dev gateway
+  return process.env.NEXT_PUBLIC_API_BASE || 'http://localhost:8080';
+}
+
+export type RunPollStatus = 'queued' | 'running' | 'succeeded' | 'failed';
+
+export type RunResponse = {
+  id: string;
+  status: RunPollStatus;
+  createdAt: string;
+  finishedAt?: string;
+  logs?: Array<
+    | string
+    | {
+        ts: string;
+        level: 'info' | 'warn' | 'error';
+        msg: string;
+        nodeId?: string;
+      }
+  >;
+};
+
+/**
+ * Start a workflow run by posting to API gateway
+ * Sets run status and begins polling
+ */
+export async function startRun(
+  workflowJson: unknown
+): Promise<{ runId: string }> {
+  const { setRunStatus, appendLog, resetRun, setNodeRunStatuses } =
+    useBuilderStore.getState();
+
+  try {
+    // Reset previous run state
+    resetRun();
+    appendLog('Starting workflow run...');
+
+    // Generate idempotency key for this run
+    const idempotencyKey = `ui_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+
+    // Call API gateway to start run
+    const response = await fetch(`${getApiBase()}/v1/runs`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Idempotency-Key': idempotencyKey,
+      },
+      body: JSON.stringify({ graph: workflowJson }),
+    });
+
+    if (!response.ok) {
+      let errorData: any = { message: response.statusText };
+      try {
+        // Some tests mock fetch without json(); guard it
+        if (typeof (response as any).json === 'function') {
+          errorData = await (response as any).json();
+        }
+      } catch {
+        // ignore and use statusText fallback
+      }
+      throw new Error(
+        `Failed to start run: ${response.status} ${errorData?.message || response.statusText}`
+      );
+    }
+
+    const result = await response.json();
+    const runId = result.runId || result.id;
+
+    // Initialize per-node statuses (queued)
+    const graph = workflowJson as any;
+    if (graph?.nodes) {
+      const map: Record<string, 'idle' | 'running' | 'succeeded' | 'failed'> =
+        {};
+      graph.nodes.forEach((n: any) => (map[n.id] = 'idle'));
+      setNodeRunStatuses(map);
+    }
+
+    // Update state with run ID and initial status
+    setRunStatus('queued', runId);
+    appendLog(`Run ${runId} created and queued`);
+    appendLog(`Idempotency key: ${idempotencyKey.substring(0, 8)}...`);
+
+    // Start polling for status updates
+    pollRun(runId);
+
+    return { runId };
+  } catch (error) {
+    const message = error instanceof Error ? error.message : 'Unknown error';
+    appendLog(`Error starting run: ${message}`);
+    setRunStatus('failed');
+    throw error;
+  }
+}
+
+/**
+ * Poll a workflow run status with exponential backoff
+ * Updates store state as run progresses
+ */
+export async function pollRun(runId: string): Promise<void> {
+  const { setRunStatus, appendLog, updateNodeRunStatus } =
+    useBuilderStore.getState();
+
+  let pollCount = 0;
+  let lastLogCount = 0; // Track how many logs we've seen
+  const maxPolls = 30; // Prevent infinite polling
+  const baseInterval = 1500; // 1.5 seconds
+
+  const poll = async (): Promise<void> => {
+    try {
+      pollCount++;
+
+      if (pollCount > maxPolls) {
+        appendLog('Polling timeout reached');
+        setRunStatus('failed');
+        return;
+      }
+
+      const response = await fetch(`${getApiBase()}/v1/runs/${runId}`);
+
+      // Guard against undefined or malformed response
+      if (!response || typeof (response as any).ok !== 'boolean') {
+        throw new Error('Fetch failed or returned invalid response');
+      }
+
+      if (!response.ok) {
+        throw new Error(`Failed to poll run: ${response.status}`);
+      }
+
+      const run: RunResponse & {
+        steps?: { id: string; nodeId?: string; status: string }[];
+      } = await response.json();
+
+      // Update status
+      setRunStatus(run.status);
+
+      // Update per-node statuses if steps present
+      if (Array.isArray((run as any).steps)) {
+        const { nodes, nodeRunStatuses } = useBuilderStore.getState();
+        (run as any).steps.forEach((s: any) => {
+          const status = s.status as
+            | 'running'
+            | 'succeeded'
+            | 'failed'
+            | string;
+          if (
+            status === 'running' ||
+            status === 'succeeded' ||
+            status === 'failed'
+          ) {
+            // Determine which node to update:
+            // 1) exact id match
+            // 2) match by type when nodeId is a type label like 'start'/'http'
+            let targetId: string | undefined = undefined;
+            const stepNodeId = (s.nodeId || s.id) as string | undefined;
+            if (stepNodeId) {
+              if (nodeRunStatuses[stepNodeId] !== undefined) {
+                targetId = stepNodeId;
+              } else {
+                const matchByType = nodes.find((n) => n.type === stepNodeId);
+                if (matchByType) targetId = matchByType.id;
+              }
+            }
+            if (targetId) updateNodeRunStatus(targetId, status);
+          }
+        });
+      }
+
+      // Add only new logs (after lastLogCount)
+      if (run.logs && run.logs.length > lastLogCount) {
+        const newLogs = run.logs.slice(lastLogCount);
+        newLogs.forEach((logObj) => {
+          // Convert log object to string format
+          const logMessage =
+            typeof logObj === 'string'
+              ? logObj
+              : `[${logObj.level?.toUpperCase() || 'INFO'}] ${logObj.msg || 'Unknown log'}`;
+          appendLog(logMessage);
+        });
+        lastLogCount = run.logs.length;
+      }
+
+      // Continue polling if still running
+      if (run.status === 'queued' || run.status === 'running') {
+        // Exponential backoff: increase interval slightly each time
+        const nextInterval = Math.min(
+          baseInterval * Math.pow(1.2, pollCount - 1),
+          5000
+        );
+        setTimeout(poll, nextInterval);
+      } else {
+        // Final status reached
+        if (run.status === 'succeeded') {
+          appendLog('Run completed successfully');
+        } else if (run.status === 'failed') {
+          appendLog('Run failed');
+        }
+      }
+    } catch (error) {
+      const message = error instanceof Error ? error.message : 'Unknown error';
+      appendLog(`Polling error: ${message}`);
+      // Original behavior: mark failed immediately on polling error (unit tests depend on this)
+      setRunStatus('failed');
+    }
+  };
+
+  // Start the polling loop
+  poll();
+}
+
+/** Cancel a workflow run (stub for now). */
+export async function cancelRun(runId: string): Promise<void> {
+  const { appendLog, setRunStatus } = useBuilderStore.getState();
+
+  try {
+    // TODO: implement actual cancellation endpoint when available
+    appendLog(`Cancelling run ${runId}...`);
+    setRunStatus('failed');
+    appendLog('Run cancelled');
+  } catch (error) {
+    const message = error instanceof Error ? error.message : 'Unknown error';
+    appendLog(`Error cancelling run: ${message}`);
+  }
+}

@@ -50,6 +50,27 @@ export interface BuilderState {
   removeNode: (nodeId: string) => void;
   duplicateNode: (nodeId: string) => void;
   clearWorkflow: () => void;
+  setGraph: (graph: { nodes: Node<NodeData>[]; edges: Edge[] }) => void; // import/export helper
+  clearUiState: () => void; // resets selection + run state (import flow)
+
+  // === Run Slice ===
+  runStatus: 'idle' | 'queued' | 'running' | 'succeeded' | 'failed';
+  currentRunId: string | null;
+  logs: string[];
+  nodeRunStatuses: Record<string, 'idle' | 'running' | 'succeeded' | 'failed'>;
+  setRunStatus: (
+    status: BuilderState['runStatus'],
+    runId?: string | null
+  ) => void;
+  appendLog: (line: string) => void;
+  resetRun: () => void;
+  setNodeRunStatuses: (
+    m: Record<string, 'idle' | 'running' | 'succeeded' | 'failed'>
+  ) => void;
+  updateNodeRunStatus: (
+    id: string,
+    status: 'running' | 'succeeded' | 'failed'
+  ) => void;
 }
 
 // === Initial Store State Interface ===
@@ -90,6 +111,10 @@ export const useBuilderStore = create<BuilderState>()(
         nodes,
         edges,
         selectedNodeId: null,
+        runStatus: 'idle',
+        currentRunId: null,
+        logs: [],
+        nodeRunStatuses: {},
 
         onNodesChange: (changes) =>
           set((s) => ({ nodes: applyNodeChanges(changes, s.nodes) })),
@@ -166,6 +191,37 @@ export const useBuilderStore = create<BuilderState>()(
 
         clearWorkflow: () =>
           set({ nodes: [], edges: [], selectedNodeId: null }),
+
+        setGraph: (graph) =>
+          set(() => ({ nodes: graph.nodes, edges: graph.edges })),
+        clearUiState: () =>
+          set(() => ({
+            selectedNodeId: null,
+            runStatus: 'idle',
+            currentRunId: null,
+            logs: [],
+          })),
+
+        // === Run Slice Implementation ===
+        setRunStatus: (status, runId) =>
+          set((s) => ({
+            runStatus: status,
+            currentRunId:
+              typeof runId === 'undefined' ? s.currentRunId : (runId ?? null),
+          })),
+        appendLog: (line) => set((s) => ({ logs: [...s.logs, line] })),
+        resetRun: () =>
+          set({
+            runStatus: 'idle',
+            currentRunId: null,
+            logs: [],
+            nodeRunStatuses: {},
+          }),
+        setNodeRunStatuses: (m) => set({ nodeRunStatuses: m }),
+        updateNodeRunStatus: (id, status) =>
+          set((s) => ({
+            nodeRunStatuses: { ...s.nodeRunStatuses, [id]: status },
+          })),
       };
     }),
     { name: 'automateos-builder' }
@@ -232,6 +288,21 @@ export const useSelectionActions = () => {
   return { setSelectedNode, updateNodeConfig };
 };
 
+// Run state selectors
+export const useRunState = () => {
+  const runStatus = useBuilderStore((s) => s.runStatus);
+  const currentRunId = useBuilderStore((s) => s.currentRunId);
+  const logs = useBuilderStore((s) => s.logs);
+  return { runStatus, currentRunId, logs };
+};
+
+export const useRunActions = () => {
+  const setRunStatus = useBuilderStore((s) => s.setRunStatus);
+  const appendLog = useBuilderStore((s) => s.appendLog);
+  const resetRun = useBuilderStore((s) => s.resetRun);
+  return { setRunStatus, appendLog, resetRun };
+};
+
 // === Builder-specific Actions ===
 
 // Add start node with validation (only one start node allowed)
@@ -266,6 +337,10 @@ export const resetBuilderStore = () =>
     nodes: [],
     edges: [],
     selectedNodeId: null,
+    runStatus: 'idle',
+    currentRunId: null,
+    logs: [],
+    nodeRunStatuses: {},
   });
 
 // Debug helper (development only)

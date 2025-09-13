@@ -1,4 +1,4 @@
-name: CI (dev-web)
+name: CI (Multi-Package)
 
 on:
   pull_request:
@@ -6,6 +6,7 @@ on:
     paths:
       - 'apps/dev-web/**'
       - 'packages/**'
+      - 'services/**'
       - 'pnpm-lock.yaml'
       - 'pnpm-workspace.yaml'
       - 'turbo.json'
@@ -25,7 +26,7 @@ env:
 
 jobs:
   install:
-    name: Install deps
+    name: Install dependencies
     runs-on: ubuntu-latest
 
     steps:
@@ -56,53 +57,193 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-pnpm-store-
 
-      - name: Install (root)
+      - name: Install dependencies (monorepo)
         run: pnpm install --frozen-lockfile
 
-  typecheck:
+  # === TYPECHECK JOBS ===
+
+  typecheck-dev-web:
     name: Typecheck (apps/dev-web)
     runs-on: ubuntu-latest
     needs: install
 
     steps:
       - uses: actions/checkout@v4
-
       - name: Setup PNPM
         uses: pnpm/action-setup@v3
         with:
           version: 9
-
       - uses: actions/setup-node@v4
         with:
           node-version: '20'
           cache: 'pnpm'
-
-      - name: Install (use lockfile)
+      - name: Install dependencies
         run: pnpm install --frozen-lockfile
-
-      - name: Typecheck
+      - name: Typecheck dev-web
         run: pnpm -C apps/dev-web run typecheck
 
-  build:
-    name: Build (apps/dev-web)
+  typecheck-workflow-schema:
+    name: Typecheck (packages/workflow-schema)
     runs-on: ubuntu-latest
-    needs: typecheck
+    needs: install
 
     steps:
       - uses: actions/checkout@v4
-
       - name: Setup PNPM
         uses: pnpm/action-setup@v3
         with:
           version: 9
-
       - uses: actions/setup-node@v4
         with:
           node-version: '20'
           cache: 'pnpm'
-
-      - name: Install (use lockfile)
+      - name: Install dependencies
         run: pnpm install --frozen-lockfile
+      - name: Typecheck workflow-schema
+        run: pnpm -C packages/workflow-schema run typecheck
 
+  # === BUILD JOBS ===
+
+  build-dev-web:
+    name: Build (apps/dev-web)
+    runs-on: ubuntu-latest
+    needs: typecheck-dev-web
+
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup PNPM
+        uses: pnpm/action-setup@v3
+        with:
+          version: 9
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'pnpm'
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
       - name: Build dev-web
         run: pnpm -C apps/dev-web run build
+
+  # === UNIT TEST JOBS ===
+
+  unit-test-dev-web:
+    name: Unit Tests (apps/dev-web)
+    runs-on: ubuntu-latest
+    needs: typecheck-dev-web
+
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup PNPM
+        uses: pnpm/action-setup@v3
+        with:
+          version: 9
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'pnpm'
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+      - name: Run unit tests
+        run: pnpm -C apps/dev-web run test:run
+
+  unit-test-workflow-schema:
+    name: Unit Tests (packages/workflow-schema)
+    runs-on: ubuntu-latest
+    needs: typecheck-workflow-schema
+
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup PNPM
+        uses: pnpm/action-setup@v3
+        with:
+          version: 9
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'pnpm'
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+      - name: Run unit tests
+        run: pnpm -C packages/workflow-schema run test
+
+  # === SERVICE INTEGRATION TESTS (Optional) ===
+
+  integration-test-orchestrator:
+    name: Integration Tests (services/orchestrator)
+    runs-on: ubuntu-latest
+    needs: install
+    if: contains(github.event.pull_request.changed_files, 'services/') || contains(github.event.pull_request.title, '[services]')
+
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: automateos_test
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+
+      redis:
+        image: redis:7
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 6379:6379
+
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup PNPM
+        uses: pnpm/action-setup@v3
+        with:
+          version: 9
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'pnpm'
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Start mock engine service
+        run: |
+          cd external/engine
+          python -m pip install -r requirements.txt
+          python main.py &
+          sleep 5
+        env:
+          ENGINE_PORT: 8081
+
+      - name: Run orchestrator tests
+        run: pnpm -C services/orchestrator run test
+        env:
+          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/automateos_test
+          REDIS_URL: redis://localhost:6379
+          ENGINE_BASE: http://localhost:8081
+
+  # === FINAL STATUS CHECK ===
+
+  ci-status:
+    name: CI Status Check
+    runs-on: ubuntu-latest
+    needs:
+      - typecheck-dev-web
+      - typecheck-workflow-schema
+      - build-dev-web
+      - unit-test-dev-web
+      - unit-test-workflow-schema
+    if: always()
+
+    steps:
+      - name: Check all jobs succeeded
+        if: ${{ contains(needs.*.result, 'failure') || contains(needs.*.result, 'cancelled') }}
+        run: exit 1
+
+      - name: All checks passed
+        run: echo "✅ All CI checks passed successfully!"

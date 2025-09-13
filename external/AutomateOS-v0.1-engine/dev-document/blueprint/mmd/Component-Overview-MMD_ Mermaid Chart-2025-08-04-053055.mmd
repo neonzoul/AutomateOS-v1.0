@@ -1,0 +1,33 @@
+---
+config:
+  layout: dagre
+---
+flowchart LR
+ subgraph subGraph0["User Facing Layer"]
+        Webhook[("External Webhook")]
+        API["🚪 API Server <br><b>(FastAPI)</b>"]
+  end
+ subgraph subGraph1["Backend Processing Layer"]
+        Queue["📬 Job Queue <br><b>(Redis)</b>"]
+        Worker["🛠️ Worker <br><b>(RQ Engine)</b>"]
+        DB[("🧠 Database <br><b>(PostgreSQL)</b>")]
+        Plugins[/"Node Plugins"/]
+  end
+    Webhook -- HTTP Request --> API
+    API -- Enqueues Job --> Queue
+    API <-- Auth &amp; Workflow Data --> DB
+    Worker -- Fetches Job --> Queue
+    Worker <-- Reads Workflow / Writes Logs --> DB
+    Worker -. Dynamically Loads Action .-> Plugins
+     Webhook:::external
+     API:::entrypoint
+     Queue:::storage
+     Worker:::compute
+     DB:::storage
+     Plugins:::plugin
+    classDef entrypoint fill:#2d98da,stroke:#1e3799,color:white,font-weight:bold
+    classDef storage fill:#9b59b6,stroke:#574b90,color:white
+    classDef compute fill:#f1c40f,stroke:#b76e11,color:#333
+    classDef plugin fill:#e67e22,stroke:#d35400,color:white
+    classDef external fill:#ecf0f1,stroke:#bdc3c7,color:#333
+    linkStyle 3 stroke:#FFD600,fill:none
