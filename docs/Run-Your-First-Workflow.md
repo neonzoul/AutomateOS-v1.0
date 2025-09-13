@@ -9,14 +9,31 @@ Welcome to AutomateOS! This guide will walk you through creating and running you
 
 ---
 
-## 🚀 Quick Start
+## 🎬 Complete Workflow Demo
+
+Watch this step-by-step demonstration of creating and running your first workflow:
+
+![Complete Workflow Tutorial](./images/complete-workflow-tutorial.gif)
+
+> **🎯 Ready to Record**: You have the AutomateOS Creator Studio interface ready! To create the tutorial GIF:
+>
+> 1. **Start recording** your screen showing the current interface
+> 2. **Click "Open Builder"** to enter the workflow builder
+> 3. **Follow the steps below** to create the complete workflow
+> 4. **Save the recording** as `complete-workflow-tutorial.gif` in the `docs/images/` folder
+>
+> Once you save the GIF file, this documentation will automatically display your tutorial!
+
+_The GIF will show the entire process from the Creator Studio interface to a completed, executed workflow._
+
+---
+
+## 🚀 Step-by-Step Guide
 
 ### Step 1: Open the Builder
 
 1. Navigate to [http://localhost:3000](http://localhost:3000) in your browser
 2. You'll see the AutomateOS Builder interface with an empty canvas
-
-![Builder Interface](./images/step1-builder-interface.png)
 
 _The Builder features a clean, visual canvas where you'll design your workflow by connecting nodes._
 
@@ -26,8 +43,6 @@ _The Builder features a clean, visual canvas where you'll design your workflow b
 2. Every workflow begins with exactly one **Start** node
 3. Position it on the left side of the canvas
 
-![Add Start Node](./images/step2-add-start-node.png)
-
 _The Start node is your workflow's entry point — it has no configuration and simply begins execution._
 
 ### Step 3: Add an HTTP Node
@@ -36,8 +51,6 @@ _The Start node is your workflow's entry point — it has no configuration and s
 2. Position it to the right of the Start node
 3. You now have two disconnected nodes
 
-![Add HTTP Node](./images/step3-add-http-node.png)
-
 _HTTP nodes let you make requests to any web API. We'll configure this to send a Discord message._
 
 ### Step 4: Connect the Nodes
@@ -45,8 +58,6 @@ _HTTP nodes let you make requests to any web API. We'll configure this to send a
 1. **Click and drag** from the small circle on the right edge of the Start node
 2. **Drop the connection** onto the HTTP node
 3. You'll see an arrow connecting them
-
-![Connect Nodes](./images/step4-connect-nodes.png)
 
 _Connections define the flow of execution. Your workflow now goes: Start → HTTP._
 
@@ -70,8 +81,6 @@ _Connections define the flow of execution. Your workflow now goes: Start → HTT
      }
      ```
 
-![Configure HTTP Node](./images/step5-configure-http.png)
-
 _The Inspector panel automatically generates forms based on each node type's schema._
 
 ### Step 6: Save Your Workflow (Optional)
@@ -79,8 +88,6 @@ _The Inspector panel automatically generates forms based on each node type's sch
 1. Click the **Export** button in the top toolbar
 2. Your workflow will download as a JSON file
 3. You can import this later using the **Import** button
-
-![Export Workflow](./images/step6-export-workflow.png)
 
 _Import/Export enables sharing workflows and backing up your creations._
 
@@ -92,8 +99,6 @@ _Import/Export enables sharing workflows and backing up your creations._
    - **Green checkmark**: Success
    - **Red X**: Failed
 
-![Run Workflow](./images/step7-run-workflow.png)
-
 _Real-time status updates let you see exactly how your workflow executes._
 
 ### Step 8: Check the Results
@@ -101,8 +106,6 @@ _Real-time status updates let you see exactly how your workflow executes._
 1. **In Discord**: You should see your message appear in the target channel
 2. **In the Builder**: Click on the HTTP node to see execution details in the Inspector
 3. **Run logs**: View detailed logs in the right panel showing the HTTP response
-
-![Check Results](./images/step8-check-results.png)
 
 _Success! Your workflow executed and sent a message to Discord._
 
