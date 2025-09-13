@@ -9,18 +9,27 @@ Open-source workflow automation platform documentation.
 - **`api/`** - API contracts and documentation
 - **`architecture/`** - System architecture and diagrams
 - **`technical/`** - Technical guides, setup, and best practices
+- **`Run-Your-First-Workflow.md`** - Step-by-step user tutorial
 
-### Getting Started
+### Quick Start
 
-1. Check out the [Architecture Overview](technical/Architecture-Overview.md)
-2. Review the [API Contract](api/API-Contract.md)
-3. Explore the [System Diagrams](architecture/diagrams/)
+1. **New Users**: Start with [Run Your First Workflow](Run-Your-First-Workflow.md) — a 5-minute tutorial
+2. **Developers**: Review the [API Contract](api/API-Contract.md) for integration details
+3. **Architecture**: Explore [System Architecture](technical/Architecture-Overview.md) and [Diagrams](architecture/diagrams/)
 
 ### For Contributors
 
 - [Code Style Guide](technical/Code-Style.md)
 - [CI/CD Setup](technical/CICD-Setup.md)
 - [Dev-Web Architecture](technical/dev-web/Architecture.md)
+- [Sprint 2 Summary](technical/Devlog/sprint2/Day10-Documentation-CI-Implementation-Summary.md)
+
+## 🎯 Sprint 2 Deliverables (Complete)
+
+- ✅ **Frozen API Contract** - Complete `/v1/runs` documentation with worked examples
+- ✅ **User Tutorial** - Visual step-by-step workflow creation guide
+- ✅ **Expanded CI** - Multi-package testing pipeline with unit + integration tests
+- ✅ **Quality Foundation** - Comprehensive test coverage and documentation
 
 ## 🤝 Contributing
 
