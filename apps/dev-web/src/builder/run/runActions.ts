@@ -52,12 +52,17 @@ export async function startRun(
     });
 
     if (!response.ok) {
-      const errorData = await response.json().catch(() => ({
-        error: 'unknown',
-        message: `HTTP ${response.status}`,
-      }));
+      let errorData: any = { message: response.statusText };
+      try {
+        // Some tests mock fetch without json(); guard it
+        if (typeof (response as any).json === 'function') {
+          errorData = await (response as any).json();
+        }
+      } catch {
+        // ignore and use statusText fallback
+      }
       throw new Error(
-        `Failed to start run: ${response.status} ${errorData.message || response.statusText}`
+        `Failed to start run: ${response.status} ${errorData?.message || response.statusText}`
       );
     }
 
@@ -114,6 +119,11 @@ export async function pollRun(runId: string): Promise<void> {
       }
 
       const response = await fetch(`${API_BASE}/v1/runs/${runId}`);
+
+      // Guard against undefined or malformed response
+      if (!response || typeof (response as any).ok !== 'boolean') {
+        throw new Error('Fetch failed or returned invalid response');
+      }
 
       if (!response.ok) {
         throw new Error(`Failed to poll run: ${response.status}`);

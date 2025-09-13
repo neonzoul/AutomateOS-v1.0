@@ -88,24 +88,13 @@ function HttpConfigForm({
       headers: currentConfig?.headers ?? {},
       body: currentConfig?.body ?? '',
     },
-    mode: 'onChange', // Validate on change for immediate feedback
+    mode: 'onChange',
   });
-
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-  } = form;
 
   // Watch form changes and sync to store when valid
   React.useEffect(() => {
     const subscription = form.watch((values) => {
-      // Ensure method has a value before validation
-      const validatedValues = {
-        ...values,
-        method: values.method || 'GET',
-      };
-      const result = HttpConfigSchema.safeParse(validatedValues);
+      const result = HttpConfigSchema.safeParse(values);
       if (result.success) {
         updateNodeConfig(nodeId, result.data);
       }
@@ -114,12 +103,7 @@ function HttpConfigForm({
   }, [form, nodeId, updateNodeConfig]);
 
   const onSubmit = (data: any) => {
-    // Ensure method has a value before validation
-    const validatedData = {
-      ...data,
-      method: data.method || 'GET',
-    };
-    const validated = HttpConfigSchema.parse(validatedData);
+    const validated = HttpConfigSchema.parse(data);
     updateNodeConfig(nodeId, validated);
   };
   return (
