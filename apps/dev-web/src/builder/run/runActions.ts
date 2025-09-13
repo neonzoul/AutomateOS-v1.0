@@ -16,7 +16,7 @@ function getApiBase(): string {
     } catch {}
   }
   // Fallbacks: build-time env or local dev gateway
-  return process.env.NEXT_PUBLIC_API_BASE || 'http://localhost:8081';
+  return process.env.NEXT_PUBLIC_API_BASE || 'http://localhost:8080';
 }
 
 export type RunPollStatus = 'queued' | 'running' | 'succeeded' | 'failed';
@@ -213,15 +213,10 @@ export async function pollRun(runId: string): Promise<void> {
         }
       }
     } catch (error) {
-      // Be lenient to transient errors; log and retry once by scheduling next poll
       const message = error instanceof Error ? error.message : 'Unknown error';
       appendLog(`Polling error: ${message}`);
-      // Don't immediately fail; schedule another attempt unless we've exceeded maxPolls
-      if (pollCount <= maxPolls) {
-        setTimeout(poll, 1000);
-      } else {
-        setRunStatus('failed');
-      }
+      // Original behavior: mark failed immediately on polling error (unit tests depend on this)
+      setRunStatus('failed');
     }
   };
 
