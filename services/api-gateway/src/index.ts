@@ -68,7 +68,7 @@ async function startServer() {
       );
       rep.header(
         'Access-Control-Allow-Headers',
-        'Content-Type, Authorization, X-Requested-With'
+        'Content-Type, Authorization, X-Requested-With, Idempotency-Key'
       );
     }
     return payload;
@@ -105,25 +105,38 @@ async function startServer() {
 
   async function callOrchestratorStart(
     graph: unknown,
-    idempotencyKey?: string
+    idempotencyKey?: string,
+    requestId?: string
   ) {
     const res = await fetch(process.env.ORCHESTRATOR_BASE + '/internal/runs', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
         ...(idempotencyKey ? { 'x-idempotency-key': idempotencyKey } : {}),
+        ...(requestId ? { 'x-request-id': requestId } : {}),
       },
       body: JSON.stringify({ graph }),
     });
-    if (!res.ok) throw new Error('Orchestrator start failed');
+    if (!res.ok) {
+      const errorText = await res.text().catch(() => 'unknown');
+      throw new Error(`Orchestrator start failed ${res.status}: ${errorText}`);
+    }
     return res.json() as Promise<{ runId: string }>;
   }
 
-  async function fetchOrchestratorRun(runId: string) {
+  async function fetchOrchestratorRun(runId: string, requestId?: string) {
     const res = await fetch(
-      process.env.ORCHESTRATOR_BASE + '/internal/runs/' + runId
+      process.env.ORCHESTRATOR_BASE + '/internal/runs/' + runId,
+      {
+        headers: {
+          ...(requestId ? { 'x-request-id': requestId } : {}),
+        },
+      }
     );
-    if (!res.ok) throw new Error('Orchestrator get failed');
+    if (!res.ok) {
+      const errorText = await res.text().catch(() => 'unknown');
+      throw new Error(`Orchestrator get failed ${res.status}: ${errorText}`);
+    }
     return res.json();
   }
 
@@ -142,7 +155,7 @@ async function startServer() {
       );
       rep.header(
         'Access-Control-Allow-Headers',
-        'Content-Type, Authorization, X-Requested-With'
+        'Content-Type, Authorization, X-Requested-With, Idempotency-Key'
       );
       return rep.status(204).send();
     }
@@ -163,7 +176,7 @@ async function startServer() {
       );
       rep.header(
         'Access-Control-Allow-Headers',
-        'Content-Type, Authorization, X-Requested-With'
+        'Content-Type, Authorization, X-Requested-With, Idempotency-Key'
       );
       return rep.status(204).send();
     }
@@ -171,38 +184,95 @@ async function startServer() {
   });
 
   app.post('/v1/runs', async (req: any, rep: any) => {
-    const body = CreateRunSchema.parse(req.body);
-    const idem =
-      (req.headers['idempotency-key'] as string | undefined) || undefined;
-    const { runId } = await callOrchestratorStart(body.graph, idem);
-    app.log.info({
-      msg: 'run.created',
-      requestId: (req as any).requestId,
-      runId,
-      hasIdempotencyKey: Boolean(idem),
-      idempotencyKeyMasked: idem ? maskValue(idem) : undefined,
-    });
-    return rep.code(201).send({ runId });
+    const requestId = (req as any).requestId;
+    try {
+      const body = CreateRunSchema.parse(req.body);
+
+      // Generate idempotency key if not provided
+      let idem = req.headers['idempotency-key'] as string | undefined;
+      if (!idem) {
+        idem = `auto_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+        app.log.debug({
+          msg: 'idempotency_key.generated',
+          requestId,
+          idempotencyKeyMasked: maskValue(idem),
+        });
+      }
+
+      const { runId } = await callOrchestratorStart(
+        body.graph,
+        idem,
+        requestId
+      );
+
+      app.log.info({
+        msg: 'run.created',
+        requestId: requestId,
+        runId,
+        hasIdempotencyKey: Boolean(idem),
+        idempotencyKeyMasked: idem ? maskValue(idem) : undefined,
+        nodeCount: body.graph.nodes.length,
+      });
+
+      return rep.code(201).send({ runId });
+    } catch (error: any) {
+      app.log.error({
+        msg: 'run.create.failed',
+        requestId,
+        error: error.message,
+        stack: error.stack?.substring(0, 500),
+      });
+
+      if (error.message?.includes('validation')) {
+        return rep.code(400).send({
+          error: 'validation_failed',
+          message: error.message,
+        });
+      }
+
+      return rep.code(500).send({
+        error: 'internal_error',
+        message: 'Failed to create run',
+      });
+    }
   });
 
   app.get('/v1/runs/:id', async (req: any, rep: any) => {
     const id = (req.params as any).id as string;
+    const requestId = (req as any).requestId;
+
     try {
-      const run = await fetchOrchestratorRun(id);
+      const run = await fetchOrchestratorRun(id, requestId);
+
       app.log.info({
         msg: 'run.fetch',
-        requestId: (req as any).requestId,
+        requestId: requestId,
         runId: id,
         status: run.status,
+        stepCount: run.steps?.length || 0,
+        logCount: run.logs?.length || 0,
       });
+
       return run;
     } catch (e: any) {
       app.log.warn({
-        msg: 'run.fetch.not_found',
-        requestId: (req as any).requestId,
+        msg: 'run.fetch.failed',
+        requestId: requestId,
         runId: id,
+        error: e.message,
       });
-      return rep.code(404).send({ error: 'not_found' });
+
+      if (e.message?.includes('404') || e.message?.includes('not_found')) {
+        return rep.code(404).send({
+          error: 'not_found',
+          message: 'Run not found',
+        });
+      }
+
+      return rep.code(500).send({
+        error: 'internal_error',
+        message: 'Failed to fetch run',
+      });
     }
   });
 

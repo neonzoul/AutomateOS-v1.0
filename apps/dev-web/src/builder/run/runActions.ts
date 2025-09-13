@@ -38,23 +38,32 @@ export async function startRun(
     resetRun();
     appendLog('Starting workflow run...');
 
+    // Generate idempotency key for this run
+    const idempotencyKey = `ui_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+
     // Call API gateway to start run
     const response = await fetch(`${API_BASE}/v1/runs`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
+        'Idempotency-Key': idempotencyKey,
       },
       body: JSON.stringify({ graph: workflowJson }),
     });
 
     if (!response.ok) {
+      const errorData = await response.json().catch(() => ({
+        error: 'unknown',
+        message: `HTTP ${response.status}`,
+      }));
       throw new Error(
-        `Failed to start run: ${response.status} ${response.statusText}`
+        `Failed to start run: ${response.status} ${errorData.message || response.statusText}`
       );
     }
 
     const result = await response.json();
     const runId = result.runId || result.id;
+
     // Initialize per-node statuses (queued)
     const graph = workflowJson as any;
     if (graph?.nodes) {
@@ -67,6 +76,7 @@ export async function startRun(
     // Update state with run ID and initial status
     setRunStatus('queued', runId);
     appendLog(`Run ${runId} created and queued`);
+    appendLog(`Idempotency key: ${idempotencyKey.substring(0, 8)}...`);
 
     // Start polling for status updates
     pollRun(runId);

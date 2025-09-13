@@ -1,0 +1,25 @@
+{
+  "graph": {
+    "nodes": [
+      {
+        "id": "start_1",
+        "type": "start",
+        "config": {}
+      },
+      {
+        "id": "http_1",
+        "type": "http",
+        "config": {
+          "url": "https://httpbin.org/get",
+          "method": "GET"
+        }
+      }
+    ],
+    "edges": [
+      {
+        "source": "start_1",
+        "target": "http_1"
+      }
+    ]
+  }
+}
