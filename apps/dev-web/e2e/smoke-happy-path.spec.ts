@@ -15,18 +15,29 @@ import { test, expect } from '@playwright/test';
  */
 
 async function addStartAndHttpNodes(page: any) {
-  // Add Start node (should be disabled if already present)
-  const startBtn = page.getByRole('button', { name: '+ Start' });
-  if (await startBtn.isEnabled()) {
-    await startBtn.click();
-    // Wait for node to appear
-    await expect(page.locator('[data-id="start"]')).toBeVisible();
+  // Check if Start node already exists first
+  const startNodeLocator = page.locator('[data-id="start"]');
+
+  if (!(await startNodeLocator.isVisible())) {
+    // Add Start node if not present
+    const startBtn = page.getByRole('button', { name: '+ Start' });
+    await expect(startBtn).toBeVisible({ timeout: 10000 });
+
+    if (await startBtn.isEnabled()) {
+      await startBtn.click();
+    }
   }
+
+  // Always wait for Start node to be visible
+  await expect(startNodeLocator).toBeVisible({ timeout: 10000 });
 
   // Add HTTP node
   const httpBtn = page.getByRole('button', { name: '+ HTTP' });
+  await expect(httpBtn).toBeVisible({ timeout: 10000 });
   await httpBtn.click();
-  await expect(page.locator('[data-id="http"]')).toBeVisible();
+  await expect(page.locator('[data-id="http"]')).toBeVisible({
+    timeout: 10000,
+  });
 }
 
 async function connectNodes(page: any) {
@@ -122,7 +133,15 @@ test.describe('E2E Smoke: Happy Path Workflow Execution', () => {
   }, testInfo) => {
     // Navigate to builder
     await page.goto('/builder');
-    await expect(page.getByTestId('canvas')).toBeVisible();
+
+    // Wait for canvas to be visible and interactive
+    await expect(page.getByTestId('canvas')).toBeVisible({ timeout: 15000 });
+
+    // Wait for the page to be fully loaded and interactive
+    await page.waitForLoadState('networkidle');
+
+    // Additional wait for React components to mount and render
+    await page.waitForTimeout(2000);
 
     // Step 1: Add Start + HTTP nodes
     await addStartAndHttpNodes(page);
@@ -158,7 +177,15 @@ test.describe('E2E Smoke: Happy Path Workflow Execution', () => {
   test('handles network errors gracefully', async ({ page }, testInfo) => {
     // Navigate to builder
     await page.goto('/builder');
-    await expect(page.getByTestId('canvas')).toBeVisible();
+
+    // Wait for canvas to be visible and interactive
+    await expect(page.getByTestId('canvas')).toBeVisible({ timeout: 15000 });
+
+    // Wait for the page to be fully loaded and interactive
+    await page.waitForLoadState('networkidle');
+
+    // Additional wait for React components to mount and render
+    await page.waitForTimeout(2000);
 
     // Add and connect nodes
     await addStartAndHttpNodes(page);
@@ -274,7 +301,15 @@ test.describe('E2E Smoke: Mocked Environment (CI-safe)', () => {
 
     // Run the same workflow test against mocked backend
     await page.goto('/builder');
-    await expect(page.getByTestId('canvas')).toBeVisible();
+
+    // Wait for canvas to be visible and interactive
+    await expect(page.getByTestId('canvas')).toBeVisible({ timeout: 15000 });
+
+    // Wait for the page to be fully loaded and interactive
+    await page.waitForLoadState('networkidle');
+
+    // Additional wait for React components to mount and render
+    await page.waitForTimeout(2000);
 
     await addStartAndHttpNodes(page);
     await connectNodes(page);

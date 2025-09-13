@@ -96,13 +96,11 @@ export default defineConfig({
   ],
 
   /* Run your local dev server before starting the tests */
-  webServer:
-    process.env.USE_MOCK_GATEWAY === 'true'
-      ? undefined
-      : {
-          command: 'pnpm dev',
-          url: 'http://localhost:3000',
-          reuseExistingServer:
-            !process.env.CI || process.env.USE_MOCK_GATEWAY === 'true',
-        },
+  webServer: process.env.CI
+    ? undefined // In CI, servers are managed by the workflow
+    : {
+        command: 'pnpm dev',
+        url: 'http://localhost:3000',
+        reuseExistingServer: !process.env.CI,
+      },
 });
