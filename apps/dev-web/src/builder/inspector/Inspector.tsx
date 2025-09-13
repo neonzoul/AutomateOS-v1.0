@@ -9,6 +9,14 @@ import { useSelectedNode, useSelectionActions } from '@/core/state';
 import { NODE_SPECS } from '@/builder/registry/nodeSpecs';
 import { HttpConfigSchema, type HttpConfig } from '@automateos/workflow-schema';
 
+// Form type that matches the schema input (method is optional with default)
+type HttpConfigFormInput = {
+  method?: 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE';
+  url: string;
+  headers?: Record<string, string>;
+  body?: string;
+};
+
 /**
  * Inspector: renders a form from the selected node's Zod schema.
  * Reads from Zustand selection; writes via updateNodeConfig(nodeId, values).
@@ -72,15 +80,7 @@ function HttpConfigForm({
 }) {
   const { updateNodeConfig } = useSelectionActions();
 
-  // Create a version of the schema with optional method for defaults
-  const formDefaultValues: HttpConfig = {
-    method: currentConfig?.method ?? 'GET',
-    url: currentConfig?.url ?? '',
-    headers: currentConfig?.headers ?? {},
-    body: currentConfig?.body ?? '',
-  };
-
-  const form = useForm<HttpConfig>({
+  const form = useForm<HttpConfigFormInput>({
     resolver: zodResolver(HttpConfigSchema),
     defaultValues: {
       method: currentConfig?.method ?? 'GET',
@@ -91,21 +91,29 @@ function HttpConfigForm({
     mode: 'onChange',
   });
 
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    watch,
+  } = form;
+
   // Watch form changes and sync to store when valid
   React.useEffect(() => {
-    const subscription = form.watch((values) => {
+    const subscription = watch((values) => {
       const result = HttpConfigSchema.safeParse(values);
       if (result.success) {
         updateNodeConfig(nodeId, result.data);
       }
     });
     return () => subscription.unsubscribe();
-  }, [form, nodeId, updateNodeConfig]);
+  }, [watch, nodeId, updateNodeConfig]);
 
   const onSubmit = (data: any) => {
     const validated = HttpConfigSchema.parse(data);
     updateNodeConfig(nodeId, validated);
   };
+
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-3">
       <div>

@@ -101,6 +101,7 @@ describe('RunPanel', () => {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'Idempotency-Key': expect.stringMatching(/^ui_\d+_[a-z0-9]+$/)
         },
         body: expect.stringContaining('"graph"'),
       });

@@ -27,7 +27,10 @@ describe('runActions', () => {
       expect(runId).toBe('test-run-123');
       expect(mockFetch).toHaveBeenCalledWith('http://localhost:8080/v1/runs', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 
+          'Content-Type': 'application/json',
+          'Idempotency-Key': expect.stringMatching(/^ui_\d+_[a-z0-9]+$/)
+        },
         body: JSON.stringify({ graph: workflowJson }),
       });
 
