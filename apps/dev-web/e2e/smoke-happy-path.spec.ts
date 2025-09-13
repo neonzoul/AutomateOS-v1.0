@@ -41,17 +41,45 @@ async function addStartAndHttpNodes(page: any) {
 }
 
 async function connectNodes(page: any) {
-  // Connect nodes using click-connect mode (connectOnClick=true)
+  // Prefer robust drag-to-connect using node handles to avoid timing issues
   const startNode = page.locator('[data-id="start"]');
   const httpNode = page.locator('[data-id="http"]');
 
-  // Click start node first (source)
-  await startNode.click();
-  // Then click HTTP node (target) to create edge
-  await httpNode.click();
+  // Ensure nodes are visible before connecting
+  await expect(startNode).toBeVisible({ timeout: 10000 });
+  await expect(httpNode).toBeVisible({ timeout: 10000 });
+
+  // React Flow renders small circle handles; source is on the right of Start, target on the left of HTTP
+  const startBox = await startNode.boundingBox();
+  const httpBox = await httpNode.boundingBox();
+
+  if (!startBox || !httpBox) {
+    throw new Error('Failed to get bounding boxes for nodes');
+  }
+
+  // Compute approximate handle positions (right center of start -> left center of http)
+  const startHandle = {
+    x: startBox.x + startBox.width - 4,
+    y: startBox.y + startBox.height / 2,
+  };
+  const httpHandle = {
+    x: httpBox.x + 4,
+    y: httpBox.y + httpBox.height / 2,
+  };
+
+  // Perform drag to connect
+  await page.mouse.move(startHandle.x, startHandle.y);
+  await page.mouse.down();
+  await page.mouse.move(httpHandle.x, httpHandle.y, { steps: 10 });
+  await page.mouse.up();
+
+  // Give React Flow a moment to render the edge
+  await page.waitForTimeout(250);
 
   // Verify edge was created by checking for React Flow edge elements
-  await expect(page.locator('.react-flow__edge')).toBeVisible();
+  await expect(page.locator('.react-flow__edge')).toBeVisible({
+    timeout: 5000,
+  });
 }
 
 async function configureHttpNode(
