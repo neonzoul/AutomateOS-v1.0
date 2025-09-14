@@ -24,18 +24,30 @@ async function addStartAndHttpNodes(page: any) {
       const toolbar = page.locator('.react-flow__panel.top.left');
       await expect(toolbar).toBeVisible({ timeout: 10000 });
 
-      const startBtn = toolbar.getByText('+ Start');
-      await expect(startBtn).toBeVisible({ timeout: 5000 });
+      // Try multiple selectors for the Start button
+      let startBtn;
+      try {
+        startBtn = toolbar.getByText('+ Start');
+        await expect(startBtn).toBeVisible({ timeout: 5000 });
+      } catch (e) {
+        // Try alternative selector
+        startBtn = toolbar.locator('button[aria-label="Add Start node"]');
+        await expect(startBtn).toBeVisible({ timeout: 5000 });
+      }
 
       if (await startBtn.isEnabled()) {
         await startBtn.click({ force: true });
         // Wait a bit for the node to appear
         await page.waitForTimeout(1000);
+      } else {
+        console.log(
+          'Start button is disabled (likely because a Start node already exists)'
+        );
       }
     } catch (e) {
       console.log(
         'Button click failed, trying direct store manipulation:',
-        e.message
+        e instanceof Error ? e.message : String(e)
       );
     }
   }
@@ -79,7 +91,26 @@ async function addStartAndHttpNodes(page: any) {
         w.__setBuilderGraph({ nodes, edges });
         console.log('Graph set directly via store');
       } else {
-        console.error('__setBuilderGraph not available');
+        console.error(
+          '__setBuilderGraph not available - test bridge not exposed'
+        );
+        // Try alternative approach: click buttons programmatically
+        console.log('Trying alternative: programmatic button clicks');
+        const toolbar = document.querySelector('.react-flow__panel.top.left');
+        if (toolbar) {
+          const startBtn = toolbar.querySelector(
+            'button[aria-label="Add Start node"]'
+          ) as HTMLButtonElement;
+          const httpBtn = toolbar.querySelector(
+            'button[aria-label="Add HTTP node"]'
+          ) as HTMLButtonElement;
+          if (startBtn && !startBtn.disabled) {
+            startBtn.click();
+          }
+          if (httpBtn) {
+            httpBtn.click();
+          }
+        }
       }
     });
 
@@ -102,8 +133,18 @@ async function addStartAndHttpNodes(page: any) {
   if (!(await httpNodeLocator.isVisible())) {
     // Add HTTP node - use the same toolbar panel
     const toolbar = page.locator('.react-flow__panel.top.left');
-    const httpBtn = toolbar.getByText('+ HTTP');
-    await expect(httpBtn).toBeVisible({ timeout: 10000 });
+
+    // Try multiple selectors for the HTTP button
+    let httpBtn;
+    try {
+      httpBtn = toolbar.getByText('+ HTTP');
+      await expect(httpBtn).toBeVisible({ timeout: 10000 });
+    } catch (e) {
+      // Try alternative selector
+      httpBtn = toolbar.locator('button[aria-label="Add HTTP node"]');
+      await expect(httpBtn).toBeVisible({ timeout: 10000 });
+    }
+
     await httpBtn.click({ force: true });
   }
 
@@ -201,11 +242,35 @@ async function configureHttpNode(
   page: any,
   url: string = 'https://httpbin.org/get'
 ) {
-  // Select HTTP node to open inspector (use direct store manipulation for reliability)
-  console.log('Selecting HTTP node via store...');
-  await page.evaluate(() => {
-    (window as any).__setSelectedNode('http');
-  });
+  // Select HTTP node to open inspector
+  console.log('Selecting HTTP node...');
+
+  // First try clicking on the node directly
+  const httpNodeElement = page.locator('.react-flow__node[data-id="http"]');
+  await expect(httpNodeElement).toBeVisible({ timeout: 10000 });
+
+  try {
+    await httpNodeElement.click();
+    console.log('Selected HTTP node by clicking');
+  } catch (e) {
+    console.log('Direct click failed, trying store manipulation');
+    // Fallback: use direct store manipulation for reliability
+    await page.evaluate(() => {
+      const w = window as any;
+      if (w.__setSelectedNode) {
+        w.__setSelectedNode('http');
+        console.log('Selected HTTP node via store');
+      } else {
+        console.log('Store selection not available, trying programmatic click');
+        const node = document.querySelector(
+          '.react-flow__node[data-id="http"]'
+        );
+        if (node) {
+          (node as HTMLElement).click();
+        }
+      }
+    });
+  }
 
   // Wait a bit for the inspector to update
   await page.waitForTimeout(500);
@@ -309,6 +374,21 @@ test.describe('E2E Smoke: Happy Path Workflow Execution', () => {
 
     // Additional wait for React components to mount and render
     await page.waitForTimeout(3000);
+
+    // Wait for test bridge functions to be available (if in test mode)
+    await page
+      .waitForFunction(
+        () => {
+          const w = window as any;
+          return w.__setBuilderGraph || w.__getBuilderSnapshot;
+        },
+        { timeout: 5000 }
+      )
+      .catch(() => {
+        console.log(
+          'Test bridge functions not available, proceeding with UI interactions only'
+        );
+      });
 
     // Debug: Log the current DOM state
     const toolbarExists =
