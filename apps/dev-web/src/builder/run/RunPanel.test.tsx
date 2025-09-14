@@ -1,4 +1,10 @@
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import {
+  render,
+  screen,
+  fireEvent,
+  waitFor,
+  act,
+} from '@testing-library/react';
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import React from 'react';
 import { RunPanel } from './RunPanel';
@@ -174,6 +180,155 @@ describe('RunPanel', () => {
       const btn = screen.getByTestId('run-button') as HTMLButtonElement;
       expect(btn).toHaveAttribute('title', 'Cannot run workflow');
       expect(btn.disabled).toBe(true);
+    });
+  });
+
+  describe('UX Edge Cases', () => {
+    it('shows correct button text during different states', async () => {
+      // Initially disabled with no nodes
+      const { rerender } = render(<RunPanel />);
+      let btn = screen.getByTestId('run-button') as HTMLButtonElement;
+      expect(btn.textContent).toBe('Run');
+      expect(btn.disabled).toBe(true);
+
+      // Add nodes - button becomes enabled
+      act(() => {
+        useBuilderStore.getState().addNode({
+          type: 'start',
+          position: { x: 0, y: 0 },
+          data: { label: 'Start' },
+        });
+      });
+      rerender(<RunPanel />);
+
+      expect(btn.textContent).toBe('Run');
+      expect(btn.disabled).toBe(false);
+
+      // Set to running state - button shows "Running..." and is disabled
+      act(() => {
+        useBuilderStore.getState().setRunStatus('running', 'test-run-123');
+      });
+      rerender(<RunPanel />);
+
+      expect(btn.textContent).toBe('Running...');
+      expect(btn.disabled).toBe(true);
+
+      // Set to succeeded - button becomes enabled again
+      act(() => {
+        useBuilderStore.getState().setRunStatus('succeeded', 'test-run-123');
+      });
+      rerender(<RunPanel />);
+
+      expect(btn.textContent).toBe('Run');
+      expect(btn.disabled).toBe(false);
+    });
+
+    it('maintains proper button states during status transitions', async () => {
+      // Add nodes first
+      act(() => {
+        useBuilderStore.getState().addNode({
+          type: 'start',
+          position: { x: 0, y: 0 },
+          data: { label: 'Start' },
+        });
+      });
+
+      const { rerender } = render(<RunPanel />);
+      const btn = screen.getByTestId('run-button') as HTMLButtonElement;
+
+      // Test each status transition
+      const statusTests = [
+        {
+          status: 'queued' as const,
+          expectedDisabled: true,
+          expectedText: 'Run',
+        }, // queued doesn't change button text
+        {
+          status: 'running' as const,
+          expectedDisabled: true,
+          expectedText: 'Running...',
+        }, // only running changes button text
+        {
+          status: 'succeeded' as const,
+          expectedDisabled: false,
+          expectedText: 'Run',
+        },
+        {
+          status: 'failed' as const,
+          expectedDisabled: false,
+          expectedText: 'Run',
+        },
+        {
+          status: 'idle' as const,
+          expectedDisabled: false,
+          expectedText: 'Run',
+        },
+      ];
+
+      for (const { status, expectedDisabled, expectedText } of statusTests) {
+        act(() => {
+          useBuilderStore.getState().setRunStatus(status, `test-${status}`);
+        });
+        rerender(<RunPanel />);
+
+        expect(btn.disabled).toBe(expectedDisabled);
+        expect(btn.textContent).toBe(expectedText);
+      }
+    });
+
+    it('handles empty logs vs no logs states correctly', async () => {
+      const { rerender } = render(<RunPanel />);
+
+      // Initially no logs - should show "No runs yet"
+      expect(screen.getByTestId('run-status')).toHaveTextContent('No runs yet');
+      expect(screen.queryByText('Logs')).not.toBeInTheDocument();
+
+      // Add logs - should show logs section
+      act(() => {
+        useBuilderStore.getState().appendLog('First log entry');
+      });
+      rerender(<RunPanel />);
+
+      expect(screen.getByText('Logs')).toBeInTheDocument();
+      expect(screen.getByText('First log entry')).toBeInTheDocument();
+      expect(screen.queryByTestId('run-status')).not.toBeInTheDocument();
+
+      // Clear logs by resetting store
+      act(() => {
+        resetBuilderStore();
+      });
+      rerender(<RunPanel />);
+
+      expect(screen.getByTestId('run-status')).toHaveTextContent('No runs yet');
+      expect(screen.queryByText('Logs')).not.toBeInTheDocument();
+    });
+
+    it('displays status text correctly with and without run IDs', async () => {
+      const { rerender } = render(<RunPanel />);
+
+      // Status without run ID
+      act(() => {
+        useBuilderStore.getState().setRunStatus('running');
+      });
+      rerender(<RunPanel />);
+
+      expect(screen.getByText('Running')).toBeInTheDocument();
+
+      // Status with run ID
+      act(() => {
+        useBuilderStore.getState().setRunStatus('running', 'run-456');
+      });
+      rerender(<RunPanel />);
+
+      expect(screen.getByText('Running (run-456)')).toBeInTheDocument();
+
+      // Back to idle
+      act(() => {
+        useBuilderStore.getState().setRunStatus('idle');
+      });
+      rerender(<RunPanel />);
+
+      expect(screen.getByText('Add nodes to run workflow')).toBeInTheDocument();
     });
   });
 });
