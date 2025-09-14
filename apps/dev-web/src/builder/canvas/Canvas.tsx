@@ -182,6 +182,14 @@ if (typeof window !== 'undefined' && process.env.NODE_ENV !== 'production') {
         useBuilderStore.subscribe((s) =>
           cb({ nodes: s.nodes, edges: s.edges })
         );
+      w.__setBuilderGraph = (graph: { nodes: any[]; edges: any[] }) => {
+        const s = useBuilderStore.getState();
+        s.setGraph(graph);
+      };
+      w.__setSelectedNode = (nodeId: string | null) => {
+        const s = useBuilderStore.getState();
+        s.setSelectedNode(nodeId);
+      };
       w.__AOS_BUILDER_STORE_BOUND = true;
     } catch (e) {
       // no-op: avoids crashing if module order changes in future
