@@ -200,6 +200,7 @@ export const useBuilderStore = create<BuilderState>()(
             runStatus: 'idle',
             currentRunId: null,
             logs: [],
+            nodeRunStatuses: {},
           })),
 
         // === Run Slice Implementation ===
@@ -279,7 +280,16 @@ export const useGraphActions = () => {
   const removeNode = useBuilderStore((s) => s.removeNode);
   const duplicateNode = useBuilderStore((s) => s.duplicateNode);
   const clearWorkflow = useBuilderStore((s) => s.clearWorkflow);
-  return { addNode, removeNode, duplicateNode, clearWorkflow };
+  const setGraph = useBuilderStore((s) => s.setGraph);
+  const clearUiState = useBuilderStore((s) => s.clearUiState);
+  return {
+    addNode,
+    removeNode,
+    duplicateNode,
+    clearWorkflow,
+    setGraph,
+    clearUiState,
+  };
 };
 
 export const useSelectionActions = () => {
