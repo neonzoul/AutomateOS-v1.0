@@ -9,6 +9,7 @@ import { useNodes, useEdges, useGraphActions } from '../../core/state';
 import { NODE_SPECS } from '../registry/nodeSpecs';
 import { exportWorkflow, importWorkflow } from '../io/importExport';
 import { useBuilderStore } from '../../core/state';
+import { WorkflowSchema } from '@automateos/workflow-schema';
 
 // Lightweight toast shim (replace with real UI system later)
 function notify(opts: {
@@ -113,6 +114,42 @@ export function CanvasToolbar() {
     }
   };
 
+  const onLoadSlackTemplate = async () => {
+    try {
+      const response = await fetch('/examples/slack-notification.json');
+      if (!response.ok) {
+        throw new Error(`Failed to fetch template: ${response.status}`);
+      }
+
+      const templateData = await response.json();
+
+      // Validate with WorkflowSchema
+      const parsed = WorkflowSchema.safeParse(templateData);
+      if (!parsed.success) {
+        throw new Error('Template validation failed: Invalid schema');
+      }
+
+      // Load into the graph
+      setGraph({
+        nodes: parsed.data.nodes as any,
+        edges: parsed.data.edges as any,
+      });
+      clearUiState();
+
+      notify({
+        title: 'Slack Template Loaded',
+        message:
+          '⚠️ Replace the webhook URL in the HTTP node with your own Slack webhook!',
+      });
+    } catch (e) {
+      notify({
+        type: 'error',
+        title: 'Template load failed',
+        message: (e as any)?.message || 'Could not load Slack template',
+      });
+    }
+  };
+
   return (
     <Panel position="top-left">
       <div className="flex gap-2 bg-white/80 backdrop-blur px-2 py-1 rounded border shadow-sm">
@@ -163,6 +200,14 @@ export function CanvasToolbar() {
           aria-label="Export workflow as JSON file"
         >
           Export
+        </button>
+        <button
+          className="px-2 py-1 text-sm rounded bg-purple-500 text-white hover:bg-purple-600 transition-colors"
+          onClick={onLoadSlackTemplate}
+          title="Load a ready-to-use Slack notification workflow"
+          aria-label="Load Slack notification template"
+        >
+          📢 Slack Template
         </button>
 
         {/* Separator */}
