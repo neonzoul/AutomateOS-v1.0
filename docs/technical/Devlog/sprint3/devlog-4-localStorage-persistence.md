@@ -1,3 +1,5 @@
+[Copilot-Sonnet4]
+
 # Sprint 3 Task 4 DevLog: LocalStorage Persistence Implementation
 
 **Date:** September 14, 2025  
