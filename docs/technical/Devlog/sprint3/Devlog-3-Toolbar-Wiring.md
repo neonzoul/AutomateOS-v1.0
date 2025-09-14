@@ -225,6 +225,33 @@ User clicks Export → Get current state → Sanitize data → Validate → Down
 - No raw JSON exposure to end users
 - Validation at every step of the process
 
+## 🐛 Bug Fixes
+
+### Runtime TypeError Fix
+
+**Issue:** `Cannot set properties of null (setting 'value')` error in import handler  
+**Root Cause:** `e.currentTarget` could be null in the `finally` block during file input reset  
+**Solution:** Implemented `useRef` pattern for direct DOM element access
+
+```tsx
+// Before (error-prone)
+finally {
+  e.currentTarget.value = ''; // Could be null!
+}
+
+// After (safe)
+const fileInputRef = useRef<HTMLInputElement>(null);
+
+finally {
+  if (fileInputRef.current) {
+    fileInputRef.current.value = '';
+  }
+}
+```
+
+**Files Modified:** `CanvasToolbar.tsx`  
+**Testing:** ✅ Dev server starts without errors, import functionality works correctly
+
 ---
 
 **Implementation Time:** ~5minutes  

@@ -16,6 +16,7 @@ import {
   applyEdgeChanges,
   addEdge,
 } from '@xyflow/react';
+import { WorkflowSchema, type Workflow } from '@automateos/workflow-schema';
 
 // === Initial Core State Types ===
 
@@ -78,11 +79,20 @@ const initialNodes: Node<NodeData>[] = [];
 const initialEdges: Edge[] = [];
 
 // === LocalStorage Persistence ===
-const STORAGE_KEY = 'automateos-builder-state';
+const STORAGE_KEY = 'automateos.dev.graph';
+
+// Check if localStorage persistence is enabled (dev only)
+const isDevStorageEnabled = () => {
+  return (
+    typeof window !== 'undefined' &&
+    process.env.NEXT_PUBLIC_DEV_STORAGE === 'true' &&
+    process.env.NODE_ENV !== 'production'
+  );
+};
 
 // Hydrate state from localStorage
 const getInitialState = () => {
-  if (typeof window === 'undefined') {
+  if (!isDevStorageEnabled()) {
     return { nodes: initialNodes, edges: initialEdges };
   }
 
@@ -90,13 +100,27 @@ const getInitialState = () => {
     const saved = localStorage.getItem(STORAGE_KEY);
     if (saved) {
       const parsed = JSON.parse(saved);
-      return {
-        nodes: parsed.nodes || initialNodes,
-        edges: parsed.edges || initialEdges,
-      };
+      // Validate with WorkflowSchema to ensure data integrity
+      const result = WorkflowSchema.safeParse(parsed);
+      if (result.success) {
+        return {
+          nodes: result.data.nodes || initialNodes,
+          edges: result.data.edges || initialEdges,
+        };
+      } else {
+        console.warn(
+          'Invalid workflow in localStorage, clearing:',
+          result.error
+        );
+        localStorage.removeItem(STORAGE_KEY);
+      }
     }
   } catch (error) {
     console.warn('Failed to load builder state from localStorage:', error);
+    // Clear corrupted data
+    try {
+      localStorage.removeItem(STORAGE_KEY);
+    } catch {}
   }
 
   return { nodes: initialNodes, edges: initialEdges };
@@ -230,12 +254,31 @@ export const useBuilderStore = create<BuilderState>()(
 );
 
 // === LocalStorage Auto-Save Subscription ===
-// Subscribe to nodes and edges changes and persist to localStorage
-if (typeof window !== 'undefined') {
+// Subscribe to nodes and edges changes and persist to localStorage (dev only)
+if (isDevStorageEnabled()) {
   let saveTimer: number | null = null;
-  const save = (payload: unknown) => {
+
+  const save = (nodes: Node<NodeData>[], edges: Edge[]) => {
     try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(payload));
+      // Create a workflow object that matches WorkflowSchema
+      // We need to cast the nodes and edges to match the schema types
+      const workflow = {
+        nodes: nodes as any, // Cast to WorkflowNode[] for validation
+        edges: edges as any, // Cast to WorkflowEdge[] for validation
+        meta: {
+          name: 'Autosaved Workflow',
+          version: 1 as const,
+          exportedAt: new Date().toISOString(),
+        },
+      };
+
+      // Validate before saving
+      const result = WorkflowSchema.safeParse(workflow);
+      if (result.success) {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(result.data));
+      } else {
+        console.warn('Failed to validate workflow for autosave:', result.error);
+      }
     } catch (error) {
       console.warn('Failed to save builder state to localStorage:', error);
     }
@@ -245,7 +288,7 @@ if (typeof window !== 'undefined') {
     (state) => ({ nodes: state.nodes, edges: state.edges }),
     (state) => {
       if (saveTimer) window.clearTimeout(saveTimer);
-      saveTimer = window.setTimeout(() => save(state), 120);
+      saveTimer = window.setTimeout(() => save(state.nodes, state.edges), 120);
     },
     {
       equalityFn: shallow,
