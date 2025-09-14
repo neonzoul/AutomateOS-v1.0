@@ -55,28 +55,62 @@ export async function startRun(
     // Generate idempotency key for this run
     const idempotencyKey = `ui_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
 
-    // Call API gateway to start run
-    const response = await fetch(`${getApiBase()}/v1/runs`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Idempotency-Key': idempotencyKey,
-      },
-      body: JSON.stringify({ graph: workflowJson }),
-    });
+    // Call API gateway to start run with transient retry/backoff
+    const maxAttempts = 5;
+    let attempt = 0;
+    let lastError: any = null;
+    let response: Response | null = null;
 
-    if (!response.ok) {
-      let errorData: any = { message: response.statusText };
+    while (attempt < maxAttempts) {
+      attempt += 1;
       try {
-        // Some tests mock fetch without json(); guard it
-        if (typeof (response as any).json === 'function') {
-          errorData = await (response as any).json();
-        }
-      } catch {
-        // ignore and use statusText fallback
+        appendLog(`Starting run (attempt ${attempt}/${maxAttempts})`);
+        response = await fetch(`${getApiBase()}/v1/runs`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Idempotency-Key': idempotencyKey,
+          },
+          body: JSON.stringify({ graph: workflowJson }),
+        });
+
+        if (response && response.ok) break;
+
+        // Non-ok response (e.g., 5xx) - capture and retry
+        let errMsg = response ? response.statusText : 'No response';
+        try {
+          if (response && typeof (response as any).json === 'function') {
+            const json = await (response as any).json();
+            if (json && json.error && json.error.message)
+              errMsg = json.error.message;
+          }
+        } catch {}
+
+        lastError = new Error(`Start run failed: ${response.status} ${errMsg}`);
+        appendLog(`Start run attempt ${attempt} failed: ${errMsg}`);
+      } catch (err) {
+        lastError = err;
+        appendLog(
+          `Start run network error on attempt ${attempt}: ${
+            err instanceof Error ? err.message : String(err)
+          }`
+        );
       }
+
+      // If not last attempt, wait with backoff
+      if (attempt < maxAttempts) {
+        const delay = 300 * attempt; // linear backoff
+        appendLog(`Retrying start in ${delay}ms`);
+        await new Promise((r) => setTimeout(r, delay));
+      }
+    }
+
+    if (!response || !response.ok) {
+      // Exhausted retries
+      const msg =
+        lastError instanceof Error ? lastError.message : String(lastError);
       throw new Error(
-        `Failed to start run: ${response.status} ${errorData?.message || response.statusText}`
+        `Failed to start run after ${maxAttempts} attempts: ${msg}`
       );
     }
 
@@ -215,8 +249,19 @@ export async function pollRun(runId: string): Promise<void> {
     } catch (error) {
       const message = error instanceof Error ? error.message : 'Unknown error';
       appendLog(`Polling error: ${message}`);
-      // Original behavior: mark failed immediately on polling error (unit tests depend on this)
-      setRunStatus('failed');
+      // Don't mark failed immediately on transient errors. Retry until maxPolls is reached.
+      if (pollCount >= maxPolls) {
+        appendLog('Polling timeout reached after repeated errors');
+        setRunStatus('failed');
+        return;
+      }
+      // Retry after a small backoff
+      const retryDelay = Math.min(
+        baseInterval * Math.pow(1.1, pollCount),
+        5000
+      );
+      appendLog(`Retrying poll in ${retryDelay}ms`);
+      setTimeout(poll, retryDelay);
     }
   };
 

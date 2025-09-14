@@ -185,27 +185,58 @@ if (typeof window !== 'undefined') {
   if (shouldExposeBridge) {
     const w = window as any;
     if (!w.__AOS_BUILDER_STORE_BOUND) {
-      try {
-        w.__getBuilderSnapshot = () => {
-          const s = useBuilderStore.getState();
-          return { nodes: s.nodes, edges: s.edges };
-        };
-        w.__subscribeBuilder = (cb: (s: any) => void) =>
-          useBuilderStore.subscribe((s) =>
-            cb({ nodes: s.nodes, edges: s.edges })
-          );
-        w.__setBuilderGraph = (graph: { nodes: any[]; edges: any[] }) => {
-          const s = useBuilderStore.getState();
-          s.setGraph(graph);
-        };
-        w.__setSelectedNode = (nodeId: string | null) => {
-          const s = useBuilderStore.getState();
-          s.setSelectedNode(nodeId);
-        };
-        w.__AOS_BUILDER_STORE_BOUND = true;
-      } catch (e) {
-        // no-op: avoids crashing if module order changes in future
-        console.warn('[builder] failed to bind test bridge', e);
+      // Resilient binder: try to attach bridge immediately, and retry a few times
+      const bindBridgeOnce = () => {
+        try {
+          // snapshot accessor
+          w.__getBuilderSnapshot = () => {
+            const s = useBuilderStore.getState();
+            return { nodes: s.nodes, edges: s.edges };
+          };
+
+          // subscribe helper
+          w.__subscribeBuilder = (cb: (s: any) => void) =>
+            useBuilderStore.subscribe((s) =>
+              cb({ nodes: s.nodes, edges: s.edges })
+            );
+
+          // setter: replace entire graph
+          w.__setBuilderGraph = (graph: { nodes: any[]; edges: any[] }) => {
+            const s = useBuilderStore.getState();
+            s.setGraph(graph);
+          };
+
+          // select node by id
+          w.__setSelectedNode = (nodeId: string | null) => {
+            const s = useBuilderStore.getState();
+            s.setSelectedNode(nodeId);
+          };
+
+          w.__AOS_BUILDER_STORE_BOUND = true;
+          return true;
+        } catch (e) {
+          return false;
+        }
+      };
+
+      // Try binding immediately, then retry periodically for up to ~5 seconds
+      if (!bindBridgeOnce()) {
+        let tries = 0;
+        const maxTries = 25; // 25 * 200ms = 5s
+        const iv = setInterval(() => {
+          tries += 1;
+          const ok = bindBridgeOnce();
+          if (ok || tries >= maxTries) {
+            clearInterval(iv);
+            if (!ok) {
+              // final warning for debugging in CI
+              // eslint-disable-next-line no-console
+              console.warn(
+                '[builder] test bridge binding timed out after retries'
+              );
+            }
+          }
+        }, 200);
       }
     }
   }

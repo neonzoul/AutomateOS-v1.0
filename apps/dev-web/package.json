@@ -5,6 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "next dev",
+    "dev:with-mock": "node scripts/dev-with-mock.cjs",
     "build": "next build",
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "start": "next start",
