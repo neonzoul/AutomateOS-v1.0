@@ -173,7 +173,8 @@ export function Canvas() {
 if (
   typeof window !== 'undefined' &&
   (process.env.NODE_ENV !== 'production' ||
-    process.env.USE_MOCK_GATEWAY === 'true')
+    process.env.USE_MOCK_GATEWAY === 'true' ||
+    process.env.USE_MOCK_GATEWAY === true)
 ) {
   const w = window as any;
   if (!w.__AOS_BUILDER_STORE_BOUND) {
