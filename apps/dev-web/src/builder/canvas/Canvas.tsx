@@ -185,28 +185,28 @@ if (typeof window !== 'undefined') {
   if (shouldExposeBridge) {
     const w = window as any;
     if (!w.__AOS_BUILDER_STORE_BOUND) {
-    try {
-      w.__getBuilderSnapshot = () => {
-        const s = useBuilderStore.getState();
-        return { nodes: s.nodes, edges: s.edges };
-      };
-      w.__subscribeBuilder = (cb: (s: any) => void) =>
-        useBuilderStore.subscribe((s) =>
-          cb({ nodes: s.nodes, edges: s.edges })
-        );
-      w.__setBuilderGraph = (graph: { nodes: any[]; edges: any[] }) => {
-        const s = useBuilderStore.getState();
-        s.setGraph(graph);
-      };
-      w.__setSelectedNode = (nodeId: string | null) => {
-        const s = useBuilderStore.getState();
-        s.setSelectedNode(nodeId);
-      };
-      w.__AOS_BUILDER_STORE_BOUND = true;
-    } catch (e) {
-      // no-op: avoids crashing if module order changes in future
-      console.warn('[builder] failed to bind test bridge', e);
-    }
+      try {
+        w.__getBuilderSnapshot = () => {
+          const s = useBuilderStore.getState();
+          return { nodes: s.nodes, edges: s.edges };
+        };
+        w.__subscribeBuilder = (cb: (s: any) => void) =>
+          useBuilderStore.subscribe((s) =>
+            cb({ nodes: s.nodes, edges: s.edges })
+          );
+        w.__setBuilderGraph = (graph: { nodes: any[]; edges: any[] }) => {
+          const s = useBuilderStore.getState();
+          s.setGraph(graph);
+        };
+        w.__setSelectedNode = (nodeId: string | null) => {
+          const s = useBuilderStore.getState();
+          s.setSelectedNode(nodeId);
+        };
+        w.__AOS_BUILDER_STORE_BOUND = true;
+      } catch (e) {
+        // no-op: avoids crashing if module order changes in future
+        console.warn('[builder] failed to bind test bridge', e);
+      }
     }
   }
 }
