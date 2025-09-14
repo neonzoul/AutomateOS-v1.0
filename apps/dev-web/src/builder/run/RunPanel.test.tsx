@@ -118,12 +118,12 @@ describe('RunPanel', () => {
   });
 
   describe('Status pill mapping', () => {
-    it('shows queued status with blue styling', () => {
+    it('shows queued status with gray styling', () => {
       useBuilderStore.getState().setRunStatus('queued', 'test-run-123');
       render(<RunPanel />);
 
       const statusPill = screen.getByText('Queued (test-run-123)');
-      expect(statusPill).toHaveClass('text-yellow-600', 'bg-yellow-50');
+      expect(statusPill).toHaveClass('text-gray-600', 'bg-gray-50');
     });
 
     it('shows running status with blue styling and pulse', () => {
