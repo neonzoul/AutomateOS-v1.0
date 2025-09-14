@@ -2,7 +2,7 @@
 
 'use client';
 
-import React, { useCallback } from 'react';
+import React, { useCallback, useRef } from 'react';
 import { Panel, useReactFlow } from '@xyflow/react';
 
 import { useNodes, useEdges, useGraphActions } from '../../core/state';
@@ -41,6 +41,9 @@ export function CanvasToolbar() {
   const nodes = useNodes();
   const edges = useEdges();
   const hasStart = nodes.some((n) => n.type === 'start');
+
+  // Ref for file input to enable programmatic reset
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const addAtCursor = useCallback(
     (evt: React.MouseEvent, type: 'start' | 'http') => {
@@ -104,7 +107,9 @@ export function CanvasToolbar() {
       notify({ type: 'error', title: 'Import error', message: msg });
     } finally {
       // Reset file input to allow re-selecting the same file
-      e.currentTarget.value = '';
+      if (fileInputRef.current) {
+        fileInputRef.current.value = '';
+      }
     }
   };
 
@@ -141,6 +146,7 @@ export function CanvasToolbar() {
         {/* Import/Export Actions */}
         <label className="px-2 py-1 text-sm rounded bg-slate-200 text-slate-700 hover:bg-slate-300 transition-colors cursor-pointer">
           <input
+            ref={fileInputRef}
             type="file"
             accept="application/json"
             className="hidden"
