@@ -170,13 +170,21 @@ export function Canvas() {
 }
 
 // Dev/Test helper: expose builder store snapshots for Playwright (non-production or test mode)
-if (
-  typeof window !== 'undefined' &&
-  (process.env.NODE_ENV !== 'production' ||
-    process.env.USE_MOCK_GATEWAY === 'true')
-) {
-  const w = window as any;
-  if (!w.__AOS_BUILDER_STORE_BOUND) {
+if (typeof window !== 'undefined') {
+  // Runtime-aware test bridge exposure:
+  // - Expose in dev builds
+  // - Expose when USE_MOCK_GATEWAY env is 'true' at build time
+  // - Expose when runtime indicates mock mode via localStorage or a window flag
+  const shouldExposeBridge =
+    process.env.NODE_ENV !== 'production' ||
+    process.env.USE_MOCK_GATEWAY === 'true' ||
+    (typeof window !== 'undefined' &&
+      (window.localStorage?.getItem('mockApiMode') === 'true' ||
+        (window as any).__AOS_ENABLE_TEST_BRIDGE === true));
+
+  if (shouldExposeBridge) {
+    const w = window as any;
+    if (!w.__AOS_BUILDER_STORE_BOUND) {
     try {
       w.__getBuilderSnapshot = () => {
         const s = useBuilderStore.getState();
@@ -198,6 +206,7 @@ if (
     } catch (e) {
       // no-op: avoids crashing if module order changes in future
       console.warn('[builder] failed to bind test bridge', e);
+    }
     }
   }
 }
