@@ -53,12 +53,23 @@ export function CanvasToolbar() {
         return;
       }
 
-      // Offset so new node is not hidden beneath toolbar.
-      const base = screenToFlowPosition({
-        x: evt.clientX + 140, // push right of toolbar
-        y: evt.clientY + 40, // push below toolbar
-      });
-      const position = base;
+      // Get position - use cursor position if available, otherwise use center of canvas
+      let position;
+      try {
+        const base = screenToFlowPosition({
+          x: evt.clientX + 140, // push right of toolbar
+          y: evt.clientY + 40, // push below toolbar
+        });
+        position = base;
+      } catch (error) {
+        // Fallback to center position if screenToFlowPosition fails
+        console.warn(
+          'screenToFlowPosition failed, using fallback position:',
+          error
+        );
+        position = { x: 200, y: 200 };
+      }
+
       const spec = NODE_SPECS[type];
       addNode({ type, position, data: spec.defaultData });
     },
