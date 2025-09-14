@@ -22,10 +22,10 @@ function getApiBase(): string {
 export type RunPollStatus = 'queued' | 'running' | 'succeeded' | 'failed';
 
 export type RunResponse = {
-  id: string;
+  id?: string;
   status: RunPollStatus;
-  createdAt: string;
-  finishedAt?: string;
+  startedAt?: string;
+  finishedAt?: string | null;
   logs?: Array<
     | string
     | {
@@ -35,6 +35,12 @@ export type RunResponse = {
         nodeId?: string;
       }
   >;
+  steps?: {
+    id: string;
+    nodeId?: string;
+    status: string;
+    durationMs?: number;
+  }[];
 };
 
 /**
@@ -74,20 +80,25 @@ export async function startRun(
           body: JSON.stringify({ graph: workflowJson }),
         });
 
+        // If HTTP response received but it's an error status, treat as API error (do not retry)
+        if (response && !response.ok) {
+          let errMsg = response.statusText || '';
+          try {
+            if (response && typeof (response as any).json === 'function') {
+              const json = await (response as any).json();
+              if (json && json.error && json.error.message)
+                errMsg = json.error.message;
+            }
+          } catch {}
+
+          const msg =
+            `Failed to start run: ${response.status} ${errMsg}`.trim();
+          appendLog(msg);
+          setRunStatus('failed');
+          throw new Error(msg);
+        }
+
         if (response && response.ok) break;
-
-        // Non-ok response (e.g., 5xx) - capture and retry
-        let errMsg = response ? response.statusText : 'No response';
-        try {
-          if (response && typeof (response as any).json === 'function') {
-            const json = await (response as any).json();
-            if (json && json.error && json.error.message)
-              errMsg = json.error.message;
-          }
-        } catch {}
-
-        lastError = new Error(`Start run failed: ${response.status} ${errMsg}`);
-        appendLog(`Start run attempt ${attempt} failed: ${errMsg}`);
       } catch (err) {
         lastError = err;
         appendLog(
@@ -106,9 +117,11 @@ export async function startRun(
     }
 
     if (!response || !response.ok) {
-      // Exhausted retries
+      // Exhausted retries on network errors
       const msg =
         lastError instanceof Error ? lastError.message : String(lastError);
+      appendLog(`Failed to start run after ${maxAttempts} attempts: ${msg}`);
+      setRunStatus('failed');
       throw new Error(
         `Failed to start run after ${maxAttempts} attempts: ${msg}`
       );
@@ -174,7 +187,9 @@ export async function pollRun(runId: string): Promise<void> {
       }
 
       if (!response.ok) {
-        throw new Error(`Failed to poll run: ${response.status}`);
+        appendLog(`Polling HTTP error: ${response.status}`);
+        setRunStatus('failed');
+        return;
       }
 
       const run: RunResponse & {
