@@ -60,7 +60,7 @@ export default defineConfig({
         },
       },
       testMatch: /smoke-happy-path\.spec\.ts/,
-      testIgnore: process.env.CI ? undefined : /.*/, // Only run in CI
+      testIgnore: process.env.CI ? undefined : undefined, // Allow running locally when USE_MOCK_GATEWAY is set
     },
 
     // Mobile testing for smoke tests
@@ -96,11 +96,9 @@ export default defineConfig({
   ],
 
   /* Run your local dev server before starting the tests */
-  webServer: process.env.CI
-    ? undefined // In CI, servers are managed by the workflow
-    : {
-        command: 'pnpm dev',
-        url: 'http://localhost:3000',
-        reuseExistingServer: !process.env.CI,
-      },
+  webServer: {
+    command: 'pnpm dev',
+    url: 'http://localhost:3000',
+    reuseExistingServer: !process.env.CI,
+  },
 });

@@ -36,13 +36,18 @@ async function addStartAndHttpNodes(page: any) {
       }
 
       if (await startBtn.isEnabled()) {
+        console.log('Start button is enabled, attempting click');
         await startBtn.click({ force: true });
+        console.log('Start button clicked successfully');
         // Wait a bit for the node to appear
         await page.waitForTimeout(1000);
-      } else {
+        const nodeVisibleAfterClick = await startNodeLocator.isVisible();
         console.log(
-          'Start button is disabled (likely because a Start node already exists)'
+          'Start node visible after button click:',
+          nodeVisibleAfterClick
         );
+      } else {
+        console.log('Start button is disabled');
       }
     } catch (e) {
       console.log(
@@ -56,8 +61,9 @@ async function addStartAndHttpNodes(page: any) {
   if (!(await startNodeLocator.isVisible())) {
     // Fallback: directly set graph using exposed store function
     console.log('Button click failed, using direct graph manipulation');
-    await page.evaluate(() => {
+    const result = await page.evaluate(() => {
       const w = window as any;
+      console.log('Checking for __setBuilderGraph:', !!w.__setBuilderGraph);
       if (w.__setBuilderGraph) {
         // Create a simple workflow with Start and HTTP nodes
         const nodes = [
@@ -88,31 +94,22 @@ async function addStartAndHttpNodes(page: any) {
             type: 'default',
           },
         ];
-        w.__setBuilderGraph({ nodes, edges });
-        console.log('Graph set directly via store');
+        try {
+          w.__setBuilderGraph({ nodes, edges });
+          console.log('Graph set directly via store');
+          return { success: true, message: 'Graph set successfully' };
+        } catch (e) {
+          console.error('Error setting graph:', e);
+          return { success: false, message: String(e) };
+        }
       } else {
         console.error(
           '__setBuilderGraph not available - test bridge not exposed'
         );
-        // Try alternative approach: click buttons programmatically
-        console.log('Trying alternative: programmatic button clicks');
-        const toolbar = document.querySelector('.react-flow__panel.top.left');
-        if (toolbar) {
-          const startBtn = toolbar.querySelector(
-            'button[aria-label="Add Start node"]'
-          ) as HTMLButtonElement;
-          const httpBtn = toolbar.querySelector(
-            'button[aria-label="Add HTTP node"]'
-          ) as HTMLButtonElement;
-          if (startBtn && !startBtn.disabled) {
-            startBtn.click();
-          }
-          if (httpBtn) {
-            httpBtn.click();
-          }
-        }
+        return { success: false, message: '__setBuilderGraph not available' };
       }
     });
+    console.log('Direct graph manipulation result:', result);
 
     // Wait for nodes to appear after direct graph manipulation
     await page.waitForTimeout(1000);
@@ -389,6 +386,17 @@ test.describe('E2E Smoke: Happy Path Workflow Execution', () => {
           'Test bridge functions not available, proceeding with UI interactions only'
         );
       });
+
+    // Debug: Check if test bridge functions are available
+    const testBridgeAvailable = await page.evaluate(() => {
+      const w = window as any;
+      return {
+        setBuilderGraph: !!w.__setBuilderGraph,
+        getBuilderSnapshot: !!w.__getBuilderSnapshot,
+        setSelectedNode: !!w.__setSelectedNode,
+      };
+    });
+    console.log('Test bridge availability:', testBridgeAvailable);
 
     // Debug: Log the current DOM state
     const toolbarExists =

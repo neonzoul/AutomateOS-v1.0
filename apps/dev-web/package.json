@@ -15,7 +15,7 @@
     "test:e2e": "playwright test",
     "test:e2e:smoke": "playwright test smoke-happy-path.spec.ts",
     "test:e2e:live": "playwright test --project=chromium-live --project=firefox-live",
-    "test:e2e:mock": "USE_MOCK_GATEWAY=true playwright test --project=chromium-mock",
+    "test:e2e:mock": "cross-env USE_MOCK_GATEWAY=true playwright test --project=chromium-mock",
     "test:e2e:headed": "playwright test --headed",
     "mock-gateway": "node mock-gateway.cjs",
     "mock-gateway:start": "node mock-gateway.cjs 3001 &"
@@ -44,6 +44,7 @@
     "@vitest/ui": "^3.2.4",
     "autoprefixer": "^10.4.21",
     "cors": "^2.8.5",
+    "cross-env": "^10.0.0",
     "express": "^4.21.2",
     "jsdom": "^26.1.0",
     "postcss": "^8.5.6",
