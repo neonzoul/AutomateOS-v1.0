@@ -331,6 +331,74 @@ All requests are validated using Zod schemas from `@automateos/workflow-schema`:
 
 ---
 
+## Export/Import & Workflow Sharing
+
+### Workflow Export Format
+
+When workflows are exported via the UI (JSON download), they follow this validated structure:
+
+```json
+{
+  "nodes": [
+    {
+      "id": "start-1",
+      "type": "start",
+      "position": { "x": 100, "y": 100 },
+      "data": { "config": {} }
+    },
+    {
+      "id": "http-1",
+      "type": "http",
+      "position": { "x": 300, "y": 100 },
+      "data": {
+        "config": {
+          "method": "POST",
+          "url": "https://api.example.com/webhook",
+          "headers": { "Content-Type": "application/json" },
+          "body": "{\"message\": \"Hello World\"}"
+        }
+      }
+    }
+  ],
+  "edges": [
+    {
+      "id": "edge-1",
+      "source": "start-1",
+      "target": "http-1"
+    }
+  ],
+  "meta": {
+    "name": "My Workflow",
+    "version": 1,
+    "exportedAt": "2025-09-14T10:30:00.000Z"
+  }
+}
+```
+
+### Security Guarantees
+
+- **No Secrets in Export**: Exported workflows contain **only configuration data** - no API keys, tokens, or sensitive credentials
+- **Round-trip Safe**: Import/export preserves identical workflow structure and data
+- **Schema Validation**: All exports/imports validated against `WorkflowSchema` from `@automateos/workflow-schema`
+- **Defense in Depth**: Multiple validation layers prevent malformed workflows from being imported
+
+### Import Validation
+
+All imported workflows undergo:
+
+1. **JSON Parsing**: File must be valid JSON
+2. **Schema Validation**: Must match `WorkflowSchema` structure
+3. **Graph Integrity**: All node/edge references must be valid
+4. **Type Safety**: Node configurations validated against type-specific schemas
+
+**Error Codes:**
+
+- `INVALID_JSON`: File is not valid JSON
+- `INVALID_SCHEMA`: Workflow structure doesn't match schema
+- `GRAPH_INTEGRITY`: Invalid node/edge references
+
+---
+
 ## Testing Contract Compliance
 
 API contract compliance is verified via:

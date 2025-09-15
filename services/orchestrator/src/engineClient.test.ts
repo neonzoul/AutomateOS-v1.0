@@ -15,10 +15,16 @@ describe('EngineClient retry', () => {
       'http://engine',
       mockFetchSequence([
         () => Promise.reject(new Error('Network fail')), // attempt 1
-        () => ({ ok: false, status: 502, json: async () => ({}) }), // attempt 2
+        () => ({
+          ok: false,
+          status: 502,
+          text: async () => 'Bad Gateway',
+          json: async () => ({}),
+        }), // attempt 2
         () => ({
           ok: true,
           status: 202,
+          text: async () => '{"engineRunId": "eng_1"}',
           json: async () => ({ engineRunId: 'eng_1' }),
         }), // attempt 3
       ]) as any,

@@ -1,0 +1,39 @@
+{
+  "nodes": [
+    {
+      "id": "start1",
+      "type": "start",
+      "position": { "x": 0, "y": 0 },
+      "data": { "label": "Start", "config": {} }
+    },
+    {
+      "id": "http1",
+      "type": "http",
+      "position": { "x": 200, "y": 0 },
+      "data": {
+        "label": "Slack Notify",
+        "config": {
+          "method": "POST",
+          "url": "https://hooks.slack.com/services/REPLACE/WITH/YOUR-WEBHOOK-URL",
+          "headers": { "Content-Type": "application/json" },
+          "body": "{\"text\": \"Hello from AutomateOS! 🤖\\nThis message was sent via the Slack notification template.\"}"
+        }
+      }
+    }
+  ],
+  "edges": [
+    {
+      "id": "e1",
+      "source": "start1",
+      "target": "http1",
+      "sourceHandle": null,
+      "targetHandle": null,
+      "data": {}
+    }
+  ],
+  "meta": {
+    "name": "Slack Notification",
+    "version": 1,
+    "exportedAt": "2025-09-14T00:00:00.000Z"
+  }
+}

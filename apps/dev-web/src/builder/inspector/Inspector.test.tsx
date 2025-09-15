@@ -158,4 +158,57 @@ describe('Inspector (shell)', () => {
     expect(input).toHaveAttribute('aria-invalid', 'false');
     expect(input).toHaveClass('border-gray-300');
   });
+
+  it('updates store when valid URL is entered after error', async () => {
+    useBuilderStore.setState({
+      nodes: [
+        {
+          id: 'h1',
+          type: 'http',
+          position: { x: 0, y: 0 },
+          data: { label: 'HTTP', config: { method: 'GET', url: '' } },
+        } as any,
+      ],
+      edges: [],
+      selectedNodeId: 'h1',
+    });
+
+    render(<Inspector />);
+    const input = screen.getByPlaceholderText(
+      'https://api.example.com'
+    ) as HTMLInputElement;
+
+    // Enter invalid URL first (should not update store)
+    fireEvent.change(input, { target: { value: 'invalid-url' } });
+
+    await waitFor(() => {
+      expect(screen.getByText(/Please enter a valid URL/i)).toBeInTheDocument();
+    });
+
+    // Verify store was not updated with invalid URL
+    const nodeAfterInvalid = useBuilderStore
+      .getState()
+      .nodes.find((n) => n.id === 'h1');
+    expect((nodeAfterInvalid?.data.config as any).url).toBe('');
+
+    // Now enter valid URL
+    fireEvent.change(input, {
+      target: { value: 'https://validapi.example.com' },
+    });
+
+    // Verify store is updated with valid URL
+    await waitFor(() => {
+      const nodeAfterValid = useBuilderStore
+        .getState()
+        .nodes.find((n) => n.id === 'h1');
+      expect((nodeAfterValid?.data.config as any).url).toBe(
+        'https://validapi.example.com'
+      );
+    });
+
+    // Verify error is cleared
+    expect(
+      screen.queryByText(/Please enter a valid URL/i)
+    ).not.toBeInTheDocument();
+  });
 });

@@ -22,29 +22,12 @@ import {
   useSelectionActions,
   useGraphActions,
   useSelectedNodeId,
+  useBuilderStore,
 } from '../../core/state';
 
 import StartNode from './nodes/StartNode';
 import HttpNode from './nodes/HttpNode';
-import { NODE_SPECS } from '../registry/nodeSpecs';
-import { exportWorkflow, importWorkflow } from '../io/importExport';
-import { useBuilderStore } from '../../core/state';
-
-// Lightweight toast shim (replace with real UI system later)
-function notify(opts: {
-  type?: 'success' | 'error';
-  title: string;
-  message?: string;
-}) {
-  if (typeof window === 'undefined') return;
-  const color = opts.type === 'error' ? '#dc2626' : '#16a34a';
-  // eslint-disable-next-line no-console
-  console.log(
-    `[%c${opts.title}%c] ${opts.message ?? ''}`,
-    `color:${color};font-weight:bold;`,
-    'color:inherit;'
-  );
-}
+import { CanvasToolbar } from './CanvasToolbar';
 
 // Node types registry
 const nodeTypes: NodeTypes = {
@@ -130,132 +113,6 @@ export function Canvas() {
     setSelectedNode(null);
   }, [setSelectedNode]);
 
-  function ToolbarButtons() {
-    const { screenToFlowPosition } = useReactFlow();
-    const { addNode, clearWorkflow } = useGraphActions();
-    const setGraph = useBuilderStore((s) => s.setGraph);
-    const clearUiState = useBuilderStore((s) => s.clearUiState);
-    const nodes = useNodes();
-    const edges = useEdges(); // FIX: capture edges via hook at top-level (was illegally called inside handler)
-    const hasStart = nodes.some((n) => n.type === 'start');
-
-    const addAtCursor = useCallback(
-      (evt: React.MouseEvent, type: 'start' | 'http') => {
-        if (type === 'start' && nodes.some((n) => n.type === 'start')) {
-          alert('Only one Start node is allowed.');
-          return;
-        }
-
-        // Offset so new node is not hidden beneath toolbar.
-        const base = screenToFlowPosition({
-          x: evt.clientX + 140, // push right of toolbar
-          y: evt.clientY + 40, // push below toolbar
-        });
-        const position = base;
-        const spec = NODE_SPECS[type];
-        addNode({ type, position, data: spec.defaultData });
-      },
-      [screenToFlowPosition, addNode, nodes]
-    );
-
-    const handleClearWorkflow = useCallback(() => {
-      if (
-        confirm(
-          'Are you sure you want to clear the entire workflow? This action cannot be undone.'
-        )
-      ) {
-        clearWorkflow();
-      }
-    }, [clearWorkflow]);
-
-    const onExport = async () => {
-      try {
-        await exportWorkflow({ nodes, edges, name: 'Workflow' });
-        notify({ title: 'Exported', message: 'Workflow JSON downloaded.' });
-      } catch (e) {
-        notify({
-          type: 'error',
-          title: 'Export failed',
-          message: (e as any)?.message,
-        });
-      }
-    };
-
-    const onImport: React.ChangeEventHandler<HTMLInputElement> = async (e) => {
-      const file = e.target.files?.[0];
-      if (!file) return;
-      try {
-        const wf = await importWorkflow(file);
-        setGraph({ nodes: wf.nodes as any, edges: wf.edges as any });
-        clearUiState();
-        notify({ title: 'Imported', message: 'Workflow loaded onto canvas.' });
-      } catch (e) {
-        const err: any = e;
-        const code = err?.code;
-        const msg =
-          code === 'INVALID_JSON'
-            ? 'File is not valid JSON'
-            : code === 'INVALID_SCHEMA'
-              ? 'Schema validation failed'
-              : err?.message || 'Import failed';
-        notify({ type: 'error', title: 'Import error', message: msg });
-      } finally {
-        e.currentTarget.value = '';
-      }
-    };
-
-    return (
-      <Panel position="top-left">
-        <div className="flex gap-2 bg-white/80 backdrop-blur px-2 py-1 rounded border shadow-sm">
-          <button
-            className={`px-2 py-1 text-sm rounded transition-colors ${
-              hasStart
-                ? 'bg-gray-400 text-gray-700 cursor-not-allowed'
-                : 'bg-emerald-500 text-white hover:bg-emerald-600'
-            }`}
-            onClick={(e) => addAtCursor(e, 'start')}
-            disabled={hasStart}
-            title={hasStart ? 'Only one Start node allowed' : 'Add Start node'}
-          >
-            + Start
-          </button>
-          <button
-            className="px-2 py-1 text-sm rounded bg-indigo-500 text-white hover:bg-indigo-600 transition-colors"
-            onClick={(e) => addAtCursor(e, 'http')}
-          >
-            + HTTP
-          </button>
-          <div className="w-px bg-gray-300" />
-          <label className="px-2 py-1 text-sm rounded bg-slate-200 text-slate-700 hover:bg-slate-300 transition-colors cursor-pointer">
-            <input
-              type="file"
-              accept="application/json"
-              className="hidden"
-              onChange={onImport}
-              data-testid="import-input"
-            />
-            Import
-          </label>
-          <button
-            className="px-2 py-1 text-sm rounded bg-slate-500 text-white hover:bg-slate-600 transition-colors"
-            onClick={onExport}
-            data-testid="export-btn"
-          >
-            Export
-          </button>
-          <div className="w-px bg-gray-300" />
-          <button
-            className="px-2 py-1 text-sm rounded bg-red-500 text-white hover:bg-red-600 transition-colors"
-            onClick={handleClearWorkflow}
-            title="Clear workflow"
-          >
-            Clear
-          </button>
-        </div>
-      </Panel>
-    );
-  }
-
   return (
     <div className="h-full w-full" data-testid="canvas">
       <ReactFlow
@@ -278,7 +135,7 @@ export function Canvas() {
         }}
         proOptions={{ hideAttribution: true }}
       >
-        <ToolbarButtons />
+        <CanvasToolbar />
         {/* Background with dot pattern */}
         <Background
           variant={BackgroundVariant.Dots}
@@ -312,23 +169,75 @@ export function Canvas() {
   );
 }
 
-// Dev/Test helper: expose builder store snapshots for Playwright (non-production)
-if (typeof window !== 'undefined' && process.env.NODE_ENV !== 'production') {
-  const w = window as any;
-  if (!w.__AOS_BUILDER_STORE_BOUND) {
-    try {
-      w.__getBuilderSnapshot = () => {
-        const s = useBuilderStore.getState();
-        return { nodes: s.nodes, edges: s.edges };
+// Dev/Test helper: expose builder store snapshots for Playwright (non-production or test mode)
+if (typeof window !== 'undefined') {
+  // Runtime-aware test bridge exposure:
+  // - Expose in dev builds
+  // - Expose when USE_MOCK_GATEWAY env is 'true' at build time
+  // - Expose when runtime indicates mock mode via localStorage or a window flag
+  const shouldExposeBridge =
+    process.env.NODE_ENV !== 'production' ||
+    process.env.USE_MOCK_GATEWAY === 'true' ||
+    (typeof window !== 'undefined' &&
+      (window.localStorage?.getItem('mockApiMode') === 'true' ||
+        (window as any).__AOS_ENABLE_TEST_BRIDGE === true));
+
+  if (shouldExposeBridge) {
+    const w = window as any;
+    if (!w.__AOS_BUILDER_STORE_BOUND) {
+      // Resilient binder: try to attach bridge immediately, and retry a few times
+      const bindBridgeOnce = () => {
+        try {
+          // snapshot accessor
+          w.__getBuilderSnapshot = () => {
+            const s = useBuilderStore.getState();
+            return { nodes: s.nodes, edges: s.edges };
+          };
+
+          // subscribe helper
+          w.__subscribeBuilder = (cb: (s: any) => void) =>
+            useBuilderStore.subscribe((s) =>
+              cb({ nodes: s.nodes, edges: s.edges })
+            );
+
+          // setter: replace entire graph
+          w.__setBuilderGraph = (graph: { nodes: any[]; edges: any[] }) => {
+            const s = useBuilderStore.getState();
+            s.setGraph(graph);
+          };
+
+          // select node by id
+          w.__setSelectedNode = (nodeId: string | null) => {
+            const s = useBuilderStore.getState();
+            s.setSelectedNode(nodeId);
+          };
+
+          w.__AOS_BUILDER_STORE_BOUND = true;
+          return true;
+        } catch (e) {
+          return false;
+        }
       };
-      w.__subscribeBuilder = (cb: (s: any) => void) =>
-        useBuilderStore.subscribe((s) =>
-          cb({ nodes: s.nodes, edges: s.edges })
-        );
-      w.__AOS_BUILDER_STORE_BOUND = true;
-    } catch (e) {
-      // no-op: avoids crashing if module order changes in future
-      console.warn('[builder] failed to bind test bridge', e);
+
+      // Try binding immediately, then retry periodically for up to ~5 seconds
+      if (!bindBridgeOnce()) {
+        let tries = 0;
+        const maxTries = 25; // 25 * 200ms = 5s
+        const iv = setInterval(() => {
+          tries += 1;
+          const ok = bindBridgeOnce();
+          if (ok || tries >= maxTries) {
+            clearInterval(iv);
+            if (!ok) {
+              // final warning for debugging in CI
+              // eslint-disable-next-line no-console
+              console.warn(
+                '[builder] test bridge binding timed out after retries'
+              );
+            }
+          }
+        }, 200);
+      }
     }
   }
 }

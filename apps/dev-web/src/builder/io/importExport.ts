@@ -39,6 +39,7 @@ export async function exportWorkflow(opts: {
       version: 1,
       exportedAt: new Date().toISOString(),
     } as WorkflowMeta,
+    metadata: {}, // Required for backward compatibility with WorkflowSchema
   } as any; // typed via schema validation below
 
   const parsed = WorkflowSchema.safeParse(payload);

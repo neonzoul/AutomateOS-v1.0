@@ -50,7 +50,7 @@ export function RunPanel() {
   const getStatusColor = () => {
     switch (runStatus) {
       case 'queued':
-        return 'text-yellow-600 bg-yellow-50';
+        return 'text-gray-600 bg-gray-50';
       case 'running':
         return 'text-blue-600 bg-blue-50';
       case 'succeeded':
