@@ -20,7 +20,7 @@ This document expands the Sprint 4 requirements into detailed, step‑by‑step
   ORCHESTRATOR_BASE=http://localhost:3002  
   ENGINE_BASE=http://localhost:8082  
   SLACK_WEBHOOK=  
-  GOOGLE_API_KEY=  
+  NOTION_TOKEN=  
   NEXT_PUBLIC_DEV_STORAGE=true
 
 - Developers can copy this file to .env and fill in real keys. Make sure .env is listed in .gitignore so secrets never go to Git.
@@ -40,7 +40,7 @@ This document expands the Sprint 4 requirements into detailed, step‑by‑step
 
 ### 1.3 Document the variables
 
-- Update the project README or create docs/.env.md explaining each environment variable and how to set it (e.g., Slack webhook URL, Google API key). Stress that developers should never commit real API keys to the repo.
+- Update the project README or create docs/.env.md explaining each environment variable and how to set it (e.g., Slack webhook URL, Notion Integration Token). Stress that developers should never commit real API keys to the repo.
 
 ---
 
@@ -265,13 +265,13 @@ The API gateway already masks sensitive headers[\[3\]](https://raw.githubusercon
 
 4. Style statuses with colors similar to the status pill (e.g., green for success, red for fail).
 
-### 4.2 Load Google Sheets template
+### 4.2 Load Notion template
 
-1. Add the JSON file examples/google-sheets-automation.json (as described in the requirements) to the repo.
+1. Add the JSON file examples/notion-automation.json (as described in the requirements) to the repo.
 
-2. In apps/dev-web/src/builder/canvas/CanvasToolbar.tsx, add another button labeled “Sheets Template”. Copy the Slack template loader logic: fetch the JSON, validate with WorkflowSchema, load into the graph, clear selection and run state, and show a toast.
+2. In apps/dev-web/src/builder/canvas/CanvasToolbar.tsx, add another button labeled "Notion Template". Copy the Slack template loader logic: fetch the JSON, validate with WorkflowSchema, load into the graph, clear selection and run state, and show a toast.
 
-3. Add a small icon (optional) or note that API keys must be configured via credentials.
+3. Add a small icon (optional) or note that Integration Token must be configured via credentials.
 
 ### 4.3 Credential manager UI (optional but recommended)
 
@@ -309,7 +309,7 @@ This can be implemented later if time allows.
 
 1. **Slack template run:** Import Slack template. Configure a credential (set a fake Slack webhook URL). Run the workflow. Ensure that the run status progresses to success and logs show HTTP 200 POST.
 
-2. **Google Sheets template:** Import Sheets template. Configure Google API key. Run the workflow. Ensure that the run status progresses to success and logs show a 200 status.
+2. **Notion template:** Import Notion template. Configure Notion Integration Token. Run the workflow. Ensure that the run status progresses to success and logs show a 200 status.
 
 3. **Credential persistence:** Ensure that credentials do not persist across page reloads unless you implement a master password. Verify that export JSON does not contain secrets.
 
@@ -353,7 +353,7 @@ This can be implemented later if time allows.
 
 - \[ \] Credential store implemented with AES‑GCM encryption; inspector updated to reference credential names.
 
-- \[ \] Google Sheets starter template available via toolbar.
+- \[ \] Notion starter template available via toolbar.
 
 - \[ \] Tests written and CI pipeline updated.
 

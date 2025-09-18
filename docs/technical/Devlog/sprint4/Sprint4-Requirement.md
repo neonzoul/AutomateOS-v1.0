@@ -22,7 +22,7 @@ The current state (merged Sprints 2–3) includes:
 
 - The engine currently uses deterministic mocks for HTTP requests (no real outbound calls)[\[4\]](https://raw.githubusercontent.com/neonzoul/AutomateOS-v1.0/main/external/engine/server.js#:~:text=switch%20%28node.type%29%20,node.config%3F.url%7D%60%20%29).
 
-To deliver real value, we need to support **real HTTP integrations** (e.g., Slack and Google APIs), handle **credentials** securely (never store secrets in exported JSON or localStorage), and improve **run feedback** (steps, logs, status). This sprint addresses those gaps.
+To deliver real value, we need to support **real HTTP integrations** (e.g., Slack and Notion APIs), handle **credentials** securely (never store secrets in exported JSON or localStorage), and improve **run feedback** (steps, logs, status). This sprint addresses those gaps.
 
 ## Scope & Constraints
 
@@ -87,37 +87,44 @@ To deliver real value, we need to support **real HTTP integrations** (e.g., Slac
 
 10. ENGINE_BASE for orchestrator to find engine.
 
-11. SLACK_WEBHOOK, GOOGLE_API_KEY for seeds (these should be optional; guide developers to set them for the starter workflows).
+11. SLACK_WEBHOOK, NOTION_TOKEN for seeds (these should be optional; guide developers to set them for the starter workflows).
 
-### 3 Seed Starter Workflow: Google Sheets Automation
+### 3 Seed Starter Workflow: Notion Database Automation
 
-1. **Add a new file** in examples/google-sheets-automation.json that defines a simple workflow: Start node → HTTP Request node calling Google Sheets API to append a row. Use placeholders for API_KEY and SpreadsheetID. Example config:
+1. **Add a new file** in examples/notion-automation.json that defines a simple workflow: Start node → HTTP Request node calling Notion API to create a new page in a database. Use placeholders for Integration Token and Database ID. Example config:
 
-- {  
-   "name": "Google Sheets Automation",  
-   "definition": {  
-   "steps": \[  
-   {  
-   "type": "http_request_node",  
-   "config": {  
-   "method": "POST",  
-   "url": "https://sheets.googleapis.com/v4/spreadsheets/\<SpreadsheetID\>/values/Sheet1\!A1:append?valueInputOption=RAW",  
-   "headers": {  
-   "Authorization": "Bearer {{getCredential('googleApiKey')}}",  
-   "Content-Type": "application/json"  
-   },  
-   "json_body": {  
-   "values": \[  
-   \["{{payload.saleId}}", "{{payload.amount}}"\]  
-   \]  
-   }  
-   }  
-   }  
-   \]  
-   }  
+- {
+   "name": "Notion Database Automation",
+   "definition": {
+   "steps": \[
+   {
+   "type": "http_request_node",
+   "config": {
+   "method": "POST",
+   "url": "https://api.notion.com/v1/pages",
+   "headers": {
+   "Authorization": "Bearer {{getCredential('notionToken')}}",
+   "Content-Type": "application/json",
+   "Notion-Version": "2022-06-28"
+   },
+   "json_body": {
+   "parent": { "database_id": "{{databaseId}}" },
+   "properties": {
+     "Name": {
+       "title": \[{"text": {"content": "{{payload.title}}"}}\]
+     },
+     "Status": {
+       "select": {"name": "{{payload.status}}"}
+     }
+   }
+   }
+   }
+   }
+   \]
+   }
   }
 
-2. **Load template** – Add a button in CanvasToolbar.tsx labelled “Sheets Template”. When clicked, fetch the JSON file, validate with WorkflowSchema and load nodes/edges into the graph. Display a toast confirming the load.
+2. **Load template** – Add a button in CanvasToolbar.tsx labelled "Notion Template". When clicked, fetch the JSON file, validate with WorkflowSchema and load nodes/edges into the graph. Display a toast confirming the load.
 
 ### 4 Developer Ergonomics & .env Support
 
@@ -125,7 +132,7 @@ To deliver real value, we need to support **real HTTP integrations** (e.g., Slac
 
 2. **Improve error messages** – Provide clear error messages when runs fail due to missing credentials, invalid API endpoints, or network errors. Surface these errors in the UI logs.
 
-3. **CI pipeline updates** – Add tests for credential encryption/decryption and ensure no secrets are logged. Update Playwright tests to include the Google Sheets starter workflow.
+3. **CI pipeline updates** – Add tests for credential encryption/decryption and ensure no secrets are logged. Update Playwright tests to include the Notion starter workflow.
 
 ### 5 Stretch Goals (optional)
 
@@ -137,13 +144,13 @@ To deliver real value, we need to support **real HTTP integrations** (e.g., Slac
 
 ## Definition of Done
 
-- **Run Pipeline:** Clicking **Run** posts a workflow to /v1/runs, which triggers orchestrator → engine → external API. Runs return real HTTP responses (e.g., Slack message posted, Sheets row inserted). Node badges update from queued → running → success/fail. Logs show step details.
+- **Run Pipeline:** Clicking **Run** posts a workflow to /v1/runs, which triggers orchestrator → engine → external API. Runs return real HTTP responses (e.g., Slack message posted, Notion page created). Node badges update from queued → running → success/fail. Logs show step details.
 
 - **Secure Credential Handling:** Developers can input API keys in the inspector; these are stored encrypted in memory and not persisted to localStorage or exports. Node configs can reference credentials via {{getCredential('name')}}. Sensitive headers are masked in logs[\[5\]](https://raw.githubusercontent.com/neonzoul/AutomateOS-v1.0/main/services/api-gateway/src/index.ts#:~:text=import%20Fastify%20from%20%27fastify%27%3B%20import,from%20%27zod).
 
-- **.env Support:** All services load environment variables from .env files automatically; devs can set NEXT_PUBLIC_API_BASE, SLACK_WEBHOOK, GOOGLE_API_KEY, etc., without changing code.
+- **.env Support:** All services load environment variables from .env files automatically; devs can set NEXT_PUBLIC_API_BASE, SLACK_WEBHOOK, NOTION_TOKEN, etc., without changing code.
 
-- **Google Sheets Template:** A second starter workflow is available via toolbar; import/export round‑trip works; Slack template still works.
+- **Notion Template:** A second starter workflow is available via toolbar; import/export round‑trip works; Slack template still works.
 
 - **RunPanel Enhancements:** The run panel lists steps with statuses and durations, streams logs, and indicates when a run completes or fails. Cancel button stub exists.
 
@@ -159,7 +166,7 @@ To deliver real value, we need to support **real HTTP integrations** (e.g., Slac
 | Engine HTTP integration           | Replace mock HTTP in engine with real network requests; handle headers/body; mask sensitive logs               | Backend dev    | 1d          |
 | Credential store & encryption     | Implement credential store with AES‑GCM; add UI fields; integrate getCredential substitution                   | Full‑stack dev | 2d          |
 | .env support                      | Add dotenv to all services; document variables; update docs                                                    | DevOps         | 0.5d        |
-| Google Sheets template            | Create JSON file; add toolbar button; test loading                                                             | Frontend dev   | 0.5d        |
+| Notion template                   | Create JSON file; add toolbar button; test loading                                                             | Frontend dev   | 0.5d        |
 | Tests & CI                        | Add unit and E2E tests; update pipeline                                                                        | QA             | 1d          |
 | Stretch: Undo/Redo & multi‑select | History stacks, keyboard shortcuts, UI updates                                                                 | Extra          | 2–3d        |
 | Stretch: DB persistence & auth    | CRUD API, simple bearer auth, UI integration                                                                   | Extra          | 3–4d        |

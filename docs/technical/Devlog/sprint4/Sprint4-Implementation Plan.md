@@ -8,7 +8,7 @@
 - Orchestrator compiles a **real DAG** and the **Engine does real HTTP** (with masked headers).
 - UI polls and shows **step list, per-node status, durations, and logs**.
 - **Credential store** (AES-GCM, in-memory) + Inspector field; secrets never in export/localStorage/logs.
-- **Google Sheets template** available from toolbar.
+- **Notion template** available from toolbar.
 
 ---
 
@@ -27,7 +27,7 @@
   ORCHESTRATOR_BASE=http://localhost:3002
   ENGINE_BASE=http://localhost:8082
   SLACK_WEBHOOK=
-  GOOGLE_API_KEY=
+  NOTION_TOKEN=
   NEXT_PUBLIC_DEV_STORAGE=true
 
   ```
@@ -144,17 +144,17 @@ feat(credentials): AES-GCM in-memory store + Inspector credentialName field + ru
 
 ---
 
-## 6 — Google Sheets starter template + toolbar
+## 6 — Notion starter template + toolbar
 
 **Edits**
 
-- **New** `examples/google-sheets-automation.json` (POST append row; placeholders for SpreadsheetID, credential name).
-- `apps/dev-web/src/builder/canvas/CanvasToolbar.tsx`: add **“Sheets Template”** button → fetch file → validate with `WorkflowSchema` → `setGraph` + `clearUiState()`; toast helper text about API key.
+- **New** `examples/notion-automation.json` (POST create page in database; placeholders for DatabaseID, credential name).
+- `apps/dev-web/src/builder/canvas/CanvasToolbar.tsx`: add **"Notion Template"** button → fetch file → validate with `WorkflowSchema` → `setGraph` + `clearUiState()`; toast helper text about Integration Token.
 
 **Commit**
 
 ```
-feat(examples): Google Sheets template + toolbar loader
+feat(examples): Notion template + toolbar loader
 
 ```
 
@@ -197,18 +197,18 @@ test(ui): RunPanel steps/durations/logs; Inspector credentialName flow
 
 ---
 
-## 9 — E2E smoke (Slack + Sheets)
+## 9 — E2E smoke (Slack + Notion)
 
 **Playwright**
 
 - Load Slack template, set credential, **Run** → expect **200 POST** log line.
-- Load Sheets template, set Google credential, **Run** → expect **200** log line.
+- Load Notion template, set Notion credential, **Run** → expect **200** log line.
 - Ensure **no secrets** appear in exported JSON or localStorage.
 
 **Commit**
 
 ```
-test(e2e): Slack & Sheets runs succeed; secrets never leak
+test(e2e): Slack & Notion runs succeed; secrets never leak
 
 ```
 
@@ -237,7 +237,7 @@ docs: sprint4 env guide, run contract notes, demo gif
 - [ ] Orchestrator uses `compileDag()`; Engine performs real HTTP; sensitive headers masked.
 - [ ] UI: step list, statuses (queued/running/succeeded/failed), durations, logs, cancel stub.
 - [ ] Credential store AES-GCM (in-memory); Inspector references credential by name; no secrets in export/localStorage/logs.
-- [ ] Google Sheets template loads from toolbar and runs.
+- [ ] Notion template loads from toolbar and runs.
 - [ ] Unit + component + (optional) E2E tests green; CI passes.
 
 ---
