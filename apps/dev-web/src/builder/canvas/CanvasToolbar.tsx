@@ -161,6 +161,42 @@ export function CanvasToolbar() {
     }
   };
 
+  const onLoadNotionTemplate = async () => {
+    try {
+      const response = await fetch('/examples/notion-automation.json');
+      if (!response.ok) {
+        throw new Error(`Failed to fetch template: ${response.status}`);
+      }
+
+      const templateData = await response.json();
+
+      // Validate with WorkflowSchema
+      const parsed = WorkflowSchema.safeParse(templateData);
+      if (!parsed.success) {
+        throw new Error('Template validation failed: Invalid schema');
+      }
+
+      // Load into the graph
+      setGraph({
+        nodes: parsed.data.nodes as any,
+        edges: parsed.data.edges as any,
+      });
+      clearUiState();
+
+      notify({
+        title: 'Notion Template Loaded',
+        message:
+          '⚠️ Update the database ID and create a "notion-integration-token" credential with your Notion Integration Token!',
+      });
+    } catch (e) {
+      notify({
+        type: 'error',
+        title: 'Template load failed',
+        message: (e as any)?.message || 'Could not load Notion template',
+      });
+    }
+  };
+
   return (
     <Panel position="top-left">
       <div className="flex gap-2 bg-white/80 backdrop-blur px-2 py-1 rounded border shadow-sm">
@@ -219,6 +255,14 @@ export function CanvasToolbar() {
           aria-label="Load Slack notification template"
         >
           📢 Slack Template
+        </button>
+        <button
+          className="px-2 py-1 text-sm rounded bg-blue-500 text-white hover:bg-blue-600 transition-colors"
+          onClick={onLoadNotionTemplate}
+          title="Load a ready-to-use Notion database entry workflow"
+          aria-label="Load Notion template"
+        >
+          📝 Notion Template
         </button>
 
         {/* Separator */}
