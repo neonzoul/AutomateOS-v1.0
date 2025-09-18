@@ -144,7 +144,7 @@ feat(credentials): AES-GCM in-memory store + Inspector credentialName field + ru
 
 ---
 
-## 6 — Notion starter template + toolbar
+## 6 — Notion starter template + toolbar [x]
 
 **Edits**
 
