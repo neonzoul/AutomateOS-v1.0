@@ -122,7 +122,7 @@ feat(run): normalize statuses, durations; show step list + logs; idempotent star
 
 ---
 
-## 5 — Credential store (AES-GCM) + Inspector field
+## 5 — Credential store (AES-GCM) + Inspector field [x]
 
 **Edits**
 
