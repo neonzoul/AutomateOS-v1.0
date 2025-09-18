@@ -121,6 +121,22 @@ function HttpConfigForm({
       }
     }
 
+    // If body contains JSON, also set json_body for engine compatibility
+    if (typeof values.body === 'string' && values.body.trim()) {
+      try {
+        const parsedBody = JSON.parse(values.body);
+        transformed.json_body = parsedBody;
+        // Keep body as string for form display
+      } catch (e) {
+        // If not valid JSON, just keep as body string
+        // But clear any existing json_body to prevent conflicts
+        transformed.json_body = undefined;
+      }
+    } else {
+      // If no body, clear json_body
+      transformed.json_body = undefined;
+    }
+
     return transformed;
   };
 
