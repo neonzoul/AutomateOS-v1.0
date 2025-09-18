@@ -14,7 +14,7 @@
 
 # Day-by-Day Plan (exact edits + suggested commits)
 
-## 1 — .env plumbing everywhere
+## 1 — .env plumbing everywhere [x]
 
 **Edits**
 
