@@ -24,6 +24,7 @@ import {
   useSelectedNodeId,
   useBuilderStore,
 } from '../../core/state';
+import { useCredentialStore } from '../../core/credentials';
 
 import StartNode from './nodes/StartNode';
 import HttpNode from './nodes/HttpNode';
@@ -210,6 +211,11 @@ if (typeof window !== 'undefined') {
           w.__setSelectedNode = (nodeId: string | null) => {
             const s = useBuilderStore.getState();
             s.setSelectedNode(nodeId);
+          };
+
+          // credential store access for testing
+          w.__getCredentialStore = () => {
+            return useCredentialStore.getState();
           };
 
           w.__AOS_BUILDER_STORE_BOUND = true;

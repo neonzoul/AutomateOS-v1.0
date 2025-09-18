@@ -59,7 +59,7 @@ export default defineConfig({
           'X-Test-Mode': 'mock',
         },
       },
-      testMatch: /smoke-happy-path\.spec\.ts/,
+      testMatch: /(smoke-happy-path|slack-notion-smoke)\.spec\.ts/,
       testIgnore: process.env.CI ? undefined : undefined, // Allow running locally when USE_MOCK_GATEWAY is set
     },
 
