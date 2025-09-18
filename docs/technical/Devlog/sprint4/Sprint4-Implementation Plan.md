@@ -44,7 +44,7 @@ chore(env): load .env in ui/gateway/orchestrator/engine + add .env.example
 
 ---
 
-## 2 — Orchestrator uses real DAG compiler
+## 2 — Orchestrator uses real DAG compiler [x]
 
 **Edits**
 
@@ -67,7 +67,7 @@ feat(orchestrator): compileDag() replaces convertToEngineDag for proper deps
 
 ---
 
-## 3 — Engine: real HTTP (mask sensitive headers)
+## 3 — Engine: real HTTP (mask sensitive headers) [x]
 
 **Edits**
 
@@ -100,7 +100,7 @@ feat(engine): real HTTP execution via node-fetch + sensitive header masking
 
 ---
 
-## 4 — Run polling: steps, durations, logs
+## 4 — Run polling: steps, durations, logs [x]
 
 **Edits**
 

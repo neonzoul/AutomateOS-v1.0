@@ -7,7 +7,9 @@
       "Bash(pnpm typecheck:*)",
       "Bash(npx tsc:*)",
       "Bash(pnpm test:*)",
-      "Bash(git commit:*)"
+      "Bash(git commit:*)",
+      "Bash(npm install)",
+      "Bash(timeout:*)"
     ],
     "deny": [],
     "ask": []
