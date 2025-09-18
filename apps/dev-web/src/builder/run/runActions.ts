@@ -161,7 +161,7 @@ export async function startRun(
  * Updates store state as run progresses
  */
 export async function pollRun(runId: string): Promise<void> {
-  const { setRunStatus, appendLog, updateNodeRunStatus } =
+  const { setRunStatus, appendLog, updateNodeRunStatus, setStepDuration } =
     useBuilderStore.getState();
 
   let pollCount = 0;
@@ -199,7 +199,7 @@ export async function pollRun(runId: string): Promise<void> {
       // Update status
       setRunStatus(run.status);
 
-      // Update per-node statuses if steps present
+      // Update per-node statuses and durations if steps present
       if (Array.isArray((run as any).steps)) {
         const { nodes, nodeRunStatuses } = useBuilderStore.getState();
         (run as any).steps.forEach((s: any) => {
@@ -226,7 +226,15 @@ export async function pollRun(runId: string): Promise<void> {
                 if (matchByType) targetId = matchByType.id;
               }
             }
-            if (targetId) updateNodeRunStatus(targetId, status);
+
+            if (targetId) {
+              updateNodeRunStatus(targetId, status);
+
+              // Store step duration if available
+              if (typeof s.durationMs === 'number') {
+                setStepDuration(targetId, s.durationMs);
+              }
+            }
           }
         });
       }

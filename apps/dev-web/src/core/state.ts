@@ -59,6 +59,7 @@ export interface BuilderState {
   currentRunId: string | null;
   logs: string[];
   nodeRunStatuses: Record<string, 'idle' | 'running' | 'succeeded' | 'failed'>;
+  stepDurations: Record<string, number>; // nodeId -> durationMs
   setRunStatus: (
     status: BuilderState['runStatus'],
     runId?: string | null
@@ -72,6 +73,7 @@ export interface BuilderState {
     id: string,
     status: 'running' | 'succeeded' | 'failed'
   ) => void;
+  setStepDuration: (nodeId: string, durationMs: number) => void;
 }
 
 // === Initial Store State Interface ===
@@ -139,6 +141,7 @@ export const useBuilderStore = create<BuilderState>()(
         currentRunId: null,
         logs: [],
         nodeRunStatuses: {},
+        stepDurations: {},
 
         onNodesChange: (changes) =>
           set((s) => ({ nodes: applyNodeChanges(changes, s.nodes) })),
@@ -225,6 +228,7 @@ export const useBuilderStore = create<BuilderState>()(
             currentRunId: null,
             logs: [],
             nodeRunStatuses: {},
+            stepDurations: {},
           })),
 
         // === Run Slice Implementation ===
@@ -241,11 +245,16 @@ export const useBuilderStore = create<BuilderState>()(
             currentRunId: null,
             logs: [],
             nodeRunStatuses: {},
+            stepDurations: {},
           }),
         setNodeRunStatuses: (m) => set({ nodeRunStatuses: m }),
         updateNodeRunStatus: (id, status) =>
           set((s) => ({
             nodeRunStatuses: { ...s.nodeRunStatuses, [id]: status },
+          })),
+        setStepDuration: (nodeId, durationMs) =>
+          set((s) => ({
+            stepDurations: { ...s.stepDurations, [nodeId]: durationMs },
           })),
       };
     }),
@@ -346,7 +355,9 @@ export const useRunState = () => {
   const runStatus = useBuilderStore((s) => s.runStatus);
   const currentRunId = useBuilderStore((s) => s.currentRunId);
   const logs = useBuilderStore((s) => s.logs);
-  return { runStatus, currentRunId, logs };
+  const nodeRunStatuses = useBuilderStore((s) => s.nodeRunStatuses);
+  const stepDurations = useBuilderStore((s) => s.stepDurations);
+  return { runStatus, currentRunId, logs, nodeRunStatuses, stepDurations };
 };
 
 export const useRunActions = () => {
@@ -394,6 +405,7 @@ export const resetBuilderStore = () =>
     currentRunId: null,
     logs: [],
     nodeRunStatuses: {},
+    stepDurations: {},
   });
 
 // Debug helper (development only)
