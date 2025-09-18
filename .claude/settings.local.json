@@ -13,7 +13,9 @@
       "Bash(pnpm -C apps/dev-web test src/core/credentials.test.ts)",
       "Bash(pnpm -C apps/dev-web test src/test/engine-http-masking.test.ts)",
       "Bash(pnpm -C apps/dev-web test src/builder/run/runActions.test.ts)",
-      "Bash(pnpm -C apps/dev-web test src/core/credentials.test.ts src/test/engine-http-masking.test.ts src/builder/run/runActions.test.ts)"
+      "Bash(pnpm -C apps/dev-web test src/core/credentials.test.ts src/test/engine-http-masking.test.ts src/builder/run/runActions.test.ts)",
+      "Bash(pnpm -C apps/dev-web test src/builder/run/RunPanel.test.tsx src/builder/inspector/Inspector.test.tsx)",
+      "Bash(pnpm -C apps/dev-web test src/builder/inspector/Inspector.test.tsx)"
     ],
     "deny": [],
     "ask": []
