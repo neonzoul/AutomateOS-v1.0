@@ -1,3 +1,4 @@
+import 'dotenv/config';
 import Fastify from 'fastify';
 import { randomUUID } from 'crypto';
 import { z } from 'zod';
@@ -108,7 +109,7 @@ async function startServer() {
     idempotencyKey?: string,
     requestId?: string
   ) {
-    const res = await fetch(process.env.ORCHESTRATOR_BASE + '/internal/runs', {
+    const res = await fetch((process.env.ORCHESTRATOR_BASE || 'http://localhost:3002') + '/internal/runs', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -126,7 +127,7 @@ async function startServer() {
 
   async function fetchOrchestratorRun(runId: string, requestId?: string) {
     const res = await fetch(
-      process.env.ORCHESTRATOR_BASE + '/internal/runs/' + runId,
+      (process.env.ORCHESTRATOR_BASE || 'http://localhost:3002') + '/internal/runs/' + runId,
       {
         headers: {
           ...(requestId ? { 'x-request-id': requestId } : {}),

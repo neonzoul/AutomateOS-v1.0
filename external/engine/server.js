@@ -1,4 +1,5 @@
 // Minimal Engine v0.1 (REST) - sequential execution prototype
+import 'dotenv/config';
 import Fastify from 'fastify';
 
 const app = Fastify({ logger: true });
@@ -111,7 +112,7 @@ function sleep(ms) {
 
 app.get('/health', async () => ({ ok: true }));
 
-app.listen({ port: 8082, host: '0.0.0.0' }).catch((e) => {
+app.listen({ port: Number(process.env.PORT) || 8082, host: '0.0.0.0' }).catch((e) => {
   app.log.error(e);
   process.exit(1);
 });

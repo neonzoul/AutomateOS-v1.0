@@ -1,3 +1,4 @@
+import 'dotenv/config';
 import Fastify from 'fastify';
 import { startRun, getRun, startRunWithDag } from './runService';
 import { z } from 'zod';
