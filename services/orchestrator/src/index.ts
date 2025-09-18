@@ -1,6 +1,7 @@
 import 'dotenv/config';
 import Fastify from 'fastify';
 import { startRun, getRun, startRunWithDag } from './runService';
+import { compileDag } from './compileDag';
 import { z } from 'zod';
 
 const app = Fastify({ logger: true });
@@ -40,16 +41,7 @@ const StartRunSchema = z.object({
   }),
 });
 
-// Convert simplified graph format to Engine DAG format
-function convertToEngineDag(graph: any) {
-  return {
-    nodes: graph.nodes.map((node: any) => ({
-      id: node.id,
-      type: node.type,
-      config: node.config || {},
-    })),
-  };
-}
+// Note: convertToEngineDag deprecated in favor of compileDag
 
 app.post('/internal/runs', async (req, rep) => {
   const body = StartRunSchema.parse(req.body);
@@ -58,8 +50,11 @@ app.post('/internal/runs', async (req, rep) => {
     (req.headers['x-idempotency-key'] as string | undefined) || undefined;
   req.log.info({ idem, headers: maskHeaders(req.headers) }, 'startRun request');
 
-  // Convert to Engine DAG format and start directly
-  const dag = convertToEngineDag(body.graph);
+  // Convert to Engine DAG format using compileDag
+  const dag = compileDag({
+    nodes: body.graph.nodes,
+    edges: body.graph.edges || []
+  });
   await startRunWithDag(runId, dag, idem);
   return rep.code(202).send({ runId });
 });
