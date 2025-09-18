@@ -8,6 +8,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useSelectedNode, useSelectionActions } from '@/core/state';
 import { NODE_SPECS } from '@/builder/registry/nodeSpecs';
 import { HttpConfigSchema, type HttpConfig } from '@automateos/workflow-schema';
+import { useCredentialList, useCredentials } from '@/core/credentials';
 
 // Form type that matches the schema input (method is optional with default)
 type HttpConfigFormInput = {
@@ -15,6 +16,9 @@ type HttpConfigFormInput = {
   url: string;
   headers?: Record<string, string>;
   body?: string;
+  auth?: {
+    credentialName: string;
+  };
 };
 
 /**
@@ -79,6 +83,8 @@ function HttpConfigForm({
   currentConfig?: Partial<HttpConfig>;
 }) {
   const { updateNodeConfig } = useSelectionActions();
+  const credentialList = useCredentialList();
+  const { setCredential } = useCredentials();
 
   const form = useForm<HttpConfigFormInput>({
     resolver: zodResolver(HttpConfigSchema),
@@ -87,6 +93,9 @@ function HttpConfigForm({
       url: currentConfig?.url ?? '',
       headers: currentConfig?.headers ?? {},
       body: currentConfig?.body ?? '',
+      auth: currentConfig?.auth ? {
+        credentialName: currentConfig.auth.credentialName
+      } : undefined,
     },
     mode: 'onChange',
   });
@@ -156,6 +165,50 @@ function HttpConfigForm({
             </p>
           )}
         </label>
+      </div>
+
+      {/* Credential Authentication */}
+      <div>
+        <label className="block">
+          <span className="text-sm font-medium text-gray-700">
+            Authentication (optional)
+          </span>
+          <select
+            {...register('auth.credentialName')}
+            className="mt-1 w-full rounded border border-gray-300 px-2 py-1 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+          >
+            <option value="">No authentication</option>
+            {credentialList.map((cred) => (
+              <option key={cred.name} value={cred.name}>
+                {cred.name} ({cred.maskedPreview})
+              </option>
+            ))}
+          </select>
+          {errors.auth?.credentialName && (
+            <p className="mt-1 text-xs text-red-600">
+              {errors.auth.credentialName.message}
+            </p>
+          )}
+        </label>
+
+        {/* Quick credential creation */}
+        <div className="mt-2">
+          <button
+            type="button"
+            className="text-xs text-blue-600 hover:text-blue-700"
+            onClick={() => {
+              const name = prompt('Credential name:');
+              const value = prompt('Credential value (e.g., Bearer token):');
+              if (name && value) {
+                setCredential(name, value).then(() => {
+                  // Re-render will happen automatically due to store update
+                });
+              }
+            }}
+          >
+            + Create new credential
+          </button>
+        </div>
       </div>
 
       <div>
