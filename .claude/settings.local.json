@@ -9,7 +9,11 @@
       "Bash(pnpm test:*)",
       "Bash(git commit:*)",
       "Bash(npm install)",
-      "Bash(timeout:*)"
+      "Bash(timeout:*)",
+      "Bash(pnpm -C apps/dev-web test src/core/credentials.test.ts)",
+      "Bash(pnpm -C apps/dev-web test src/test/engine-http-masking.test.ts)",
+      "Bash(pnpm -C apps/dev-web test src/builder/run/runActions.test.ts)",
+      "Bash(pnpm -C apps/dev-web test src/core/credentials.test.ts src/test/engine-http-masking.test.ts src/builder/run/runActions.test.ts)"
     ],
     "deny": [],
     "ask": []
