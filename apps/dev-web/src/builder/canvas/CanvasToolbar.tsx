@@ -86,18 +86,7 @@ export function CanvasToolbar() {
     }
   }, [clearWorkflow]);
 
-  const onExport = async () => {
-    try {
-      await exportWorkflow({ nodes, edges, name: 'Workflow' });
-      notify({ title: 'Exported', message: 'Workflow JSON downloaded.' });
-    } catch (e) {
-      notify({
-        type: 'error',
-        title: 'Export failed',
-        message: (e as any)?.message,
-      });
-    }
-  };
+  // Export functionality moved to main header as Share button
 
   const onImport: React.ChangeEventHandler<HTMLInputElement> = async (e) => {
     const file = e.target.files?.[0];
@@ -290,7 +279,7 @@ export function CanvasToolbar() {
 
         <div style={{ width: '1px', height: '24px', background: 'rgba(0, 0, 0, 0.08)', alignSelf: 'center', margin: '0 2px' }} />
 
-        {/* Import/Export Actions */}
+        {/* Import Action - Export moved to main header as Share */}
         <label
           className="cursor-pointer"
           style={{
@@ -320,28 +309,6 @@ export function CanvasToolbar() {
           />
           📁 Import
         </label>
-        <button
-          onClick={onExport}
-          data-testid="export-btn"
-          aria-label="Export workflow"
-          style={{
-            background: 'linear-gradient(135deg, #A29BFE 0%, #9B8CE8 100%)',
-            color: 'rgba(255,255,255,0.98)',
-            fontSize: '12px',
-            fontWeight: '600',
-            padding: '7px 14px',
-            borderRadius: '16px',
-            border: 'none',
-            cursor: 'pointer',
-            transition: 'all 0.25s cubic-bezier(0.25, 0.1, 0.25, 1)',
-            boxShadow: '0 2px 8px rgba(162,155,254,0.2), inset 0 1px 0 rgba(255,255,255,0.4)',
-            fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Text", system-ui, sans-serif',
-            minWidth: '80px',
-            textAlign: 'center'
-          }}
-        >
-          💾 Export
-        </button>
         <button
           onClick={onLoadSlackTemplate}
           title="Load Slack workflow template"

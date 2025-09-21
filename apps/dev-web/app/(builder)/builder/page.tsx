@@ -7,6 +7,7 @@ import { RunPanel } from '@/builder/run/RunPanel';
 import { MainHeader } from '@/components/ui/MainHeader';
 import { useBuilderStore } from '@/core/state';
 import { startRun } from '@/builder/run/runActions';
+import { exportWorkflow } from '@/builder/io/importExport';
 import { WorkflowSchema } from '@automateos/workflow-schema';
 
 /**
@@ -31,9 +32,12 @@ export default function BuilderPage() {
     }
   };
 
-  const handleShare = () => {
-    // TODO: Implement share functionality
-    console.log('Share workflow');
+  const handleExport = async () => {
+    try {
+      await exportWorkflow({ nodes, edges, name: 'Workflow' });
+    } catch (error) {
+      console.error('Export failed:', error);
+    }
   };
 
   return (
@@ -41,7 +45,7 @@ export default function BuilderPage() {
       {/* Main Header */}
       <MainHeader
         onRun={handleRun}
-        onShare={handleShare}
+        onExport={handleExport}
         isRunning={useBuilderStore((s) => s.runStatus === 'running')}
       />
 
