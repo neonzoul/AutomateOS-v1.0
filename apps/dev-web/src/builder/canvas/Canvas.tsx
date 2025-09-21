@@ -115,7 +115,12 @@ export function Canvas() {
   }, [setSelectedNode]);
 
   return (
-    <div className="h-full w-full" data-testid="canvas">
+    <div className="h-full w-full bg-canvas-light relative overflow-hidden" data-testid="canvas">
+      {/* Ambient background elements */}
+      <div className="absolute inset-0 bg-gradient-to-br from-cream-100/30 via-transparent to-coral-50/20 pointer-events-none" />
+      <div className="absolute top-0 left-1/4 w-96 h-96 bg-coral-100/10 rounded-full blur-3xl pointer-events-none" />
+      <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-emerald-100/10 rounded-full blur-3xl pointer-events-none" />
+
       <ReactFlow
         nodes={nodes}
         edges={edges}
@@ -127,44 +132,93 @@ export function Canvas() {
         onPaneClick={onPaneClick}
         fitView
         snapToGrid
-        snapGrid={[16, 16]}
+        snapGrid={[20, 20]}
         connectOnClick={true}
         selectionOnDrag
         defaultEdgeOptions={{
-          style: { strokeWidth: 2, stroke: '#6366f1' },
-          animated: false,
+          style: {
+            strokeWidth: 3,
+            stroke: '#e84b4b',
+            strokeDasharray: '8,8',
+          },
+          animated: true,
         }}
         proOptions={{ hideAttribution: true }}
+        style={{
+          background: 'transparent',
+        }}
       >
         <CanvasToolbar />
-        {/* Background with dot pattern */}
+
+        {/* Beautiful organic background pattern */}
         <Background
           variant={BackgroundVariant.Dots}
-          gap={20}
-          size={1}
-          color="#e2e8f0"
+          gap={30}
+          size={2}
+          color="#e84b4b"
+          style={{
+            opacity: 0.15,
+          }}
         />
 
-        {/* Controls for zoom/pan/fit */}
+        {/* Enhanced controls with better styling */}
         <Controls
           position="bottom-right"
           showZoom
           showFitView
           showInteractive
-        />
-
-        {/* Mini map for navigation */}
-        <MiniMap
-          position="bottom-left"
-          nodeStrokeWidth={3}
-          nodeColor="#6366f1"
-          maskColor="rgba(0, 0, 0, 0.1)"
           style={{
-            backgroundColor: '#f8fafc',
-            border: '1px solid #e2e8f0',
-            borderRadius: '8px',
+            background: 'rgba(255, 255, 255, 0.95)',
+            backdropFilter: 'blur(12px)',
+            border: '1px solid rgba(232, 75, 75, 0.1)',
+            borderRadius: '16px',
+            boxShadow: '0 8px 32px rgba(0, 0, 0, 0.08)',
+            padding: '8px',
           }}
         />
+
+        {/* Enhanced mini map */}
+        <MiniMap
+          position="bottom-left"
+          nodeStrokeWidth={2}
+          nodeColor={(node) => {
+            if (node.type === 'start') return '#10b981';
+            if (node.type === 'http') return '#e84b4b';
+            return '#6b7280';
+          }}
+          maskColor="rgba(232, 75, 75, 0.1)"
+          style={{
+            background: 'rgba(255, 255, 255, 0.95)',
+            backdropFilter: 'blur(12px)',
+            border: '1px solid rgba(232, 75, 75, 0.1)',
+            borderRadius: '16px',
+            boxShadow: '0 8px 32px rgba(0, 0, 0, 0.08)',
+            overflow: 'hidden',
+          }}
+        />
+
+        {/* Floating inspiration message */}
+        {nodes.length === 0 && (
+          <Panel position="top-center" className="pointer-events-none mt-32">
+            <div className="text-center space-y-4 max-w-md mx-auto">
+              <div className="text-6xl animate-float">✨</div>
+              <div className="space-y-2">
+                <h2 className="text-2xl font-bold text-gray-800">
+                  Welcome to AutomateOS
+                </h2>
+                <p className="text-gray-600">
+                  Your creative automation playground awaits!
+                  Start by adding a <span className="font-semibold text-emerald-600">Trigger</span> to begin building something magical.
+                </p>
+              </div>
+              <div className="text-sm text-gray-500 flex items-center justify-center gap-2 mt-6">
+                <div className="w-2 h-2 bg-coral-400 rounded-full animate-pulse" />
+                <span>Click the toolbar above to get started</span>
+                <div className="w-2 h-2 bg-coral-400 rounded-full animate-pulse" />
+              </div>
+            </div>
+          </Panel>
+        )}
       </ReactFlow>
     </div>
   );

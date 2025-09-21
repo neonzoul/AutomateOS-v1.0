@@ -199,36 +199,36 @@ export function CanvasToolbar() {
 
   return (
     <Panel position="top-left">
-      <div className="flex gap-2 bg-white/80 backdrop-blur px-2 py-1 rounded border shadow-sm">
+      <div className="flex gap-3 bg-white/90 backdrop-blur-md px-4 py-3 rounded-2xl border border-white/20 shadow-large">
         {/* Node Creation Buttons */}
         <button
-          className={`px-2 py-1 text-sm rounded transition-colors ${
+          className={`px-3 py-2 text-sm rounded-xl font-medium transition-all duration-200 ${
             hasStart
-              ? 'bg-gray-400 text-gray-700 cursor-not-allowed'
-              : 'bg-emerald-500 text-white hover:bg-emerald-600'
+              ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
+              : 'bg-gradient-to-r from-emerald-500 to-emerald-600 text-white hover:from-emerald-600 hover:to-emerald-700 hover:scale-105 shadow-soft'
           }`}
           onClick={(e) => addAtCursor(e, 'start')}
           disabled={hasStart}
-          title={hasStart ? 'Only one Start node allowed' : 'Add Start node'}
+          title={hasStart ? 'Only one workflow trigger allowed' : 'Add workflow trigger'}
           aria-label={
-            hasStart ? 'Only one Start node allowed' : 'Add Start node'
+            hasStart ? 'Only one workflow trigger allowed' : 'Add workflow trigger'
           }
         >
-          + Start
+          ✨ Trigger
         </button>
         <button
-          className="px-2 py-1 text-sm rounded bg-indigo-500 text-white hover:bg-indigo-600 transition-colors"
+          className="px-3 py-2 text-sm rounded-xl font-medium bg-gradient-to-r from-coral-500 to-coral-600 text-white hover:from-coral-600 hover:to-coral-700 hover:scale-105 transition-all duration-200 shadow-soft"
           onClick={(e) => addAtCursor(e, 'http')}
-          aria-label="Add HTTP node"
+          aria-label="Add service connection"
         >
-          + HTTP
+          🔗 Connect Service
         </button>
 
         {/* Separator */}
-        <div className="w-px bg-gray-300" />
+        <div className="w-px bg-gray-200/60 h-8 self-center" />
 
         {/* Import/Export Actions */}
-        <label className="px-2 py-1 text-sm rounded bg-slate-200 text-slate-700 hover:bg-slate-300 transition-colors cursor-pointer">
+        <label className="px-3 py-2 text-sm rounded-xl font-medium bg-gradient-to-r from-slate-400 to-slate-500 text-white hover:from-slate-500 hover:to-slate-600 hover:scale-105 transition-all duration-200 cursor-pointer shadow-soft">
           <input
             ref={fileInputRef}
             type="file"
@@ -236,46 +236,46 @@ export function CanvasToolbar() {
             className="hidden"
             onChange={onImport}
             data-testid="import-input"
-            aria-label="Import workflow JSON file"
+            aria-label="Import workflow template"
           />
-          Import
+          📂 Import Template
         </label>
         <button
-          className="px-2 py-1 text-sm rounded bg-slate-500 text-white hover:bg-slate-600 transition-colors"
+          className="px-3 py-2 text-sm rounded-xl font-medium bg-gradient-to-r from-slate-500 to-slate-600 text-white hover:from-slate-600 hover:to-slate-700 hover:scale-105 transition-all duration-200 shadow-soft"
           onClick={onExport}
           data-testid="export-btn"
-          aria-label="Export workflow as JSON file"
+          aria-label="Share workflow as template"
         >
-          Export
+          📤 Share Template
         </button>
         <button
-          className="px-2 py-1 text-sm rounded bg-purple-500 text-white hover:bg-purple-600 transition-colors"
+          className="px-3 py-2 text-sm rounded-xl font-medium bg-gradient-to-r from-purple-500 to-purple-600 text-white hover:from-purple-600 hover:to-purple-700 hover:scale-105 transition-all duration-200 shadow-soft"
           onClick={onLoadSlackTemplate}
           title="Load a ready-to-use Slack notification workflow"
           aria-label="Load Slack notification template"
         >
-          📢 Slack Template
+          📢 Slack Workflow
         </button>
         <button
-          className="px-2 py-1 text-sm rounded bg-blue-500 text-white hover:bg-blue-600 transition-colors"
+          className="px-3 py-2 text-sm rounded-xl font-medium bg-gradient-to-r from-blue-500 to-blue-600 text-white hover:from-blue-600 hover:to-blue-700 hover:scale-105 transition-all duration-200 shadow-soft"
           onClick={onLoadNotionTemplate}
           title="Load a ready-to-use Notion database entry workflow"
           aria-label="Load Notion template"
         >
-          📝 Notion Template
+          📝 Notion Workflow
         </button>
 
         {/* Separator */}
-        <div className="w-px bg-gray-300" />
+        <div className="w-px bg-gray-200/60 h-8 self-center" />
 
         {/* Clear Action */}
         <button
-          className="px-2 py-1 text-sm rounded bg-red-500 text-white hover:bg-red-600 transition-colors"
+          className="px-3 py-2 text-sm rounded-xl font-medium bg-gradient-to-r from-red-500 to-red-600 text-white hover:from-red-600 hover:to-red-700 hover:scale-105 transition-all duration-200 shadow-soft"
           onClick={handleClearWorkflow}
-          title="Clear workflow"
-          aria-label="Clear entire workflow"
+          title="Start fresh with new workflow"
+          aria-label="Start fresh with new workflow"
         >
-          Clear
+          🗑️ Start Fresh
         </button>
       </div>
     </Panel>

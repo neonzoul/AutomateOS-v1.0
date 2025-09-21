@@ -28,7 +28,8 @@
       "Bash(pnpm -C apps/dev-web test:e2e:mock --project=chromium-mock -g \"Notion workflow\")",
       "Bash(pnpm -C apps/dev-web test:e2e:mock --project=chromium-mock -g \"Slack workflow\")",
       "Bash(pnpm -C apps/dev-web test:e2e:mock --project=chromium-mock -g \"creator can run a simple Start\")",
-      "Bash(pnpm -C apps/dev-web test:e2e:mock --project=chromium-mock -g \"handles network errors gracefully\")"
+      "Bash(pnpm -C apps/dev-web test:e2e:mock --project=chromium-mock -g \"handles network errors gracefully\")",
+      "Bash(git checkout:*)"
     ],
     "deny": [],
     "ask": []
