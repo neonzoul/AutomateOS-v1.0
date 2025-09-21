@@ -119,15 +119,15 @@ export function Canvas() {
       className="h-full w-full relative overflow-hidden"
       data-testid="canvas"
       style={{
-        background: 'linear-gradient(135deg, rgba(232,75,75,0.08) 0%, rgba(255,248,240,0.6) 50%, #FFF8F0 100%)',
+        background: 'linear-gradient(135deg, #FF6B6B 0%, #E84B4B 25%, #F4C2A1 75%, #FFF8F0 100%)',
       }}
     >
       {/* Subtle Her movie inspired elements */}
       <div
         className="absolute inset-0 pointer-events-none"
         style={{
-          background: 'radial-gradient(ellipse at 25% 25%, rgba(232,75,75,0.04) 0%, transparent 60%)',
-          opacity: 0.8
+          background: 'radial-gradient(ellipse at 20% 20%, rgba(255,255,255,0.1) 0%, transparent 50%)',
+          opacity: 0.6
         }}
       />
 

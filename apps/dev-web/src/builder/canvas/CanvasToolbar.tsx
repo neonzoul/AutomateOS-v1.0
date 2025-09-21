@@ -200,13 +200,13 @@ export function CanvasToolbar() {
   return (
     <Panel position="top-left" style={{ zIndex: 1000 }}>
       <div
-        className="flex gap-3 backdrop-blur-xl"
+        className="flex gap-2 backdrop-blur-xl"
         style={{
-          background: 'rgba(255,255,255,0.9)',
-          padding: '12px 16px',
-          borderRadius: '28px',
-          border: '1px solid rgba(232,75,75,0.1)',
-          boxShadow: '0 8px 24px rgba(232,75,75,0.08), 0 2px 8px rgba(232,75,75,0.04), inset 0 1px 0 rgba(255,255,255,0.8)'
+          background: 'rgba(255,255,255,0.95)',
+          padding: '8px 12px',
+          borderRadius: '32px',
+          border: '1px solid rgba(232,75,75,0.08)',
+          boxShadow: '0 4px 20px rgba(232,75,75,0.06), 0 1px 3px rgba(232,75,75,0.04), inset 0 1px 0 rgba(255,255,255,0.9)'
         }}
       >
         {/* Node Creation Buttons */}
@@ -219,21 +219,23 @@ export function CanvasToolbar() {
           }
           style={{
             background: hasStart
-              ? 'rgba(232,75,75,0.1)'
-              : '#E84B4B',
-            color: hasStart ? 'rgba(232,75,75,0.5)' : 'rgba(255,255,255,0.95)',
-            fontSize: '14px',
+              ? 'rgba(232,75,75,0.15)'
+              : 'linear-gradient(135deg, #FF6B6B 0%, #E84B4B 100%)',
+            color: hasStart ? 'rgba(232,75,75,0.6)' : 'rgba(255,255,255,0.98)',
+            fontSize: '13px',
             fontWeight: '600',
-            padding: '10px 16px',
-            borderRadius: '20px',
+            padding: '8px 16px',
+            borderRadius: '24px',
             border: 'none',
             cursor: hasStart ? 'not-allowed' : 'pointer',
-            transition: 'all 0.3s ease',
+            transition: 'all 0.3s cubic-bezier(0.25, 0.1, 0.25, 1.0)',
             boxShadow: hasStart
               ? 'none'
-              : '0 4px 12px rgba(232,75,75,0.15), inset 0 1px 0 rgba(255,255,255,0.3)',
+              : '0 2px 8px rgba(232,75,75,0.2), inset 0 1px 0 rgba(255,255,255,0.4)',
             transform: 'scale(1)',
-            fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Display", system-ui, sans-serif'
+            fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Display", system-ui, sans-serif',
+            minWidth: '80px',
+            textAlign: 'center'
           }}
           onMouseEnter={(e) => {
             if (!hasStart) {
@@ -256,18 +258,20 @@ export function CanvasToolbar() {
           onClick={(e) => addAtCursor(e, 'http')}
           aria-label="Add HTTP request"
           style={{
-            background: '#A29BFE',
-            color: 'rgba(255,255,255,0.95)',
-            fontSize: '14px',
+            background: 'linear-gradient(135deg, #A29BFE 0%, #9B8CE8 100%)',
+            color: 'rgba(255,255,255,0.98)',
+            fontSize: '13px',
             fontWeight: '600',
-            padding: '10px 16px',
-            borderRadius: '20px',
+            padding: '8px 16px',
+            borderRadius: '24px',
             border: 'none',
             cursor: 'pointer',
-            transition: 'all 0.3s ease',
-            boxShadow: '0 4px 12px rgba(162,155,254,0.15), inset 0 1px 0 rgba(255,255,255,0.3)',
+            transition: 'all 0.3s cubic-bezier(0.25, 0.1, 0.25, 1.0)',
+            boxShadow: '0 2px 8px rgba(162,155,254,0.2), inset 0 1px 0 rgba(255,255,255,0.4)',
             transform: 'scale(1)',
-            fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Display", system-ui, sans-serif'
+            fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Display", system-ui, sans-serif',
+            minWidth: '80px',
+            textAlign: 'center'
           }}
           onMouseEnter={(e) => {
             const target = e.target as HTMLButtonElement;
@@ -286,7 +290,24 @@ export function CanvasToolbar() {
         <div className="w-px bg-coral-sunset/20 h-8 self-center" />
 
         {/* Import/Export Actions */}
-        <label className="px-5 py-2.5 text-body font-medium rounded-full bg-lavender-twilight text-white hover:bg-lavender-twilight/90 hover:scale-105 hover:shadow-lg transition-all duration-300 ease-out cursor-pointer drop-shadow-sm">
+        <label
+          className="cursor-pointer"
+          style={{
+            background: 'linear-gradient(135deg, #FFD93D 0%, #F4C430 100%)',
+            color: 'rgba(255,255,255,0.98)',
+            fontSize: '13px',
+            fontWeight: '600',
+            padding: '8px 16px',
+            borderRadius: '24px',
+            border: 'none',
+            transition: 'all 0.3s cubic-bezier(0.25, 0.1, 0.25, 1.0)',
+            boxShadow: '0 2px 8px rgba(255,217,61,0.2), inset 0 1px 0 rgba(255,255,255,0.4)',
+            fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Display", system-ui, sans-serif',
+            minWidth: '90px',
+            textAlign: 'center',
+            display: 'inline-block'
+          }}
+        >
           <input
             ref={fileInputRef}
             type="file"
@@ -299,26 +320,68 @@ export function CanvasToolbar() {
           📁 Import
         </label>
         <button
-          className="px-5 py-2.5 text-body font-medium rounded-full bg-lavender-twilight text-white hover:bg-lavender-twilight/90 hover:scale-105 hover:shadow-lg transition-all duration-300 ease-out drop-shadow-sm"
           onClick={onExport}
           data-testid="export-btn"
           aria-label="Export workflow"
+          style={{
+            background: 'linear-gradient(135deg, #A29BFE 0%, #9B8CE8 100%)',
+            color: 'rgba(255,255,255,0.98)',
+            fontSize: '13px',
+            fontWeight: '600',
+            padding: '8px 16px',
+            borderRadius: '24px',
+            border: 'none',
+            cursor: 'pointer',
+            transition: 'all 0.3s cubic-bezier(0.25, 0.1, 0.25, 1.0)',
+            boxShadow: '0 2px 8px rgba(162,155,254,0.2), inset 0 1px 0 rgba(255,255,255,0.4)',
+            fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Display", system-ui, sans-serif',
+            minWidth: '90px',
+            textAlign: 'center'
+          }}
         >
           💾 Export
         </button>
         <button
-          className="px-5 py-2.5 text-body font-medium rounded-full bg-golden-hour text-white hover:bg-golden-hour/90 hover:scale-105 hover:shadow-lg transition-all duration-300 ease-out drop-shadow-sm"
           onClick={onLoadSlackTemplate}
           title="Load Slack workflow template"
           aria-label="Load Slack template"
+          style={{
+            background: 'linear-gradient(135deg, #FFD93D 0%, #F4C430 100%)',
+            color: 'rgba(255,255,255,0.98)',
+            fontSize: '13px',
+            fontWeight: '600',
+            padding: '8px 16px',
+            borderRadius: '24px',
+            border: 'none',
+            cursor: 'pointer',
+            transition: 'all 0.3s cubic-bezier(0.25, 0.1, 0.25, 1.0)',
+            boxShadow: '0 2px 8px rgba(255,217,61,0.2), inset 0 1px 0 rgba(255,255,255,0.4)',
+            fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Display", system-ui, sans-serif',
+            minWidth: '90px',
+            textAlign: 'center'
+          }}
         >
           💬 Slack
         </button>
         <button
-          className="px-5 py-2.5 text-body font-medium rounded-full bg-golden-hour text-white hover:bg-golden-hour/90 hover:scale-105 hover:shadow-lg transition-all duration-300 ease-out drop-shadow-sm"
           onClick={onLoadNotionTemplate}
           title="Load Notion workflow template"
           aria-label="Load Notion template"
+          style={{
+            background: 'linear-gradient(135deg, #FFD93D 0%, #F4C430 100%)',
+            color: 'rgba(255,255,255,0.98)',
+            fontSize: '13px',
+            fontWeight: '600',
+            padding: '8px 16px',
+            borderRadius: '24px',
+            border: 'none',
+            cursor: 'pointer',
+            transition: 'all 0.3s cubic-bezier(0.25, 0.1, 0.25, 1.0)',
+            boxShadow: '0 2px 8px rgba(255,217,61,0.2), inset 0 1px 0 rgba(255,255,255,0.4)',
+            fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Display", system-ui, sans-serif',
+            minWidth: '90px',
+            textAlign: 'center'
+          }}
         >
           📝 Notion
         </button>
@@ -327,10 +390,24 @@ export function CanvasToolbar() {
 
         {/* Clear Action */}
         <button
-          className="px-5 py-2.5 text-body font-medium rounded-full bg-warm-gray-400 text-white hover:bg-warm-gray-500 hover:scale-105 hover:shadow-lg transition-all duration-300 ease-out drop-shadow-sm"
           onClick={handleClearWorkflow}
           title="Clear workflow"
           aria-label="Clear workflow"
+          style={{
+            background: 'linear-gradient(135deg, #C4BCB5 0%, #9B8E85 100%)',
+            color: 'rgba(255,255,255,0.98)',
+            fontSize: '13px',
+            fontWeight: '600',
+            padding: '8px 16px',
+            borderRadius: '24px',
+            border: 'none',
+            cursor: 'pointer',
+            transition: 'all 0.3s cubic-bezier(0.25, 0.1, 0.25, 1.0)',
+            boxShadow: '0 2px 8px rgba(196,188,181,0.2), inset 0 1px 0 rgba(255,255,255,0.4)',
+            fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Display", system-ui, sans-serif',
+            minWidth: '80px',
+            textAlign: 'center'
+          }}
         >
           🗑️ Clear
         </button>
