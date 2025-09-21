@@ -29,7 +29,13 @@
       "Bash(pnpm -C apps/dev-web test:e2e:mock --project=chromium-mock -g \"Slack workflow\")",
       "Bash(pnpm -C apps/dev-web test:e2e:mock --project=chromium-mock -g \"creator can run a simple Start\")",
       "Bash(pnpm -C apps/dev-web test:e2e:mock --project=chromium-mock -g \"handles network errors gracefully\")",
-      "Bash(git checkout:*)"
+      "Bash(git checkout:*)",
+      "WebSearch",
+      "Bash(pnpm -C apps/dev-web test --run --reporter=line)",
+      "Bash(pnpm -C apps/dev-web test)",
+      "Bash(pnpm:*)",
+      "WebFetch(domain:localhost)",
+      "WebFetch(domain:172.27.208.1)"
     ],
     "deny": [],
     "ask": []

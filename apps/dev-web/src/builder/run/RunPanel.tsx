@@ -5,8 +5,6 @@
 import React from 'react';
 import { useRunState, useNodes, useEdges } from '../../core/state';
 import { startRun, cancelRun } from './runActions';
-import { motion, AnimatePresence } from 'framer-motion';
-import { motionVariants } from '../../components/ui/motion';
 
 /**
  * RunPanel: render run controls and status
@@ -51,15 +49,15 @@ export function RunPanel() {
   const getStatusColor = () => {
     switch (runStatus) {
       case 'queued':
-        return 'text-gray-600 bg-gray-50';
+        return 'text-secondary bg-off-white';
       case 'running':
-        return 'text-blue-600 bg-blue-50';
+        return 'text-system-blue bg-system-blue/10';
       case 'succeeded':
-        return 'text-green-600 bg-green-50';
+        return 'text-system-green bg-system-green/10';
       case 'failed':
-        return 'text-red-600 bg-red-50';
+        return 'text-system-red bg-system-red/10';
       default:
-        return 'text-gray-600 bg-gray-50';
+        return 'text-secondary bg-off-white';
     }
   };
 
@@ -74,13 +72,13 @@ export function RunPanel() {
   const getStepStatusColor = (status: string) => {
     switch (status) {
       case 'running':
-        return 'text-blue-600 bg-blue-50';
+        return 'text-system-blue bg-system-blue/10';
       case 'succeeded':
-        return 'text-green-600 bg-green-50';
+        return 'text-system-green bg-system-green/10';
       case 'failed':
-        return 'text-red-600 bg-red-50';
+        return 'text-system-red bg-system-red/10';
       default:
-        return 'text-gray-600 bg-gray-50';
+        return 'text-secondary bg-off-white';
     }
   };
 
@@ -104,184 +102,107 @@ export function RunPanel() {
       data-testid="run-panel"
     >
       <div className="flex items-center justify-between">
-        <h3 className="text-xl font-bold text-gray-900 flex items-center gap-2">
-          ⚡ Automation Control
+        <h3 className="text-title-3 text-primary">
+          Run Control
         </h3>
 
-        <div className="flex gap-3">
-          <motion.button
+        <div className="flex gap-2">
+          <button
             type="button"
-            className={`px-6 py-3 rounded-2xl text-sm font-semibold transition-all duration-200 ${
+            className={`px-4 py-2 rounded text-caption font-medium transition-all duration-micro ease-apple ${
               runStatus === 'running'
-                ? 'bg-gradient-to-r from-coral-500 to-coral-600 text-white shadow-glow-soft'
+                ? 'bg-system-orange text-white'
                 : !canRun
-                  ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
-                  : 'bg-gradient-to-r from-emerald-500 to-emerald-600 text-white hover:from-emerald-600 hover:to-emerald-700 shadow-soft hover:shadow-medium'
+                  ? 'bg-separator text-secondary cursor-not-allowed'
+                  : 'bg-system-green text-white hover:bg-system-green/90'
             }`}
             disabled={!canRun}
             onClick={handleRunClick}
-            title={canRun ? 'Start workflow automation' : 'Add workflow steps to run'}
+            title={canRun ? 'Start workflow' : 'Add nodes to run'}
             data-testid="run-button"
-            whileHover={canRun ? { scale: 1.05 } : {}}
-            whileTap={canRun ? { scale: 0.95 } : {}}
-            animate={runStatus === 'running' ? {
-              scale: [1, 1.02, 1],
-              opacity: [0.8, 1, 0.8],
-              transition: {
-                repeat: Infinity,
-                duration: 2,
-                ease: "easeInOut"
-              }
-            } : {}}
           >
-            {runStatus === 'running' ? (
-              <span className="flex items-center gap-2">
-                <motion.div
-                  className="w-2 h-2 bg-white rounded-full"
-                  animate={{
-                    scale: [1, 1.2, 1],
-                    opacity: [1, 0.7, 1],
-                  }}
-                  transition={{
-                    repeat: Infinity,
-                    duration: 1,
-                    ease: "easeInOut"
-                  }}
-                />
-                Running Magic...
-              </span>
-            ) : (
-              <span className="flex items-center gap-2">
-                ✨ Run Workflow
-              </span>
-            )}
-          </motion.button>
+            {runStatus === 'running' ? 'Running...' : 'Run'}
+          </button>
 
-          <AnimatePresence>
-            {(runStatus === 'queued' || runStatus === 'running') && currentRunId && (
-              <motion.button
-                type="button"
-                className="px-4 py-3 rounded-2xl bg-gradient-to-r from-red-500 to-red-600 text-white text-sm font-medium hover:from-red-600 hover:to-red-700 transition-all duration-200 shadow-soft"
-                onClick={handleCancelClick}
-                title="Stop workflow"
-                data-testid="cancel-button"
-                initial={{ opacity: 0, scale: 0.8 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.8 }}
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-              >
-                🛑 Stop
-              </motion.button>
-            )}
-          </AnimatePresence>
+          {(runStatus === 'queued' || runStatus === 'running') && currentRunId && (
+            <button
+              type="button"
+              className="px-4 py-2 rounded bg-system-red text-white text-caption font-medium hover:bg-system-red/90 transition-all duration-micro ease-apple"
+              onClick={handleCancelClick}
+              title="Stop workflow"
+              data-testid="cancel-button"
+            >
+              Stop
+            </button>
+          )}
         </div>
       </div>
 
-      {/* Status indicator */}
-      <motion.div
-        className={`inline-flex items-center gap-2 px-4 py-2 rounded-2xl text-sm font-medium shadow-soft ${getStatusColor()}`}
-        animate={runStatus === 'running' ? {
-          scale: [1, 1.02, 1],
-          opacity: [0.8, 1, 0.8],
-          transition: {
-            repeat: Infinity,
-            duration: 2,
-            ease: "easeInOut"
-          }
-        } : {}}
-      >
+      <div className={`inline-flex items-center gap-2 px-3 py-1.5 rounded text-caption font-medium ${getStatusColor()}`}>
         <div className={`w-2 h-2 rounded-full ${
-          runStatus === 'running' ? 'bg-blue-500 animate-pulse' :
-          runStatus === 'succeeded' ? 'bg-green-500' :
-          runStatus === 'failed' ? 'bg-red-500' :
-          'bg-gray-400'
+          runStatus === 'running' ? 'bg-system-blue' :
+          runStatus === 'succeeded' ? 'bg-system-green' :
+          runStatus === 'failed' ? 'bg-system-red' :
+          'bg-secondary'
         }`} />
         {getStatusText()}
-      </motion.div>
+      </div>
 
-      {/* Steps section */}
       {nodes.length > 0 && runStatus !== 'idle' && (
-        <motion.div
-          className="space-y-3"
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.2 }}
-        >
-          <h4 className="text-base font-semibold text-gray-800 flex items-center gap-2">
-            ⚡ Workflow Steps
+        <div className="space-y-3">
+          <h4 className="text-body font-medium text-primary">
+            Workflow Steps
           </h4>
           <div className="space-y-2" data-testid="run-steps">
-            <AnimatePresence>
-              {nodes.map((node, index) => {
-                const status = nodeRunStatuses[node.id] || 'idle';
-                const duration = stepDurations[node.id];
-                const label = node.data?.label || (node.type === 'start' ? 'Trigger' : 'Connect Service');
+            {nodes.map((node) => {
+              const status = nodeRunStatuses[node.id] || 'idle';
+              const duration = stepDurations[node.id];
+              const label = node.data?.label || (node.type === 'start' ? 'Start' : 'HTTP Request');
 
-                return (
-                  <motion.div
-                    key={node.id}
-                    className="flex items-center justify-between p-3 bg-white rounded-xl border border-gray-100 shadow-soft"
-                    initial={{ opacity: 0, x: -20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: index * 0.1 }}
-                  >
-                    <div className="flex items-center gap-3">
-                      <div className={`w-2 h-2 rounded-full ${
-                        status === 'running' ? 'bg-blue-500 animate-pulse' :
-                        status === 'succeeded' ? 'bg-green-500' :
-                        status === 'failed' ? 'bg-red-500' :
-                        'bg-gray-300'
-                      }`} />
-                      <span className="text-gray-800 font-medium">
-                        {node.type === 'start' ? '✨' : '🔗'} {label}
-                      </span>
-                      <motion.span
-                        className={`inline-flex px-2 py-1 rounded-full text-xs font-medium ${getStepStatusColor(status)}`}
-                        animate={status === 'running' ? {
-                          scale: [1, 1.02, 1],
-                          opacity: [0.8, 1, 0.8],
-                          transition: {
-                            repeat: Infinity,
-                            duration: 2,
-                            ease: "easeInOut"
-                          }
-                        } : {}}
-                      >
-                        {status === 'running' ? '⚡ Running' :
-                         status === 'succeeded' ? '✅ Done' :
-                         status === 'failed' ? '❌ Failed' :
-                         status}
-                      </motion.span>
-                    </div>
-                    {duration !== undefined && (
-                      <motion.span
-                        className="text-xs text-gray-500 font-mono bg-gray-50 px-2 py-1 rounded-lg"
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        transition={{ delay: 0.3 }}
-                      >
-                        {formatDuration(duration)}
-                      </motion.span>
-                    )}
-                  </motion.div>
-                );
-              })}
-            </AnimatePresence>
+              return (
+                <div
+                  key={node.id}
+                  className="flex items-center justify-between p-3 bg-white rounded border border-separator"
+                >
+                  <div className="flex items-center gap-3">
+                    <div className={`w-2 h-2 rounded-full ${
+                      status === 'running' ? 'bg-system-blue' :
+                      status === 'succeeded' ? 'bg-system-green' :
+                      status === 'failed' ? 'bg-system-red' :
+                      'bg-separator'
+                    }`} />
+                    <span className="text-primary text-caption font-medium">
+                      {label}
+                    </span>
+                    <span className={`inline-flex px-2 py-1 rounded text-caption font-medium ${getStepStatusColor(status)}`}>
+                      {status === 'running' ? 'Running' :
+                       status === 'succeeded' ? 'Completed' :
+                       status === 'failed' ? 'Failed' :
+                       status}
+                    </span>
+                  </div>
+                  {duration !== undefined && (
+                    <span className="text-caption text-secondary font-mono bg-off-white px-2 py-1 rounded">
+                      {formatDuration(duration)}
+                    </span>
+                  )}
+                </div>
+              );
+            })}
           </div>
-        </motion.div>
+        </div>
       )}
 
       {/* Run logs */}
       {logs.length > 0 && (
         <div className="space-y-2">
-          <h4 className="text-sm font-medium text-gray-700">Logs</h4>
+          <h4 className="text-caption font-medium text-primary">Logs</h4>
           <div
-            className="max-h-32 overflow-y-auto p-2 bg-gray-50 rounded border text-xs font-mono space-y-1"
+            className="max-h-32 overflow-y-auto p-2 bg-off-white rounded border border-separator text-caption font-mono space-y-1"
             data-testid="run-logs"
           >
             {logs.map((log, index) => (
-              <div key={index} className="text-gray-700">
+              <div key={index} className="text-secondary">
                 {log}
               </div>
             ))}
@@ -289,20 +210,13 @@ export function RunPanel() {
         </div>
       )}
 
-      {/* Empty state */}
       {runStatus === 'idle' && logs.length === 0 && (
-        <motion.div
-          className="text-center py-8 space-y-3"
-          data-testid="run-status"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-        >
-          <div className="text-4xl">🚀</div>
-          <div className="text-gray-600 font-medium">Ready to automate!</div>
-          <div className="text-sm text-gray-500">
-            Add workflow steps and click Run to see the magic happen
+        <div className="text-center py-8 space-y-3" data-testid="run-status">
+          <div className="text-body font-medium text-primary">Ready to Run</div>
+          <div className="text-caption text-secondary">
+            Add workflow nodes and click Run to execute
           </div>
-        </motion.div>
+        </div>
       )}
     </aside>
   );

@@ -2,84 +2,71 @@ import React from 'react';
 import { useBuilderStore } from '../../../core/state';
 import { Handle, Position } from '@xyflow/react';
 import { motion } from 'framer-motion';
-import { motionVariants } from '../../../components/ui/motion';
+import { nodeEntranceVariants, subtleHover, pressEffect } from '../../../components/ui/motion';
 
 type StartNodeData = { label?: string };
-// React Flow provides id + data on props; we type minimally
+
 interface StartNodeProps {
   id: string;
   data?: StartNodeData;
 }
+
 export default function StartNode({ data, id }: StartNodeProps) {
   const status = useBuilderStore((s) => s.nodeRunStatuses[id] ?? 'idle');
   const isSelected = useBuilderStore((s) => s.selectedNodeId === id);
-  const isRunning = status === 'running';
+
+  const getStatusColor = () => {
+    switch (status) {
+      case 'running': return 'bg-system-blue';
+      case 'succeeded': return 'bg-system-green';
+      case 'failed': return 'bg-system-red';
+      default: return 'bg-secondary';
+    }
+  };
 
   return (
     <motion.div
       data-id="start"
       data-node-id={id}
-      className="rounded-2xl border-2 bg-gradient-to-br from-emerald-400 to-emerald-600 px-4 py-3 shadow-soft min-w-[140px] text-center cursor-pointer"
-      variants={motionVariants.nodeEnter}
+      className={`
+        relative bg-white rounded-lg border border-separator px-6 py-4
+        min-w-[160px] cursor-pointer transition-all duration-micro ease-apple
+        focus-ring
+        ${isSelected
+          ? 'border-system-blue shadow-[0_0_0_2px_rgba(0,122,255,0.2)]'
+          : 'hover:border-primary hover:shadow-sm'
+        }
+      `}
+      variants={nodeEntranceVariants}
       initial="initial"
       animate="animate"
-      whileHover={{ scale: 1.02, transition: { type: "spring", stiffness: 400, damping: 25 } }}
-      whileTap={{ scale: 0.98 }}
-      style={{
-        borderColor: isSelected ? '#10b981' : 'transparent',
-        boxShadow: isSelected
-          ? '0 0 20px rgba(16, 185, 129, 0.4)'
-          : isRunning
-            ? '0 0 15px rgba(16, 185, 129, 0.3)'
-            : '0 2px 8px rgba(0, 0, 0, 0.06)'
-      }}
+      whileHover={subtleHover}
+      whileTap={pressEffect}
+      tabIndex={0}
     >
-      {/* Breathing animation overlay for running state */}
-      {isRunning && (
-        <motion.div
-          className="absolute inset-0 rounded-2xl bg-emerald-300"
-          animate={{
-            opacity: [0, 0.3, 0],
-            scale: [1, 1.05, 1],
-          }}
-          transition={{
-            repeat: Infinity,
-            duration: 2,
-            ease: "easeInOut"
-          }}
-        />
-      )}
+      {/* Status indicator bar */}
+      <div className={`absolute top-0 left-0 right-0 h-1 rounded-t-lg ${getStatusColor()}`} />
 
-      <div className="relative z-10">
-        <div className="text-white font-semibold text-base mb-1">
-          ✨ {data?.label ?? 'Trigger'}
+      <div className="text-center">
+        <div className="text-primary font-semibold text-body mb-1">
+          {data?.label ?? 'Start'}
         </div>
-        <div className="text-emerald-100 text-xs flex items-center justify-center gap-1">
-          Begin workflow
-          {status && status !== 'idle' && (
-            <motion.span
-              className="text-[9px] px-2 py-0.5 rounded-full bg-white/20 border border-white/30 text-white uppercase tracking-wide font-medium"
-              animate={isRunning ? {
-                scale: [1, 1.02, 1],
-                opacity: [0.8, 1, 0.8],
-                transition: {
-                  repeat: Infinity,
-                  duration: 2,
-                  ease: "easeInOut"
-                }
-              } : {}}
-            >
-              {status === 'running' ? '▶ Running' : status}
-            </motion.span>
+        <div className="text-secondary text-caption">
+          Workflow trigger
+          {status !== 'idle' && (
+            <span className="ml-2 inline-block">
+              <span className={`inline-block w-2 h-2 rounded-full ${getStatusColor()} mr-1`} />
+              <span className="capitalize">{status}</span>
+            </span>
           )}
         </div>
       </div>
 
-      {/* Only output handle for start */}
+      {/* Output handle */}
       <Handle
         type="source"
         position={Position.Right}
-        className="!bg-white !border-2 !border-emerald-300 !w-4 !h-4 !shadow-md"
+        className="!bg-white !border-2 !border-separator !w-3 !h-3 hover:!border-system-blue"
       />
     </motion.div>
   );
