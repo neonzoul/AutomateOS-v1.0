@@ -22,7 +22,12 @@
       "Bash(gh pr checks:*)",
       "Bash(pnpm -C apps/dev-web typecheck)",
       "Bash(pnpm -C apps/dev-web test:e2e:mock)",
-      "Bash(pnpm -C apps/dev-web test src/builder/inspector/Inspector.test.tsx --run)"
+      "Bash(pnpm -C apps/dev-web test src/builder/inspector/Inspector.test.tsx --run)",
+      "Bash(git push:*)",
+      "Bash(pnpm -C apps/dev-web test:e2e:mock --project=chromium-mock --reporter=line)",
+      "Bash(pnpm -C apps/dev-web test:e2e:mock --project=chromium-mock -g \"Notion workflow\")",
+      "Bash(pnpm -C apps/dev-web test:e2e:mock --project=chromium-mock -g \"Slack workflow\")",
+      "Bash(pnpm -C apps/dev-web test:e2e:mock --project=chromium-mock -g \"creator can run a simple Start\")"
     ],
     "deny": [],
     "ask": []
