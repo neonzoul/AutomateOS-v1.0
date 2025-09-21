@@ -35,10 +35,13 @@ export function Inspector() {
 
   if (!selected) {
     return (
-      <div className="p-6 text-center space-y-3">
-        <h3 className="text-title-3 text-primary">Inspector</h3>
-        <p className="text-body text-secondary">
-          Select a node to configure its settings
+      <div className="p-8 text-center space-y-6">
+        <div className="w-16 h-16 mx-auto mb-6 rounded-full bg-coral-sunset/20 flex items-center justify-center animate-pulse" style={{ animationDuration: '3s' }}>
+          <div className="w-8 h-8 rounded-full bg-coral-sunset/40"></div>
+        </div>
+        <h3 className="text-title-3 text-warm-gray-800 font-display">Inspector</h3>
+        <p className="text-body text-warm-gray-600 leading-relaxed">
+          Select a node to configure its settings and bring your workflow to life
         </p>
       </div>
     );
@@ -48,24 +51,26 @@ export function Inspector() {
 
   if (!nodeSpec) {
     return (
-      <div className="p-4 text-sm text-red-500">
-        Unknown node type: {selected.type}
+      <div className="p-6 bg-coral-sunset/10 rounded-2xl border border-coral-sunset/20">
+        <p className="text-body text-coral-sunset font-medium">
+          Unknown node type: {selected.type}
+        </p>
       </div>
     );
   }
 
   return (
-    <div className="p-6 space-y-6">
-      <div className="space-y-2">
-        <h3 className="text-title-3 text-primary">
-          Configure {selected.type === 'start' ? 'Start' : 'HTTP'} Node
+    <div className="p-8 space-y-8 bg-warm-glow min-h-full">
+      <div className="space-y-4">
+        <h3 className="text-title-2 text-warm-gray-800 font-display">
+          Configure {selected.type === 'start' ? '✨ Start' : '🌐 HTTP'} Node
         </h3>
-        <div className="flex items-center gap-2 text-caption">
-          <span className="px-2 py-1 bg-off-white border border-separator rounded font-mono text-xs text-secondary">
+        <div className="flex items-center gap-3 text-caption">
+          <span className="px-3 py-1.5 bg-coral-sunset/10 border border-coral-sunset/20 rounded-full font-mono text-xs text-coral-sunset">
             {selected.type}
           </span>
-          <span className="text-separator">·</span>
-          <span className="text-secondary font-mono text-xs">{selected.id}</span>
+          <span className="text-coral-sunset/40">·</span>
+          <span className="text-warm-gray-500 font-mono text-xs">{selected.id}</span>
         </div>
       </div>
 
@@ -75,18 +80,21 @@ export function Inspector() {
           currentConfig={selected.data?.config as HttpConfig}
         />
       ) : selected.type === 'start' ? (
-        <div className="space-y-4">
-          <div className="p-4 bg-off-white border border-separator rounded">
-            <h4 className="text-body font-medium text-primary mb-2">Workflow Trigger</h4>
-            <p className="text-caption text-secondary">
-              This node starts the workflow when executed. No additional configuration required.
+        <div className="space-y-6">
+          <div className="p-6 bg-sage-whisper/10 border border-sage-whisper/20 rounded-2xl backdrop-blur-sm">
+            <h4 className="text-title-3 font-display text-warm-gray-800 mb-3">✨ Workflow Trigger</h4>
+            <p className="text-body text-warm-gray-600 leading-relaxed">
+              This magical node starts your workflow journey. When triggered, it begins the flow of automation through your connected nodes.
             </p>
           </div>
         </div>
       ) : (
-        <div className="text-center py-8 space-y-3">
-          <div className="text-body font-medium text-primary">No configuration available</div>
-          <div className="text-caption text-secondary">
+        <div className="text-center py-12 space-y-4">
+          <div className="w-12 h-12 mx-auto mb-4 rounded-full bg-lavender-twilight/20 flex items-center justify-center">
+            <div className="w-6 h-6 rounded-full bg-lavender-twilight/40"></div>
+          </div>
+          <div className="text-title-3 font-display text-warm-gray-800">No configuration available</div>
+          <div className="text-body text-warm-gray-600">
             This node type doesn't have configurable settings
           </div>
         </div>
@@ -192,17 +200,17 @@ function HttpConfigForm({
 
       {/* Basic Configuration */}
       <div className="space-y-4">
-        <h4 className="text-body font-medium text-primary">
-          Basic Configuration
+        <h4 className="text-title-3 font-display text-warm-gray-800">
+          🌐 Basic Configuration
         </h4>
 
         <div className="grid grid-cols-2 gap-4">
           <div>
             <label className="block">
-              <span className="text-caption font-medium text-primary mb-2 block">Request Method</span>
+              <span className="text-body font-medium text-warm-gray-700 mb-3 block">Request Method</span>
               <select
                 {...register('method')}
-                className="w-full rounded border border-separator px-3 py-2 text-caption focus:border-system-blue focus:ring-2 focus:ring-system-blue/20 transition-all duration-micro ease-apple bg-white"
+                className="w-full rounded-xl border-2 border-coral-sunset/20 px-4 py-3 text-body focus:border-coral-sunset focus:ring-4 focus:ring-coral-sunset/10 transition-all duration-300 ease-out bg-cream-warm backdrop-blur-sm"
               >
                 {['GET', 'POST', 'PUT', 'PATCH', 'DELETE'].map((m) => (
                   <option key={m} value={m}>
@@ -211,17 +219,17 @@ function HttpConfigForm({
                 ))}
               </select>
               {errors.method && (
-                <p className="mt-1 text-caption text-system-red">{errors.method.message}</p>
+                <p className="mt-2 text-body text-coral-sunset">{errors.method.message}</p>
               )}
             </label>
           </div>
 
           <div>
             <label className="block">
-              <span className="text-caption font-medium text-primary mb-2 block">API Key</span>
+              <span className="text-body font-medium text-warm-gray-700 mb-3 block">API Key</span>
               <select
                 {...register('auth.credentialName')}
-                className="w-full rounded border border-separator px-3 py-2 text-caption focus:border-system-blue focus:ring-2 focus:ring-system-blue/20 transition-all duration-micro ease-apple bg-white"
+                className="w-full rounded-xl border-2 border-coral-sunset/20 px-4 py-3 text-body focus:border-coral-sunset focus:ring-4 focus:ring-coral-sunset/10 transition-all duration-300 ease-out bg-cream-warm backdrop-blur-sm"
               >
                 <option value="">No authentication needed</option>
                 {credentialList.map((cred) => (
@@ -231,7 +239,7 @@ function HttpConfigForm({
                 ))}
               </select>
               {errors.auth?.credentialName && (
-                <p className="mt-1 text-caption text-system-red">
+                <p className="mt-2 text-body text-coral-sunset">
                   {errors.auth.credentialName.message}
                 </p>
               )}
@@ -241,21 +249,21 @@ function HttpConfigForm({
 
         <div>
           <label className="block">
-            <span className="text-caption font-medium text-primary mb-2 block">Service URL</span>
+            <span className="text-body font-medium text-warm-gray-700 mb-3 block">Service URL</span>
             <input
               {...register('url')}
               type="url"
               aria-invalid={!!errors.url}
               aria-describedby={errors.url ? 'url-error' : undefined}
-              className={`w-full rounded border px-3 py-2 text-caption focus:ring-2 transition-all duration-micro ease-apple ${
+              className={`w-full rounded-xl border-2 px-4 py-3 text-body focus:ring-4 transition-all duration-300 ease-out bg-cream-warm backdrop-blur-sm ${
                 errors.url
-                  ? 'border-system-red focus:border-system-red focus:ring-system-red/20'
-                  : 'border-separator focus:border-system-blue focus:ring-system-blue/20'
+                  ? 'border-coral-sunset focus:border-coral-sunset focus:ring-coral-sunset/10'
+                  : 'border-coral-sunset/20 focus:border-coral-sunset focus:ring-coral-sunset/10'
               }`}
               placeholder="https://api.example.com/endpoint"
             />
             {errors.url && (
-              <p id="url-error" className="mt-1 text-caption text-system-red">
+              <p id="url-error" className="mt-2 text-body text-coral-sunset">
                 {errors.url.message}
               </p>
             )}
@@ -265,7 +273,7 @@ function HttpConfigForm({
         {/* Quick credential creation */}
         <button
           type="button"
-          className="w-full p-3 border border-dashed border-separator rounded text-caption text-secondary hover:border-system-blue hover:text-system-blue hover:bg-system-blue/5 transition-all duration-micro ease-apple flex items-center justify-center gap-2"
+          className="w-full p-4 border-2 border-dashed border-coral-sunset/30 rounded-2xl text-body text-warm-gray-600 hover:border-coral-sunset hover:text-coral-sunset hover:bg-coral-sunset/5 transition-all duration-300 ease-out flex items-center justify-center gap-3 backdrop-blur-sm"
           onClick={() => {
             const name = prompt('Enter a name for your API key:');
             const value = prompt('Enter your API key or token:');
@@ -276,20 +284,20 @@ function HttpConfigForm({
             }
           }}
         >
-          Create New API Key
+          🔑 Create New API Key
         </button>
       </div>
 
       {/* Advanced Configuration */}
       <div className="space-y-4">
         <div className="flex items-center justify-between">
-          <h4 className="text-body font-medium text-primary">
-            Advanced Options
+          <h4 className="text-title-3 font-display text-warm-gray-800">
+            ⚙️ Advanced Options
           </h4>
           <button
             type="button"
             onClick={() => setShowAdvanced(!showAdvanced)}
-            className="text-caption text-system-blue hover:text-system-blue/80 transition-colors duration-micro ease-apple"
+            className="text-body text-coral-sunset hover:text-coral-sunset/80 transition-colors duration-300 ease-out font-medium"
           >
             {showAdvanced ? 'Hide' : 'Show'}
           </button>
@@ -300,15 +308,15 @@ function HttpConfigForm({
               {/* Headers */}
               <div>
                 <label className="block">
-                  <span className="text-caption font-medium text-primary mb-2 block">Headers (JSON)</span>
+                  <span className="text-body font-medium text-warm-gray-700 mb-3 block">Headers (JSON)</span>
                   <textarea
                     {...register('headers')}
                     rows={4}
-                    className="w-full rounded border border-separator px-3 py-2 text-caption font-mono focus:border-system-blue focus:ring-2 focus:ring-system-blue/20 transition-all duration-micro ease-apple"
+                    className="w-full rounded-2xl border-2 border-coral-sunset/20 px-4 py-3 text-body font-mono focus:border-coral-sunset focus:ring-4 focus:ring-coral-sunset/10 transition-all duration-300 ease-out bg-cream-warm backdrop-blur-sm"
                     placeholder='{"Content-Type": "application/json"}'
                   />
                   {errors.headers && (
-                    <p className="mt-1 text-caption text-system-red">{errors.headers.message}</p>
+                    <p className="mt-2 text-body text-coral-sunset">{errors.headers.message}</p>
                   )}
                 </label>
               </div>
@@ -317,26 +325,26 @@ function HttpConfigForm({
               {needsBody && (
                 <div>
                   <label className="block">
-                    <span className="text-caption font-medium text-primary mb-2 block">Request Body (JSON)</span>
+                    <span className="text-body font-medium text-warm-gray-700 mb-3 block">Request Body (JSON)</span>
                     <textarea
                       {...register('body')}
                       rows={6}
-                      className="w-full rounded border border-separator px-3 py-2 text-caption font-mono focus:border-system-blue focus:ring-2 focus:ring-system-blue/20 transition-all duration-micro ease-apple"
+                      className="w-full rounded-2xl border-2 border-coral-sunset/20 px-4 py-3 text-body font-mono focus:border-coral-sunset focus:ring-4 focus:ring-coral-sunset/10 transition-all duration-300 ease-out bg-cream-warm backdrop-blur-sm"
                       placeholder='{"message": "Hello from AutomateOS!"}'
                     />
                     {errors.body && (
-                      <p className="mt-1 text-caption text-system-red">{errors.body.message}</p>
+                      <p className="mt-2 text-body text-coral-sunset">{errors.body.message}</p>
                     )}
                   </label>
                 </div>
               )}
 
               {!needsBody && (
-                <div className="p-3 bg-off-white border border-separator rounded">
-                  <p className="text-caption font-medium text-primary mb-1">
+                <div className="p-6 bg-lavender-twilight/10 border border-lavender-twilight/20 rounded-2xl backdrop-blur-sm">
+                  <p className="text-body font-medium text-warm-gray-800 mb-2">
                     No Request Body Needed
                   </p>
-                  <p className="text-caption text-secondary">
+                  <p className="text-body text-warm-gray-600 leading-relaxed">
                     {watchedMethod} requests typically don't include a request body.
                     Switch to POST, PUT, or PATCH if you need to send data.
                   </p>
