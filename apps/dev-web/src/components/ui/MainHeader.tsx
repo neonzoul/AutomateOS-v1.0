@@ -168,26 +168,41 @@ export function MainHeader({ onRun, onExport, isRunning = false }: MainHeaderPro
                   initial={{ opacity: 0, scale: 0.8 }}
                   animate={{ opacity: 1, scale: 1 }}
                   exit={{ opacity: 0, scale: 0.8 }}
-                  style={{ display: 'flex', alignItems: 'center', gap: '6px' }}
+                  style={{ display: 'flex', alignItems: 'center', gap: '8px' }}
                 >
-                  <motion.span
+                  <motion.svg
                     animate={{ rotate: 360 }}
                     transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+                    width="14"
+                    height="14"
+                    viewBox="0 0 16 16"
+                    fill="currentColor"
                     style={{ display: 'inline-block' }}
                   >
-                    ⟳
-                  </motion.span>
+                    <path d="M8 3a5 5 0 1 0 4.546 2.914.5.5 0 0 1 .908-.417A6 6 0 1 1 8 2v1z"/>
+                    <path d="M8 4.466V.534a.25.25 0 0 1 .41-.192l2.36 1.966c.12.1.12.284 0 .384L8.41 4.658A.25.25 0 0 1 8 4.466z"/>
+                  </motion.svg>
                   Running
                 </motion.div>
               ) : (
-                <motion.span
+                <motion.div
                   key="run"
                   initial={{ opacity: 0, scale: 0.8 }}
                   animate={{ opacity: 1, scale: 1 }}
                   exit={{ opacity: 0, scale: 0.8 }}
+                  style={{ display: 'flex', alignItems: 'center', gap: '8px' }}
                 >
+                  <svg
+                    width="14"
+                    height="14"
+                    viewBox="0 0 24 24"
+                    fill="currentColor"
+                    style={{ color: 'rgba(255, 255, 255, 0.98)' }}
+                  >
+                    <path d="M8 5v14l11-7z"/>
+                  </svg>
                   Run
-                </motion.span>
+                </motion.div>
               )}
             </AnimatePresence>
           </motion.button>

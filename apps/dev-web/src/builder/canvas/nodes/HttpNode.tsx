@@ -51,14 +51,18 @@ export default function HttpNode({ data, id }: HttpNodeProps) {
         }
       `}
       style={{
-        background: 'linear-gradient(135deg, #A29BFE 0%, #B8B5FF 30%, #D1CEFF 100%)',
-        borderRadius: '32px',
-        padding: '24px 32px',
-        minWidth: '260px',
-        border: isSelected ? '3px solid rgba(255,255,255,0.6)' : '2px solid rgba(255,255,255,0.3)',
+        background: isSelected
+          ? 'linear-gradient(135deg, #FFFBF7 0%, #FFF8F0 100%)'
+          : 'linear-gradient(135deg, #FFF8F0 0%, #FFFBF7 100%)',
+        borderRadius: '28px',
+        padding: '28px 36px',
+        minWidth: '280px',
+        border: isSelected
+          ? '2px solid #E84B4B'
+          : '1px solid rgba(232, 75, 75, 0.15)',
         boxShadow: isSelected
-          ? '0 20px 60px rgba(162,155,254,0.4), 0 8px 24px rgba(162,155,254,0.3), inset 0 1px 0 rgba(255,255,255,0.2)'
-          : '0 12px 32px rgba(162,155,254,0.25), 0 4px 12px rgba(162,155,254,0.15), inset 0 1px 0 rgba(255,255,255,0.15)',
+          ? '0 16px 48px rgba(232, 75, 75, 0.15), 0 4px 16px rgba(232, 75, 75, 0.08), inset 0 1px 0 rgba(255,255,255,0.8)'
+          : '0 8px 32px rgba(232, 75, 75, 0.08), 0 2px 8px rgba(232, 75, 75, 0.04), inset 0 1px 0 rgba(255,255,255,0.6)',
         backdropFilter: 'blur(20px)',
       }}
       variants={nodeEntranceVariants}
@@ -68,46 +72,44 @@ export default function HttpNode({ data, id }: HttpNodeProps) {
       whileTap={pressEffect}
       tabIndex={0}
     >
-      {/* Organic status indicator - Her style */}
+      {/* Her-style coral accent circle */}
       <div
-        className={`absolute top-4 left-4 w-4 h-4 rounded-full ${status === 'running' ? 'animate-pulse' : ''}`}
+        className={`absolute top-5 left-5 w-5 h-5 rounded-full flex items-center justify-center ${status === 'running' ? 'animate-pulse' : ''}`}
         style={{
           background: status === 'running' ? '#FFD93D' :
                      status === 'succeeded' ? '#00DFA2' :
-                     status === 'failed' ? '#FF6B6B' : 'rgba(255,255,255,0.4)',
-          boxShadow: '0 2px 8px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.3)'
+                     status === 'failed' ? '#E84B4B' : '#E84B4B',
+          boxShadow: '0 3px 12px rgba(232, 75, 75, 0.25), inset 0 1px 0 rgba(255,255,255,0.4)'
         }}
-      />
+      >
+        <div className="w-2 h-2 bg-white rounded-full opacity-90" />
+      </div>
 
       <div className="space-y-3">
         <div className="flex items-center gap-4">
           <span
             style={{
-              background: method === 'GET' ? '#00DFA2' :
-                         method === 'POST' ? '#FF6B6B' :
-                         method === 'PUT' ? '#FFD93D' :
-                         method === 'DELETE' ? '#FF6B6B' : '#A29BFE',
+              background: '#E84B4B',
               color: 'rgba(255,255,255,0.95)',
-              fontSize: '14px',
+              fontSize: '13px',
               fontWeight: '600',
-              padding: '8px 16px',
+              padding: '10px 18px',
               borderRadius: '20px',
-              minWidth: '64px',
+              minWidth: '70px',
               textAlign: 'center',
-              boxShadow: '0 4px 12px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.2)',
-              letterSpacing: '0.5px'
+              boxShadow: '0 3px 12px rgba(232, 75, 75, 0.25), inset 0 1px 0 rgba(255,255,255,0.3)',
+              letterSpacing: '0.3px'
             }}
           >
             {method}
           </span>
           <div
             style={{
-              color: 'rgba(255,255,255,0.95)',
+              color: '#2D1B1B',
               fontSize: '22px',
               fontWeight: '600',
               fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Display", system-ui, sans-serif',
-              letterSpacing: '-0.5px',
-              textShadow: '0 2px 4px rgba(0,0,0,0.1)'
+              letterSpacing: '-0.3px'
             }}
           >
             🌐 {data?.label ?? 'API Request'}
@@ -117,10 +119,10 @@ export default function HttpNode({ data, id }: HttpNodeProps) {
         <div className="space-y-3 mt-3">
           <div
             style={{
-              color: 'rgba(255,255,255,0.85)',
+              color: 'rgba(45, 27, 27, 0.75)',
               fontSize: '15px',
-              fontWeight: '500',
-              lineHeight: '1.4'
+              fontWeight: '400',
+              lineHeight: '1.5'
             }}
           >
             {url ? (
@@ -129,10 +131,11 @@ export default function HttpNode({ data, id }: HttpNodeProps) {
                 title={url}
                 style={{
                   fontSize: '13px',
-                  backgroundColor: 'rgba(255,255,255,0.1)',
-                  padding: '8px 12px',
+                  backgroundColor: 'rgba(232, 75, 75, 0.08)',
+                  padding: '10px 14px',
                   borderRadius: '12px',
-                  border: '1px solid rgba(255,255,255,0.15)'
+                  border: '1px solid rgba(232, 75, 75, 0.15)',
+                  color: 'rgba(45, 27, 27, 0.8)'
                 }}
               >
                 {url}
@@ -141,7 +144,7 @@ export default function HttpNode({ data, id }: HttpNodeProps) {
               <span
                 className="italic"
                 style={{
-                  color: 'rgba(255,255,255,0.65)'
+                  color: 'rgba(45, 27, 27, 0.5)'
                 }}
               >
                 Configure request URL
@@ -151,11 +154,14 @@ export default function HttpNode({ data, id }: HttpNodeProps) {
 
           {status !== 'idle' && (
             <div
+              className="mt-3 px-3 py-1 rounded-full inline-block"
               style={{
-                color: 'rgba(255,255,255,0.75)',
-                fontSize: '14px',
+                backgroundColor: 'rgba(232, 75, 75, 0.1)',
+                color: '#E84B4B',
+                fontSize: '13px',
+                fontWeight: '500',
                 textTransform: 'capitalize',
-                marginTop: '8px'
+                border: '1px solid rgba(232, 75, 75, 0.2)'
               }}
             >
               {status}
@@ -164,17 +170,17 @@ export default function HttpNode({ data, id }: HttpNodeProps) {
         </div>
       </div>
 
-      {/* Input and output handles */}
+      {/* Input and output handles - Her style coral accents */}
       <Handle
         type="target"
         position={Position.Left}
         style={{
-          background: 'rgba(255,255,255,0.9)',
-          border: '2px solid rgba(255,255,255,0.6)',
-          width: '14px',
-          height: '14px',
-          boxShadow: '0 4px 12px rgba(162,155,254,0.2), inset 0 1px 0 rgba(255,255,255,0.3)',
-          transition: 'all 0.3s ease'
+          background: '#E84B4B',
+          border: '2px solid rgba(232, 75, 75, 0.8)',
+          width: '16px',
+          height: '16px',
+          boxShadow: '0 4px 16px rgba(232, 75, 75, 0.3), inset 0 1px 0 rgba(255,255,255,0.4)',
+          transition: 'all 0.4s cubic-bezier(0.23, 1, 0.32, 1)'
         }}
         className="hover:!scale-110"
       />
@@ -182,12 +188,12 @@ export default function HttpNode({ data, id }: HttpNodeProps) {
         type="source"
         position={Position.Right}
         style={{
-          background: 'rgba(255,255,255,0.9)',
-          border: '2px solid rgba(255,255,255,0.6)',
-          width: '14px',
-          height: '14px',
-          boxShadow: '0 4px 12px rgba(162,155,254,0.2), inset 0 1px 0 rgba(255,255,255,0.3)',
-          transition: 'all 0.3s ease'
+          background: '#E84B4B',
+          border: '2px solid rgba(232, 75, 75, 0.8)',
+          width: '16px',
+          height: '16px',
+          boxShadow: '0 4px 16px rgba(232, 75, 75, 0.3), inset 0 1px 0 rgba(255,255,255,0.4)',
+          transition: 'all 0.4s cubic-bezier(0.23, 1, 0.32, 1)'
         }}
         className="hover:!scale-110"
       />
