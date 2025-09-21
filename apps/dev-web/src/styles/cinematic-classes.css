@@ -1,0 +1,68 @@
+/*
+ * Cinematic Classes Safeguard
+ * This file ensures all our custom Tailwind classes are compiled and available.
+ * Import this in globals.css or reference these classes to force compilation.
+ */
+
+/* Gradient backgrounds */
+.bg-flow-sage { background: linear-gradient(135deg, #00DFA2 0%, #42E8C2 50%, #84F5E1 100%); }
+.bg-flow-coral { background: linear-gradient(135deg, #FF6B6B 0%, #FF8E8E 50%, #FFB4A2 100%); }
+.bg-flow-lavender { background: linear-gradient(135deg, #A29BFE 0%, #B8B5FF 50%, #D1CEFF 100%); }
+
+.bg-warm-glow { background: linear-gradient(135deg, #FFF8F0 0%, #F8F6F3 100%); }
+.bg-canvas-dream { background: linear-gradient(135deg, #FDFCFB 0%, #F0ECE8 100%); }
+.bg-her-scene { background: radial-gradient(circle at 30% 70%, #FF6B6B 0%, #FFB4A2 40%, #FFF8F0 100%); }
+
+/* Cinematic Colors */
+.text-coral-sunset { color: #FF6B6B; }
+.bg-coral-sunset { background-color: #FF6B6B; }
+.border-coral-sunset { border-color: #FF6B6B; }
+
+.text-sage-whisper { color: #00DFA2; }
+.bg-sage-whisper { background-color: #00DFA2; }
+.border-sage-whisper { border-color: #00DFA2; }
+
+.text-golden-hour { color: #FFD93D; }
+.bg-golden-hour { background-color: #FFD93D; }
+.border-golden-hour { border-color: #FFD93D; }
+
+.text-lavender-twilight { color: #A29BFE; }
+.bg-lavender-twilight { background-color: #A29BFE; }
+.border-lavender-twilight { border-color: #A29BFE; }
+
+.text-warm-gray-800 { color: #3A342F; }
+.text-warm-gray-700 { color: #554D46; }
+.text-warm-gray-600 { color: #756B62; }
+.text-warm-gray-500 { color: #9B8E85; }
+.text-warm-gray-400 { color: #C4BCB5; }
+.text-warm-gray-300 { color: #E5DFD9; }
+
+.bg-warm-gray-300 { background-color: #E5DFD9; }
+.bg-warm-gray-200 { background-color: #F0ECE8; }
+.bg-warm-gray-100 { background-color: #F8F6F3; }
+.bg-warm-gray-50 { background-color: #FDFCFB; }
+
+.bg-cream-warm { background-color: #FFF8F0; }
+.bg-cream-light { background-color: #FFFBF7; }
+
+/* Force compilation of opacity variants */
+.bg-coral-sunset\/10 { background-color: rgba(255, 107, 107, 0.1); }
+.bg-coral-sunset\/20 { background-color: rgba(255, 107, 107, 0.2); }
+.bg-coral-sunset\/30 { background-color: rgba(255, 107, 107, 0.3); }
+
+.bg-sage-whisper\/10 { background-color: rgba(0, 223, 162, 0.1); }
+.bg-sage-whisper\/20 { background-color: rgba(0, 223, 162, 0.2); }
+
+.bg-lavender-twilight\/10 { background-color: rgba(162, 155, 254, 0.1); }
+.bg-lavender-twilight\/20 { background-color: rgba(162, 155, 254, 0.2); }
+
+.border-coral-sunset\/20 { border-color: rgba(255, 107, 107, 0.2); }
+.border-coral-sunset\/30 { border-color: rgba(255, 107, 107, 0.3); }
+
+.border-sage-whisper\/30 { border-color: rgba(0, 223, 162, 0.3); }
+.border-sage-whisper\/20 { border-color: rgba(0, 223, 162, 0.2); }
+
+/* Typography */
+.font-display { font-family: Inter, -apple-system, BlinkMacSystemFont, system-ui, sans-serif; }
+
+/* This file ensures all cinematic classes are available even if not detected by Tailwind's purge */
