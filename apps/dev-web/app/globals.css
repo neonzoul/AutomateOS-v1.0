@@ -3,7 +3,7 @@
 /* React Flow base styles */
 @import '@xyflow/react/dist/style.css';
 
-/* Apple-inspired baseline */
+/* Cinematic baseline inspired by Her and La La Land */
 html,
 body {
   height: 100%;
@@ -14,8 +14,8 @@ body {
     'Inter',
     system-ui,
     sans-serif;
-  background: #F5F5F7; /* Apple's canvas gray */
-  color: #1D1D1F; /* Apple's primary text */
+  background: linear-gradient(135deg, #FFF8F0 0%, #F8F6F3 100%); /* Warm cinematic background */
+  color: #3A342F; /* Warm gray text */
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   overflow: hidden;
@@ -38,96 +38,96 @@ body {
   outline-offset: 2px;
 }
 
-/* Clean edge styling */
+/* Cinematic edge styling */
 .react-flow__edge-path {
-  stroke-width: 2px;
-  stroke: #007AFF; /* System blue */
+  stroke-width: 3px;
+  stroke: #FF6B6B; /* Coral sunset */
   stroke-linecap: round;
 }
 
 .react-flow__edge.animated .react-flow__edge-path {
-  stroke-dasharray: none; /* No animation dashes */
+  stroke-dasharray: 8,8; /* Organic dashes */
 }
 
 /* Connection line styling */
 .react-flow__connectionline {
-  stroke: #007AFF;
-  stroke-width: 2px;
+  stroke: #FF6B6B;
+  stroke-width: 3px;
   stroke-linecap: round;
-  opacity: 0.6;
+  opacity: 0.8;
 }
 
-/* Clean controls styling */
+/* Cinematic controls styling */
 .react-flow__controls {
-  background: rgba(255, 255, 255, 0.95);
+  background: rgba(255, 248, 240, 0.95);
   backdrop-filter: blur(20px);
-  border: 1px solid rgba(0, 0, 0, 0.06);
-  border-radius: 12px !important;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.16), 0 2px 4px rgba(0, 0, 0, 0.08);
+  border: 1px solid rgba(255, 107, 107, 0.15);
+  border-radius: 16px !important;
+  box-shadow: 0 8px 32px rgba(255, 107, 107, 0.08);
   overflow: hidden;
 }
 
 .react-flow__controls-button {
   background: transparent !important;
   border: none !important;
-  border-radius: 6px !important;
+  border-radius: 8px !important;
   margin: 4px !important;
   padding: 8px !important;
-  color: #1D1D1F !important;
-  transition: all 200ms cubic-bezier(0.25, 0.1, 0.25, 1.0) !important;
+  color: #3A342F !important;
+  transition: all 300ms cubic-bezier(0.25, 0.1, 0.25, 1.0) !important;
 }
 
 .react-flow__controls-button:hover {
-  background: rgba(0, 0, 0, 0.05) !important;
-  transform: none; /* No scaling */
+  background: rgba(255, 107, 107, 0.1) !important;
+  transform: scale(1.05);
 }
 
 .react-flow__controls-button:active {
-  background: rgba(0, 0, 0, 0.1) !important;
-  transform: scale(0.97);
+  background: rgba(255, 107, 107, 0.2) !important;
+  transform: scale(0.98);
 }
 
-/* Clean minimap */
+/* Cinematic minimap */
 .react-flow__minimap {
-  background: rgba(255, 255, 255, 0.95);
+  background: rgba(255, 248, 240, 0.95);
   backdrop-filter: blur(20px);
-  border: 1px solid rgba(0, 0, 0, 0.06);
-  border-radius: 12px !important;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.16), 0 2px 4px rgba(0, 0, 0, 0.08);
+  border: 1px solid rgba(255, 107, 107, 0.15);
+  border-radius: 16px !important;
+  box-shadow: 0 8px 32px rgba(255, 107, 107, 0.08);
   overflow: hidden;
 }
 
 /* Selection box styling */
 .react-flow__selection {
-  background: rgba(0, 122, 255, 0.1);
-  border: 2px solid #007AFF;
-  border-radius: 4px;
+  background: rgba(255, 107, 107, 0.1);
+  border: 2px solid #FF6B6B;
+  border-radius: 8px;
 }
 
-/* Handle styling - Clean and minimal */
+/* Handle styling - Cinematic and organic */
 .react-flow__handle {
   width: 12px;
   height: 12px;
   background: #FFFFFF;
-  border: 2px solid #D1D1D6;
+  border: 2px solid #E5DFD9;
   border-radius: 50%;
-  transition: all 200ms cubic-bezier(0.25, 0.1, 0.25, 1.0);
+  transition: all 300ms cubic-bezier(0.25, 0.1, 0.25, 1.0);
 }
 
 .react-flow__handle:hover {
-  border-color: #007AFF;
-  box-shadow: 0 0 0 3px rgba(0, 122, 255, 0.2);
-  transform: none; /* No scaling */
+  border-color: #FF6B6B;
+  box-shadow: 0 0 0 3px rgba(255, 107, 107, 0.3);
+  transform: scale(1.1);
 }
 
 .react-flow__handle.react-flow__handle-connecting {
-  border-color: #007AFF;
-  box-shadow: 0 0 0 3px rgba(0, 122, 255, 0.2);
+  border-color: #FF6B6B;
+  box-shadow: 0 0 0 3px rgba(255, 107, 107, 0.3);
 }
 
-/* Background pattern - Subtle and minimal */
+/* Background pattern - Cinematic and organic */
 .react-flow__background {
-  opacity: 0.5;
+  opacity: 0.12;
 }
 
 /* Panel styling for overlay elements */
@@ -135,8 +135,8 @@ body {
   z-index: 10;
 }
 
-/* Custom focus ring utility class */
+/* Custom focus ring utility class - Cinematic */
 .focus-ring:focus-visible {
   outline: none;
-  box-shadow: 0 0 0 2px #007AFF, 0 0 0 4px rgba(0, 122, 255, 0.2);
+  box-shadow: 0 0 0 2px #FF6B6B, 0 0 0 4px rgba(255, 107, 107, 0.2);
 }

@@ -49,15 +49,15 @@ export function RunPanel() {
   const getStatusColor = () => {
     switch (runStatus) {
       case 'queued':
-        return 'text-secondary bg-off-white';
+        return 'text-warm-gray-600 bg-lavender-twilight/10';
       case 'running':
-        return 'text-system-blue bg-system-blue/10';
+        return 'text-white bg-golden-hour';
       case 'succeeded':
-        return 'text-system-green bg-system-green/10';
+        return 'text-white bg-sage-whisper';
       case 'failed':
-        return 'text-system-red bg-system-red/10';
+        return 'text-white bg-coral-sunset';
       default:
-        return 'text-secondary bg-off-white';
+        return 'text-warm-gray-600 bg-warm-gray-100';
     }
   };
 
@@ -72,13 +72,13 @@ export function RunPanel() {
   const getStepStatusColor = (status: string) => {
     switch (status) {
       case 'running':
-        return 'text-system-blue bg-system-blue/10';
+        return 'text-white bg-golden-hour';
       case 'succeeded':
-        return 'text-system-green bg-system-green/10';
+        return 'text-white bg-sage-whisper';
       case 'failed':
-        return 'text-system-red bg-system-red/10';
+        return 'text-white bg-coral-sunset';
       default:
-        return 'text-secondary bg-off-white';
+        return 'text-warm-gray-600 bg-warm-gray-200';
     }
   };
 
@@ -97,63 +97,63 @@ export function RunPanel() {
 
   return (
     <aside
-      className="p-4 space-y-3"
+      className="p-8 space-y-6 bg-warm-glow min-h-full"
       aria-label="Run Panel"
       data-testid="run-panel"
     >
       <div className="flex items-center justify-between">
-        <h3 className="text-title-3 text-primary">
-          Run Control
+        <h3 className="text-title-2 text-warm-gray-800 font-display">
+          ▶️ Run Control
         </h3>
 
-        <div className="flex gap-2">
+        <div className="flex gap-3">
           <button
             type="button"
-            className={`px-4 py-2 rounded text-caption font-medium transition-all duration-micro ease-apple ${
+            className={`px-6 py-3 rounded-full text-body font-medium transition-all duration-300 ease-out drop-shadow-sm ${
               runStatus === 'running'
-                ? 'bg-system-orange text-white'
+                ? 'bg-golden-hour text-white hover:bg-golden-hour/90 hover:scale-105'
                 : !canRun
-                  ? 'bg-separator text-secondary cursor-not-allowed'
-                  : 'bg-system-green text-white hover:bg-system-green/90'
+                  ? 'bg-warm-gray-300 text-warm-gray-500 cursor-not-allowed'
+                  : 'bg-sage-whisper text-white hover:bg-sage-whisper/90 hover:scale-105 hover:shadow-lg'
             }`}
             disabled={!canRun}
             onClick={handleRunClick}
             title={canRun ? 'Start workflow' : 'Add nodes to run'}
             data-testid="run-button"
           >
-            {runStatus === 'running' ? 'Running...' : 'Run'}
+            {runStatus === 'running' ? '⏸️ Running...' : '▶️ Run'}
           </button>
 
           {(runStatus === 'queued' || runStatus === 'running') && currentRunId && (
             <button
               type="button"
-              className="px-4 py-2 rounded bg-system-red text-white text-caption font-medium hover:bg-system-red/90 transition-all duration-micro ease-apple"
+              className="px-6 py-3 rounded-full bg-coral-sunset text-white text-body font-medium hover:bg-coral-sunset/90 hover:scale-105 hover:shadow-lg transition-all duration-300 ease-out drop-shadow-sm"
               onClick={handleCancelClick}
               title="Stop workflow"
               data-testid="cancel-button"
             >
-              Stop
+              ⏹️ Stop
             </button>
           )}
         </div>
       </div>
 
-      <div className={`inline-flex items-center gap-2 px-3 py-1.5 rounded text-caption font-medium ${getStatusColor()}`}>
-        <div className={`w-2 h-2 rounded-full ${
-          runStatus === 'running' ? 'bg-system-blue' :
-          runStatus === 'succeeded' ? 'bg-system-green' :
-          runStatus === 'failed' ? 'bg-system-red' :
-          'bg-secondary'
+      <div className={`inline-flex items-center gap-3 px-6 py-3 rounded-full text-body font-medium backdrop-blur-sm ${getStatusColor()}`}>
+        <div className={`w-3 h-3 rounded-full ${
+          runStatus === 'running' ? 'bg-white animate-pulse' :
+          runStatus === 'succeeded' ? 'bg-white' :
+          runStatus === 'failed' ? 'bg-white' :
+          'bg-warm-gray-400'
         }`} />
         {getStatusText()}
       </div>
 
       {nodes.length > 0 && runStatus !== 'idle' && (
-        <div className="space-y-3">
-          <h4 className="text-body font-medium text-primary">
-            Workflow Steps
+        <div className="space-y-6">
+          <h4 className="text-title-3 font-display text-warm-gray-800">
+            🎭 Workflow Steps
           </h4>
-          <div className="space-y-2" data-testid="run-steps">
+          <div className="space-y-4" data-testid="run-steps">
             {nodes.map((node) => {
               const status = nodeRunStatuses[node.id] || 'idle';
               const duration = stepDurations[node.id];
@@ -162,19 +162,19 @@ export function RunPanel() {
               return (
                 <div
                   key={node.id}
-                  className="flex items-center justify-between p-3 bg-white rounded border border-separator"
+                  className="flex items-center justify-between p-6 bg-cream-warm/60 rounded-2xl border border-coral-sunset/20 backdrop-blur-sm shadow-raised"
                 >
-                  <div className="flex items-center gap-3">
-                    <div className={`w-2 h-2 rounded-full ${
-                      status === 'running' ? 'bg-system-blue' :
-                      status === 'succeeded' ? 'bg-system-green' :
-                      status === 'failed' ? 'bg-system-red' :
-                      'bg-separator'
+                  <div className="flex items-center gap-4">
+                    <div className={`w-3 h-3 rounded-full ${
+                      status === 'running' ? 'bg-golden-hour animate-pulse' :
+                      status === 'succeeded' ? 'bg-sage-whisper' :
+                      status === 'failed' ? 'bg-coral-sunset' :
+                      'bg-warm-gray-300'
                     }`} />
-                    <span className="text-primary text-caption font-medium">
-                      {label}
+                    <span className="text-warm-gray-800 text-body font-medium">
+                      {node.type === 'start' ? '✨' : '🌐'} {label}
                     </span>
-                    <span className={`inline-flex px-2 py-1 rounded text-caption font-medium ${getStepStatusColor(status)}`}>
+                    <span className={`inline-flex px-3 py-1.5 rounded-full text-caption font-medium backdrop-blur-sm ${getStepStatusColor(status)}`}>
                       {status === 'running' ? 'Running' :
                        status === 'succeeded' ? 'Completed' :
                        status === 'failed' ? 'Failed' :
@@ -182,7 +182,7 @@ export function RunPanel() {
                     </span>
                   </div>
                   {duration !== undefined && (
-                    <span className="text-caption text-secondary font-mono bg-off-white px-2 py-1 rounded">
+                    <span className="text-caption text-warm-gray-600 font-mono bg-warm-gray-100 px-3 py-1.5 rounded-full">
                       {formatDuration(duration)}
                     </span>
                   )}
@@ -195,14 +195,14 @@ export function RunPanel() {
 
       {/* Run logs */}
       {logs.length > 0 && (
-        <div className="space-y-2">
-          <h4 className="text-caption font-medium text-primary">Logs</h4>
+        <div className="space-y-4">
+          <h4 className="text-body font-medium text-warm-gray-800">📜 Logs</h4>
           <div
-            className="max-h-32 overflow-y-auto p-2 bg-off-white rounded border border-separator text-caption font-mono space-y-1"
+            className="max-h-40 overflow-y-auto p-4 bg-warm-gray-50 rounded-2xl border border-warm-gray-200 text-body font-mono space-y-2 backdrop-blur-sm"
             data-testid="run-logs"
           >
             {logs.map((log, index) => (
-              <div key={index} className="text-secondary">
+              <div key={index} className="text-warm-gray-600">
                 {log}
               </div>
             ))}
@@ -211,10 +211,13 @@ export function RunPanel() {
       )}
 
       {runStatus === 'idle' && logs.length === 0 && (
-        <div className="text-center py-8 space-y-3" data-testid="run-status">
-          <div className="text-body font-medium text-primary">Ready to Run</div>
-          <div className="text-caption text-secondary">
-            Add workflow nodes and click Run to execute
+        <div className="text-center py-12 space-y-6" data-testid="run-status">
+          <div className="w-16 h-16 mx-auto mb-6 rounded-full bg-sage-whisper/20 flex items-center justify-center animate-pulse" style={{ animationDuration: '3s' }}>
+            <div className="w-8 h-8 rounded-full bg-sage-whisper/40"></div>
+          </div>
+          <div className="text-title-3 font-display text-warm-gray-800">Ready to Run</div>
+          <div className="text-body text-warm-gray-600 leading-relaxed">
+            Add workflow nodes and click Run to execute your creative automation
           </div>
         </div>
       )}
