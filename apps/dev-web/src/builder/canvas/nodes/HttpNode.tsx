@@ -44,7 +44,7 @@ export default function HttpNode({ data, id }: HttpNodeProps) {
       data-id="http"
       data-node-id={id}
       className={`
-        relative bg-flow-coral rounded-3xl border-2 border-coral-sunset/30 px-8 py-6
+        relative rounded-3xl border-2 border-coral-sunset/30 px-8 py-6
         min-w-[240px] cursor-pointer transition-all duration-300 ease-out
         shadow-lg hover:shadow-xl backdrop-blur-sm
         ${isSelected
@@ -52,6 +52,9 @@ export default function HttpNode({ data, id }: HttpNodeProps) {
           : 'hover:border-coral-sunset/60 hover:scale-102'
         }
       `}
+      style={{
+        background: 'linear-gradient(135deg, #FF6B6B 0%, #FF8E8E 50%, #FFB4A2 100%)'
+      }}
       variants={nodeEntranceVariants}
       initial="initial"
       animate="animate"

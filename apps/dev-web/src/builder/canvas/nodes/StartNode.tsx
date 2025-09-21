@@ -29,7 +29,7 @@ export default function StartNode({ data, id }: StartNodeProps) {
       data-id="start"
       data-node-id={id}
       className={`
-        relative bg-flow-sage rounded-3xl border-2 border-sage-whisper/30 px-8 py-6
+        relative rounded-3xl border-2 border-sage-whisper/30 px-8 py-6
         min-w-[180px] cursor-pointer transition-all duration-300 ease-out
         shadow-lg hover:shadow-xl backdrop-blur-sm
         ${isSelected
@@ -37,6 +37,9 @@ export default function StartNode({ data, id }: StartNodeProps) {
           : 'hover:border-sage-whisper/60 hover:scale-102'
         }
       `}
+      style={{
+        background: 'linear-gradient(135deg, #00DFA2 0%, #42E8C2 50%, #84F5E1 100%)'
+      }}
       variants={nodeEntranceVariants}
       initial="initial"
       animate="animate"
