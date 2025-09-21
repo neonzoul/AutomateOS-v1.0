@@ -200,13 +200,13 @@ export function CanvasToolbar() {
   return (
     <Panel position="top-left" style={{ zIndex: 1000 }}>
       <div
-        className="flex gap-4 backdrop-blur-xl"
+        className="flex gap-3 backdrop-blur-xl"
         style={{
-          background: 'rgba(255,248,240,0.95)',
-          padding: '16px 24px',
-          borderRadius: '32px',
-          border: '2px solid rgba(255,255,255,0.4)',
-          boxShadow: '0 16px 48px rgba(255,107,107,0.15), 0 4px 12px rgba(255,107,107,0.08), inset 0 1px 0 rgba(255,255,255,0.3)'
+          background: 'rgba(255,255,255,0.9)',
+          padding: '12px 16px',
+          borderRadius: '28px',
+          border: '1px solid rgba(232,75,75,0.1)',
+          boxShadow: '0 8px 24px rgba(232,75,75,0.08), 0 2px 8px rgba(232,75,75,0.04), inset 0 1px 0 rgba(255,255,255,0.8)'
         }}
       >
         {/* Node Creation Buttons */}
@@ -219,34 +219,34 @@ export function CanvasToolbar() {
           }
           style={{
             background: hasStart
-              ? 'linear-gradient(135deg, #E5DFD9 0%, #C4BCB5 100%)'
-              : 'linear-gradient(135deg, #FF6B6B 0%, #FFB4A2 100%)',
-            color: hasStart ? 'rgba(117,107,98,0.8)' : 'rgba(255,255,255,0.95)',
-            fontSize: '16px',
+              ? 'rgba(232,75,75,0.1)'
+              : '#E84B4B',
+            color: hasStart ? 'rgba(232,75,75,0.5)' : 'rgba(255,255,255,0.95)',
+            fontSize: '14px',
             fontWeight: '600',
-            padding: '12px 20px',
-            borderRadius: '24px',
-            border: '2px solid rgba(255,255,255,0.3)',
+            padding: '10px 16px',
+            borderRadius: '20px',
+            border: 'none',
             cursor: hasStart ? 'not-allowed' : 'pointer',
-            transition: 'all 0.4s ease',
+            transition: 'all 0.3s ease',
             boxShadow: hasStart
-              ? '0 4px 12px rgba(0,0,0,0.08)'
-              : '0 8px 24px rgba(255,107,107,0.25), inset 0 1px 0 rgba(255,255,255,0.2)',
+              ? 'none'
+              : '0 4px 12px rgba(232,75,75,0.15), inset 0 1px 0 rgba(255,255,255,0.3)',
             transform: 'scale(1)',
             fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Display", system-ui, sans-serif'
           }}
           onMouseEnter={(e) => {
             if (!hasStart) {
               const target = e.target as HTMLButtonElement;
-              target.style.transform = 'scale(1.05)';
-              target.style.boxShadow = '0 12px 32px rgba(255,107,107,0.35), inset 0 1px 0 rgba(255,255,255,0.2)';
+              target.style.transform = 'scale(1.02)';
+              target.style.boxShadow = '0 6px 16px rgba(232,75,75,0.2), inset 0 1px 0 rgba(255,255,255,0.3)';
             }
           }}
           onMouseLeave={(e) => {
             if (!hasStart) {
               const target = e.target as HTMLButtonElement;
               target.style.transform = 'scale(1)';
-              target.style.boxShadow = '0 8px 24px rgba(255,107,107,0.25), inset 0 1px 0 rgba(255,255,255,0.2)';
+              target.style.boxShadow = '0 4px 12px rgba(232,75,75,0.15), inset 0 1px 0 rgba(255,255,255,0.3)';
             }
           }}
         >
@@ -256,28 +256,28 @@ export function CanvasToolbar() {
           onClick={(e) => addAtCursor(e, 'http')}
           aria-label="Add HTTP request"
           style={{
-            background: 'linear-gradient(135deg, #A29BFE 0%, #D1CEFF 100%)',
+            background: '#A29BFE',
             color: 'rgba(255,255,255,0.95)',
-            fontSize: '16px',
+            fontSize: '14px',
             fontWeight: '600',
-            padding: '12px 20px',
-            borderRadius: '24px',
-            border: '2px solid rgba(255,255,255,0.3)',
+            padding: '10px 16px',
+            borderRadius: '20px',
+            border: 'none',
             cursor: 'pointer',
-            transition: 'all 0.4s ease',
-            boxShadow: '0 8px 24px rgba(162,155,254,0.25), inset 0 1px 0 rgba(255,255,255,0.2)',
+            transition: 'all 0.3s ease',
+            boxShadow: '0 4px 12px rgba(162,155,254,0.15), inset 0 1px 0 rgba(255,255,255,0.3)',
             transform: 'scale(1)',
             fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Display", system-ui, sans-serif'
           }}
           onMouseEnter={(e) => {
             const target = e.target as HTMLButtonElement;
-            target.style.transform = 'scale(1.05)';
-            target.style.boxShadow = '0 12px 32px rgba(162,155,254,0.35), inset 0 1px 0 rgba(255,255,255,0.2)';
+            target.style.transform = 'scale(1.02)';
+            target.style.boxShadow = '0 6px 16px rgba(162,155,254,0.2), inset 0 1px 0 rgba(255,255,255,0.3)';
           }}
           onMouseLeave={(e) => {
             const target = e.target as HTMLButtonElement;
             target.style.transform = 'scale(1)';
-            target.style.boxShadow = '0 8px 24px rgba(162,155,254,0.25), inset 0 1px 0 rgba(255,255,255,0.2)';
+            target.style.boxShadow = '0 4px 12px rgba(162,155,254,0.15), inset 0 1px 0 rgba(255,255,255,0.3)';
           }}
         >
           🌐 HTTP

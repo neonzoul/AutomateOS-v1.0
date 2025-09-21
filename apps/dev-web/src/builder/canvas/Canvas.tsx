@@ -119,38 +119,15 @@ export function Canvas() {
       className="h-full w-full relative overflow-hidden"
       data-testid="canvas"
       style={{
-        background: 'linear-gradient(135deg, #FF8E8E 0%, #FFB4A2 25%, #FFF8F0 100%)',
+        background: 'linear-gradient(135deg, rgba(232,75,75,0.08) 0%, rgba(255,248,240,0.6) 50%, #FFF8F0 100%)',
       }}
     >
-      {/* Her movie inspired ambient elements */}
+      {/* Subtle Her movie inspired elements */}
       <div
         className="absolute inset-0 pointer-events-none"
         style={{
-          background: 'radial-gradient(circle at 30% 20%, rgba(255,107,107,0.15) 0%, transparent 50%), radial-gradient(circle at 70% 80%, rgba(162,155,254,0.08) 0%, transparent 50%)',
-          opacity: 0.6
-        }}
-      />
-      <div
-        className="absolute top-0 left-1/4 pointer-events-none animate-pulse"
-        style={{
-          width: '400px',
-          height: '400px',
-          background: 'radial-gradient(circle, rgba(255,107,107,0.12) 0%, transparent 70%)',
-          borderRadius: '50%',
-          filter: 'blur(60px)',
-          animationDuration: '8s'
-        }}
-      />
-      <div
-        className="absolute bottom-1/3 right-1/3 pointer-events-none animate-pulse"
-        style={{
-          width: '320px',
-          height: '320px',
-          background: 'radial-gradient(circle, rgba(162,155,254,0.08) 0%, transparent 70%)',
-          borderRadius: '50%',
-          filter: 'blur(40px)',
-          animationDuration: '12s',
-          animationDelay: '4s'
+          background: 'radial-gradient(ellipse at 25% 25%, rgba(232,75,75,0.04) 0%, transparent 60%)',
+          opacity: 0.8
         }}
       />
 
@@ -233,28 +210,27 @@ export function Canvas() {
           <Panel position="top-center" className="pointer-events-none">
             <div className="text-center space-y-6 max-w-lg mx-auto mt-40">
               <div
-                className="w-20 h-20 mx-auto mb-8 rounded-full flex items-center justify-center animate-pulse"
+                className="w-16 h-16 mx-auto mb-8 rounded-full flex items-center justify-center animate-pulse"
                 style={{
-                  background: 'linear-gradient(135deg, #FF6B6B 0%, #FFB4A2 100%)',
-                  boxShadow: '0 12px 32px rgba(255,107,107,0.3), inset 0 1px 0 rgba(255,255,255,0.2)',
+                  background: '#E84B4B',
+                  boxShadow: '0 8px 24px rgba(232,75,75,0.2), inset 0 1px 0 rgba(255,255,255,0.3)',
                   animationDuration: '4s'
                 }}
               >
                 <div
-                  className="w-10 h-10 rounded-full"
+                  className="w-8 h-8 rounded-full"
                   style={{
-                    background: 'rgba(255,255,255,0.4)',
-                    boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.3)'
+                    background: 'rgba(255,255,255,0.9)'
                   }}
                 ></div>
               </div>
               <h2
                 style={{
-                  color: 'rgba(58,52,47,0.9)',
-                  fontSize: '36px',
+                  color: '#2D1B1B',
+                  fontSize: '32px',
                   fontWeight: '600',
                   fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Display", system-ui, sans-serif',
-                  letterSpacing: '-1px',
+                  letterSpacing: '-0.5px',
                   marginBottom: '16px'
                 }}
               >
@@ -262,33 +238,33 @@ export function Canvas() {
               </h2>
               <p
                 style={{
-                  color: 'rgba(58,52,47,0.75)',
-                  fontSize: '18px',
-                  fontWeight: '500',
+                  color: 'rgba(45,27,27,0.7)',
+                  fontSize: '17px',
+                  fontWeight: '400',
                   lineHeight: '1.6',
-                  letterSpacing: '-0.3px',
-                  maxWidth: '420px',
+                  letterSpacing: '-0.2px',
+                  maxWidth: '400px',
                   margin: '0 auto'
                 }}
               >
                 Every masterpiece starts with a single step. Click{' '}
-                <span style={{ color: '#FF6B6B', fontWeight: '600' }}>✨ Start</span>{' '}
+                <span style={{ color: '#E84B4B', fontWeight: '600' }}>✨ Start</span>{' '}
                 above to begin crafting something beautiful.
               </p>
-              <div className="flex items-center justify-center gap-3 mt-8">
+              <div className="flex items-center justify-center gap-2 mt-6">
                 <div
-                  className="w-3 h-3 rounded-full animate-pulse"
+                  className="w-2 h-2 rounded-full animate-pulse"
                   style={{
-                    background: '#FF6B6B',
-                    boxShadow: '0 2px 8px rgba(255,107,107,0.4)'
+                    background: '#E84B4B',
+                    boxShadow: '0 2px 6px rgba(232,75,75,0.3)'
                   }}
                 ></div>
-                <span style={{ color: 'rgba(58,52,47,0.6)', fontSize: '16px', fontWeight: '500' }}>Let your creativity flow</span>
+                <span style={{ color: 'rgba(45,27,27,0.5)', fontSize: '15px', fontWeight: '400' }}>Let your creativity flow</span>
                 <div
-                  className="w-3 h-3 rounded-full animate-pulse"
+                  className="w-2 h-2 rounded-full animate-pulse"
                   style={{
-                    background: '#A29BFE',
-                    boxShadow: '0 2px 8px rgba(162,155,254,0.4)',
+                    background: '#E84B4B',
+                    boxShadow: '0 2px 6px rgba(232,75,75,0.3)',
                     animationDelay: '2s'
                   }}
                 ></div>
