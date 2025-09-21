@@ -1,7 +1,10 @@
 @import 'tailwindcss';
 
 /* React Flow base styles */
-@import '@xyflow/react/dist/style.css';\n\n/* Cinematic classes safeguard */\n@import '../src/styles/cinematic-classes.css';
+@import '@xyflow/react/dist/style.css';
+
+/* Cinematic classes safeguard */
+@import '../src/styles/cinematic-classes.css';
 
 /* Cinematic baseline inspired by Her and La La Land */
 html,
