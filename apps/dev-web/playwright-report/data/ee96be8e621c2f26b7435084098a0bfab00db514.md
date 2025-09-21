@@ -1,0 +1,85 @@
+# Page snapshot
+
+```yaml
+- generic [ref=e1]:
+  - generic [ref=e2]:
+    - application [ref=e5]:
+      - generic [ref=e7]:
+        - generic:
+          - generic:
+            - img:
+              - group "Edge from start-1 to notion-1" [ref=e8] [cursor=pointer]
+          - generic:
+            - group [ref=e11]:
+              - generic [ref=e12]:
+                - generic [ref=e13]: Start
+                - generic [ref=e14]: entry
+            - group [active] [ref=e16]:
+              - generic [ref=e18]:
+                - generic [ref=e19]: POST
+                - generic [ref=e20]: Create Notion Page
+                - generic [ref=e21]: idle
+      - generic [ref=e26]:
+        - button "Only one Start node allowed" [disabled] [ref=e27]: + Start
+        - button "Add HTTP node" [ref=e28]: + HTTP
+        - generic [ref=e30] [cursor=pointer]: Import
+        - button "Export workflow as JSON file" [ref=e31]: Export
+        - button "Load Slack notification template" [ref=e32]: 📢 Slack Template
+        - button "Load Notion template" [ref=e33]: 📝 Notion Template
+        - button "Clear entire workflow" [ref=e35]: Clear
+      - img
+      - generic "Control Panel" [ref=e36]:
+        - button "Zoom In" [ref=e37] [cursor=pointer]:
+          - img [ref=e38] [cursor=pointer]
+        - button "Zoom Out" [ref=e40] [cursor=pointer]:
+          - img [ref=e41] [cursor=pointer]
+        - button "Fit View" [ref=e43] [cursor=pointer]:
+          - img [ref=e44] [cursor=pointer]
+        - button "Toggle Interactivity" [ref=e46] [cursor=pointer]:
+          - img [ref=e47] [cursor=pointer]
+      - img "Mini Map" [ref=e50]
+    - generic [ref=e54]:
+      - generic [ref=e56]:
+        - generic [ref=e57]:
+          - heading "Inspector" [level=3] [ref=e58]
+          - paragraph [ref=e59]:
+            - text: "Type:"
+            - generic [ref=e60]: http
+            - text: "· ID:"
+            - generic [ref=e61]: notion-1
+        - generic [ref=e62]:
+          - generic [ref=e64]:
+            - generic [ref=e65]: Method
+            - combobox "Method" [ref=e66]:
+              - option "GET"
+              - option "POST" [selected]
+              - option "PUT"
+              - option "PATCH"
+              - option "DELETE"
+          - generic [ref=e68]:
+            - generic [ref=e69]: URL
+            - textbox "URL" [ref=e70]: https://api.notion.com/v1/pages
+          - generic [ref=e71]:
+            - generic [ref=e72]:
+              - generic [ref=e73]: Authentication (optional)
+              - combobox "Authentication (optional)" [ref=e74]:
+                - option "No authentication"
+                - option "notion-integration-token (sec**********78)" [selected]
+            - button "+ Create new credential" [ref=e76]
+          - generic [ref=e78]:
+            - generic [ref=e79]: Body (optional)
+            - textbox "Body (optional)" [ref=e80]
+          - generic [ref=e82]:
+            - generic [ref=e83]: Headers (optional)
+            - 'textbox "Headers (optional) Enter headers as JSON object. For Notion API, include: \"Notion-Version\": \"2022-06-28\"" [ref=e84]': "{ \"Content-Type\": \"application/json\", \"Notion-Version\": \"2022-06-28\" }"
+            - paragraph [ref=e85]: "Enter headers as JSON object. For Notion API, include: \"Notion-Version\": \"2022-06-28\""
+      - complementary "Run Panel" [ref=e86]:
+        - generic [ref=e87]:
+          - heading "Run" [level=3] [ref=e88]
+          - button "Run" [ref=e90]
+        - generic [ref=e91]: Ready to run
+        - generic [ref=e92]: No runs yet
+  - button "Open Next.js Dev Tools" [ref=e98] [cursor=pointer]:
+    - img [ref=e99] [cursor=pointer]
+  - alert [ref=e102]
+```

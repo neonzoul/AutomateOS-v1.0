@@ -43,7 +43,7 @@ async function loadTemplate(page: any, templatePath: string, templateName: strin
   console.log(`Loading ${templateName} template...`);
 
   // Use test bridge to load the template directly
-  const result = await page.evaluate(async (path) => {
+  const result = await page.evaluate(async (path: string) => {
     try {
       const response = await fetch(path);
       const template = await response.json();
@@ -79,7 +79,7 @@ async function createCredential(page: any, credentialName: string, credentialVal
   console.log(`Creating credential: ${credentialName}`);
 
   // Create credential directly via credential store for more reliable testing
-  const createResult = await page.evaluate(async ({ name, value }) => {
+  const createResult = await page.evaluate(async ({ name, value }: { name: string; value: string }) => {
     try {
       const w = window as any;
       if (w.__getCredentialStore) {
@@ -121,9 +121,9 @@ async function createCredential(page: any, credentialName: string, credentialVal
   await expect(createCredentialBtn).toBeVisible({ timeout: 5000 });
 
   // Mock window.prompt for credential creation
-  await page.evaluate(({ name, value }) => {
+  await page.evaluate(({ name, value }: { name: string; value: string }) => {
     let promptCallCount = 0;
-    window.prompt = (message: string) => {
+    (window as any).prompt = (message?: string) => {
       promptCallCount++;
       if (promptCallCount === 1) {
         return name; // credential name
@@ -139,7 +139,7 @@ async function createCredential(page: any, credentialName: string, credentialVal
   await page.waitForTimeout(2000);
 
   // Verify credential was created
-  const credentialExists = await page.evaluate((name) => {
+  const credentialExists = await page.evaluate((name: string) => {
     const w = window as any;
     if (w.__getCredentialStore) {
       const store = w.__getCredentialStore();
@@ -200,7 +200,7 @@ async function executeWorkflowWithMocks(page: any, expectedEndpoint: string) {
   console.log('Setting up API mocks...');
 
   // Mock the /v1/runs POST endpoint
-  await page.route('**/v1/runs', async (route) => {
+  await page.route('**/v1/runs', async (route: any) => {
     if (route.request().method() === 'POST') {
       const body = route.request().postData();
       console.log('Intercepted run creation request');
@@ -217,7 +217,7 @@ async function executeWorkflowWithMocks(page: any, expectedEndpoint: string) {
   });
 
   // Mock the run polling endpoint
-  await page.route('**/v1/runs/test-run-*', async (route) => {
+  await page.route('**/v1/runs/test-run-*', async (route: any) => {
     console.log('Intercepted run polling request');
 
     await route.fulfill({
@@ -549,7 +549,12 @@ test.describe('E2E Smoke: Slack + Notion with Credentials', () => {
     await page.waitForTimeout(500);
 
     // Check that credential dropdown shows the credential
-    await expect(page.locator('text=notion-integration-token')).toBeVisible();
+    const credentialDropdown = page.locator('select[data-testid="credentialName"], select:has(option[value="notion-integration-token"])');
+    await expect(credentialDropdown).toBeVisible({ timeout: 10000 });
+
+    // Verify the credential option exists in the dropdown
+    const credentialOption = page.locator('option[value="notion-integration-token"]');
+    await expect(credentialOption).toBeAttached();
 
     console.log('Template round-trip test completed successfully');
   });

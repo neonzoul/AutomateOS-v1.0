@@ -8,18 +8,21 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useSelectedNode, useSelectionActions } from '@/core/state';
 import { NODE_SPECS } from '@/builder/registry/nodeSpecs';
 import { HttpConfigSchema, type HttpConfig } from '@automateos/workflow-schema';
+import { z } from 'zod';
 import { useCredentialList, useCredentials } from '@/core/credentials';
 
-// Form type that matches the schema input (method is optional with default)
-type HttpConfigFormInput = {
-  method?: 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE';
-  url: string;
-  headers?: Record<string, string>;
-  body?: string;
-  auth?: {
-    credentialName: string;
-  };
-};
+// Form schema with string headers (for JSON input)
+const HttpConfigFormSchema = z.object({
+  method: z.enum(['GET', 'POST', 'PUT', 'PATCH', 'DELETE']).optional(),
+  url: z.string().url('Please enter a valid URL').min(1, 'URL is required'),
+  headers: z.string().optional(), // JSON string in form
+  body: z.string().optional(),
+  auth: z.object({
+    credentialName: z.string(),
+  }).optional(),
+});
+
+type HttpConfigFormInput = z.infer<typeof HttpConfigFormSchema>;
 
 /**
  * Inspector: renders a form from the selected node's Zod schema.
@@ -87,7 +90,7 @@ function HttpConfigForm({
   const { setCredential } = useCredentials();
 
   const form = useForm<HttpConfigFormInput>({
-    resolver: zodResolver(HttpConfigSchema),
+    resolver: zodResolver(HttpConfigFormSchema),
     defaultValues: {
       method: currentConfig?.method ?? 'GET',
       url: currentConfig?.url ?? '',
@@ -279,7 +282,7 @@ function HttpConfigForm({
             Enter headers as JSON object. For Notion API, include: {'"Notion-Version": "2022-06-28"'}
           </p>
           {errors.headers && (
-            <p className="mt-1 text-xs text-red-600">{errors.headers.message}</p>
+            <p className="mt-1 text-xs text-red-600">{errors.headers?.message}</p>
           )}
         </label>
       </div>

@@ -17,7 +17,12 @@
       "Bash(pnpm -C apps/dev-web test src/builder/run/RunPanel.test.tsx src/builder/inspector/Inspector.test.tsx)",
       "Bash(pnpm -C apps/dev-web test src/builder/inspector/Inspector.test.tsx)",
       "Bash(pnpm exec playwright:*)",
-      "Bash(copy \"F:\\Coding-Area\\Projects\\4-automateOS-v1\\examples\\notion-automation.json\" \"F:\\Coding-Area\\Projects\\4-automateOS-v1\\apps\\dev-web\\public\\examples\\notion-automation.json\")"
+      "Bash(copy \"F:\\Coding-Area\\Projects\\4-automateOS-v1\\examples\\notion-automation.json\" \"F:\\Coding-Area\\Projects\\4-automateOS-v1\\apps\\dev-web\\public\\examples\\notion-automation.json\")",
+      "Bash(gh pr view:*)",
+      "Bash(gh pr checks:*)",
+      "Bash(pnpm -C apps/dev-web typecheck)",
+      "Bash(pnpm -C apps/dev-web test:e2e:mock)",
+      "Bash(pnpm -C apps/dev-web test src/builder/inspector/Inspector.test.tsx --run)"
     ],
     "deny": [],
     "ask": []
