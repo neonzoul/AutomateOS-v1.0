@@ -17,7 +17,7 @@ body {
     'Inter',
     system-ui,
     sans-serif;
-  background: linear-gradient(135deg, #FFF8F0 0%, #F8F6F3 100%); /* Warm cinematic background */
+  background: #FFF9F2; /* Sophisticated peachy canvas - incredibly subtle warmth */
   color: #3A342F; /* Warm gray text */
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -41,11 +41,12 @@ body {
   outline-offset: 2px;
 }
 
-/* Cinematic edge styling */
+/* Her-style edge styling */
 .react-flow__edge-path {
   stroke-width: 3px;
-  stroke: #FF6B6B; /* Coral sunset */
+  stroke: #E84B4B; /* Perfect Her coral */
   stroke-linecap: round;
+  opacity: 0.8;
 }
 
 .react-flow__edge.animated .react-flow__edge-path {
@@ -54,19 +55,19 @@ body {
 
 /* Connection line styling */
 .react-flow__connectionline {
-  stroke: #FF6B6B;
+  stroke: #E84B4B;
   stroke-width: 3px;
   stroke-linecap: round;
   opacity: 0.8;
 }
 
-/* Cinematic controls styling */
+/* Her-style controls styling */
 .react-flow__controls {
-  background: rgba(255, 248, 240, 0.95);
+  background: rgba(255, 251, 247, 0.95);
   backdrop-filter: blur(20px);
-  border: 1px solid rgba(255, 107, 107, 0.15);
+  border: 1px solid rgba(232, 75, 75, 0.15);
   border-radius: 16px !important;
-  box-shadow: 0 8px 32px rgba(255, 107, 107, 0.08);
+  box-shadow: 0 8px 32px rgba(232, 75, 75, 0.08);
   overflow: hidden;
 }
 
@@ -81,29 +82,29 @@ body {
 }
 
 .react-flow__controls-button:hover {
-  background: rgba(255, 107, 107, 0.1) !important;
+  background: rgba(232, 75, 75, 0.1) !important;
   transform: scale(1.05);
 }
 
 .react-flow__controls-button:active {
-  background: rgba(255, 107, 107, 0.2) !important;
+  background: rgba(232, 75, 75, 0.15) !important;
   transform: scale(0.98);
 }
 
-/* Cinematic minimap */
+/* Her-style minimap */
 .react-flow__minimap {
-  background: rgba(255, 248, 240, 0.95);
+  background: rgba(255, 251, 247, 0.95);
   backdrop-filter: blur(20px);
-  border: 1px solid rgba(255, 107, 107, 0.15);
+  border: 1px solid rgba(232, 75, 75, 0.15);
   border-radius: 16px !important;
-  box-shadow: 0 8px 32px rgba(255, 107, 107, 0.08);
+  box-shadow: 0 8px 32px rgba(232, 75, 75, 0.08);
   overflow: hidden;
 }
 
 /* Selection box styling */
 .react-flow__selection {
-  background: rgba(255, 107, 107, 0.1);
-  border: 2px solid #FF6B6B;
+  background: rgba(232, 75, 75, 0.08);
+  border: 2px solid #E84B4B;
   border-radius: 8px;
 }
 
@@ -118,14 +119,14 @@ body {
 }
 
 .react-flow__handle:hover {
-  border-color: #FF6B6B;
-  box-shadow: 0 0 0 3px rgba(255, 107, 107, 0.3);
+  border-color: #E84B4B;
+  box-shadow: 0 0 0 3px rgba(232, 75, 75, 0.3);
   transform: scale(1.1);
 }
 
 .react-flow__handle.react-flow__handle-connecting {
-  border-color: #FF6B6B;
-  box-shadow: 0 0 0 3px rgba(255, 107, 107, 0.3);
+  border-color: #E84B4B;
+  box-shadow: 0 0 0 3px rgba(232, 75, 75, 0.3);
 }
 
 /* Background pattern - Cinematic and organic */
@@ -138,8 +139,8 @@ body {
   z-index: 10;
 }
 
-/* Custom focus ring utility class - Cinematic */
+/* Custom focus ring utility class - Her style */
 .focus-ring:focus-visible {
   outline: none;
-  box-shadow: 0 0 0 2px #FF6B6B, 0 0 0 4px rgba(255, 107, 107, 0.2);
+  box-shadow: 0 0 0 2px #E84B4B, 0 0 0 4px rgba(232, 75, 75, 0.2);
 }

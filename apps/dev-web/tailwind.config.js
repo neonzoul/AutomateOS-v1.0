@@ -5,11 +5,20 @@ export default {
     extend: {
       // Cinematic color system inspired by "Her" and "La La Land"
       colors: {
-        // "Her" Inspired Warmth - Primary palette
-        'coral-sunset': '#FF6B6B',      // Love, creativity, human connection
-        'coral-light': '#FF8E8E',       // Lighter coral for hover states
-        'coral-dark': '#FF4757',        // Deeper coral for active states
-        'peach-soft': '#FFB4A2',        // Intimacy, comfort, evening glow
+        // Perfect "Her" Movie Palette - Primary colors
+        'her-coral': '#E84B4B',         // Perfect soft coral from movie references
+        'her-coral-light': '#F4C2A1',   // Peachy coral accent from movie
+        'her-cream': '#FFF8F0',         // Warm cream background from movie
+        'her-cream-light': '#FFFBF7',   // Lighter cream for cards
+        'her-cream-canvas': '#FFF9F2',  // Sophisticated peachy canvas - incredibly subtle warmth
+        'her-text': '#2D1B1B',          // Deep warm charcoal from movie
+        'her-text-soft': 'rgba(45, 27, 27, 0.8)', // Softer text
+
+        // Legacy coral colors (kept for compatibility)
+        'coral-sunset': '#E84B4B',      // Updated to match Her palette
+        'coral-light': '#F4C2A1',       // Updated to match Her palette
+        'coral-dark': '#D63031',        // Deeper coral for active states
+        'peach-soft': '#F4C2A1',        // Intimacy, comfort, evening glow
         'peach-light': '#FFC8B8',       // Light peach for backgrounds
         'cream-warm': '#FFF8F0',        // Canvas for possibilities
         'cream-light': '#FFFBF7',       // Lighter cream for cards
@@ -139,8 +148,12 @@ export default {
         'flow-lavender': 'linear-gradient(135deg, #A29BFE 0%, #B8B5FF 50%, #D1CEFF 100%)',
         'flow-sage': 'linear-gradient(135deg, #00DFA2 0%, #42E8C2 50%, #84F5E1 100%)',
 
-        // Cinematic scene gradients
-        'her-scene': 'radial-gradient(circle at 30% 70%, #FF6B6B 0%, #FFB4A2 40%, #FFF8F0 100%)',
+        // Perfect "Her" movie gradients
+        'her-scene': 'radial-gradient(ellipse at center, #F4C2A1 0%, #FFF8F0 45%, #FFFBF7 100%)',
+        'her-node': 'linear-gradient(135deg, #FFF8F0 0%, #FFFBF7 100%)',
+        'her-node-selected': 'linear-gradient(135deg, #FFFBF7 0%, #FFF8F0 100%)',
+
+        // La La Land scene gradients
         'lalaland-scene': 'radial-gradient(circle at 70% 30%, #FFD93D 0%, #A29BFE 40%, #F8F6F3 100%)',
       }
     },

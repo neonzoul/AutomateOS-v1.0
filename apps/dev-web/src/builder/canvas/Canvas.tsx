@@ -119,17 +119,9 @@ export function Canvas() {
       className="h-full w-full relative overflow-hidden"
       data-testid="canvas"
       style={{
-        background: 'linear-gradient(135deg, #FF6B6B 0%, #E84B4B 25%, #F4C2A1 75%, #FFF8F0 100%)',
+        background: '#FFF9F2',
       }}
     >
-      {/* Subtle Her movie inspired elements */}
-      <div
-        className="absolute inset-0 pointer-events-none"
-        style={{
-          background: 'radial-gradient(ellipse at 20% 20%, rgba(255,255,255,0.1) 0%, transparent 50%)',
-          opacity: 0.6
-        }}
-      />
 
       <ReactFlow
         nodes={nodes}

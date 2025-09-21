@@ -200,13 +200,14 @@ export function CanvasToolbar() {
   return (
     <Panel position="top-left" style={{ zIndex: 1000 }}>
       <div
-        className="flex gap-2 backdrop-blur-xl"
+        className="flex backdrop-blur-xl"
         style={{
-          background: 'rgba(255,255,255,0.95)',
-          padding: '8px 12px',
-          borderRadius: '32px',
-          border: '1px solid rgba(232,75,75,0.08)',
-          boxShadow: '0 4px 20px rgba(232,75,75,0.06), 0 1px 3px rgba(232,75,75,0.04), inset 0 1px 0 rgba(255,255,255,0.9)'
+          gap: '4px',
+          background: 'rgba(255, 255, 255, 0.98)',
+          padding: '6px 8px',
+          borderRadius: '20px',
+          border: '1px solid rgba(0, 0, 0, 0.06)',
+          boxShadow: '0 2px 12px rgba(0, 0, 0, 0.08), 0 1px 3px rgba(0, 0, 0, 0.04), inset 0 1px 0 rgba(255, 255, 255, 0.9)'
         }}
       >
         {/* Node Creation Buttons */}
@@ -222,19 +223,19 @@ export function CanvasToolbar() {
               ? 'rgba(232,75,75,0.15)'
               : 'linear-gradient(135deg, #FF6B6B 0%, #E84B4B 100%)',
             color: hasStart ? 'rgba(232,75,75,0.6)' : 'rgba(255,255,255,0.98)',
-            fontSize: '13px',
+            fontSize: '12px',
             fontWeight: '600',
-            padding: '8px 16px',
-            borderRadius: '24px',
+            padding: '7px 14px',
+            borderRadius: '16px',
             border: 'none',
             cursor: hasStart ? 'not-allowed' : 'pointer',
-            transition: 'all 0.3s cubic-bezier(0.25, 0.1, 0.25, 1.0)',
+            transition: 'all 0.25s cubic-bezier(0.25, 0.1, 0.25, 1)',
             boxShadow: hasStart
               ? 'none'
               : '0 2px 8px rgba(232,75,75,0.2), inset 0 1px 0 rgba(255,255,255,0.4)',
             transform: 'scale(1)',
-            fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Display", system-ui, sans-serif',
-            minWidth: '80px',
+            fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Text", system-ui, sans-serif',
+            minWidth: '70px',
             textAlign: 'center'
           }}
           onMouseEnter={(e) => {
@@ -260,17 +261,17 @@ export function CanvasToolbar() {
           style={{
             background: 'linear-gradient(135deg, #A29BFE 0%, #9B8CE8 100%)',
             color: 'rgba(255,255,255,0.98)',
-            fontSize: '13px',
+            fontSize: '12px',
             fontWeight: '600',
-            padding: '8px 16px',
-            borderRadius: '24px',
+            padding: '7px 14px',
+            borderRadius: '16px',
             border: 'none',
             cursor: 'pointer',
-            transition: 'all 0.3s cubic-bezier(0.25, 0.1, 0.25, 1.0)',
+            transition: 'all 0.25s cubic-bezier(0.25, 0.1, 0.25, 1)',
             boxShadow: '0 2px 8px rgba(162,155,254,0.2), inset 0 1px 0 rgba(255,255,255,0.4)',
             transform: 'scale(1)',
-            fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Display", system-ui, sans-serif',
-            minWidth: '80px',
+            fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Text", system-ui, sans-serif',
+            minWidth: '70px',
             textAlign: 'center'
           }}
           onMouseEnter={(e) => {
@@ -287,7 +288,7 @@ export function CanvasToolbar() {
           🌐 HTTP
         </button>
 
-        <div className="w-px bg-coral-sunset/20 h-8 self-center" />
+        <div style={{ width: '1px', height: '24px', background: 'rgba(0, 0, 0, 0.08)', alignSelf: 'center', margin: '0 2px' }} />
 
         {/* Import/Export Actions */}
         <label
@@ -295,15 +296,15 @@ export function CanvasToolbar() {
           style={{
             background: 'linear-gradient(135deg, #FFD93D 0%, #F4C430 100%)',
             color: 'rgba(255,255,255,0.98)',
-            fontSize: '13px',
+            fontSize: '12px',
             fontWeight: '600',
-            padding: '8px 16px',
-            borderRadius: '24px',
+            padding: '7px 14px',
+            borderRadius: '16px',
             border: 'none',
-            transition: 'all 0.3s cubic-bezier(0.25, 0.1, 0.25, 1.0)',
+            transition: 'all 0.25s cubic-bezier(0.25, 0.1, 0.25, 1)',
             boxShadow: '0 2px 8px rgba(255,217,61,0.2), inset 0 1px 0 rgba(255,255,255,0.4)',
-            fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Display", system-ui, sans-serif',
-            minWidth: '90px',
+            fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Text", system-ui, sans-serif',
+            minWidth: '80px',
             textAlign: 'center',
             display: 'inline-block'
           }}
@@ -326,16 +327,16 @@ export function CanvasToolbar() {
           style={{
             background: 'linear-gradient(135deg, #A29BFE 0%, #9B8CE8 100%)',
             color: 'rgba(255,255,255,0.98)',
-            fontSize: '13px',
+            fontSize: '12px',
             fontWeight: '600',
-            padding: '8px 16px',
-            borderRadius: '24px',
+            padding: '7px 14px',
+            borderRadius: '16px',
             border: 'none',
             cursor: 'pointer',
-            transition: 'all 0.3s cubic-bezier(0.25, 0.1, 0.25, 1.0)',
+            transition: 'all 0.25s cubic-bezier(0.25, 0.1, 0.25, 1)',
             boxShadow: '0 2px 8px rgba(162,155,254,0.2), inset 0 1px 0 rgba(255,255,255,0.4)',
-            fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Display", system-ui, sans-serif',
-            minWidth: '90px',
+            fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Text", system-ui, sans-serif',
+            minWidth: '80px',
             textAlign: 'center'
           }}
         >
@@ -348,16 +349,16 @@ export function CanvasToolbar() {
           style={{
             background: 'linear-gradient(135deg, #FFD93D 0%, #F4C430 100%)',
             color: 'rgba(255,255,255,0.98)',
-            fontSize: '13px',
+            fontSize: '12px',
             fontWeight: '600',
-            padding: '8px 16px',
-            borderRadius: '24px',
+            padding: '7px 14px',
+            borderRadius: '16px',
             border: 'none',
             cursor: 'pointer',
-            transition: 'all 0.3s cubic-bezier(0.25, 0.1, 0.25, 1.0)',
+            transition: 'all 0.25s cubic-bezier(0.25, 0.1, 0.25, 1)',
             boxShadow: '0 2px 8px rgba(255,217,61,0.2), inset 0 1px 0 rgba(255,255,255,0.4)',
-            fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Display", system-ui, sans-serif',
-            minWidth: '90px',
+            fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Text", system-ui, sans-serif',
+            minWidth: '80px',
             textAlign: 'center'
           }}
         >
@@ -370,23 +371,23 @@ export function CanvasToolbar() {
           style={{
             background: 'linear-gradient(135deg, #FFD93D 0%, #F4C430 100%)',
             color: 'rgba(255,255,255,0.98)',
-            fontSize: '13px',
+            fontSize: '12px',
             fontWeight: '600',
-            padding: '8px 16px',
-            borderRadius: '24px',
+            padding: '7px 14px',
+            borderRadius: '16px',
             border: 'none',
             cursor: 'pointer',
-            transition: 'all 0.3s cubic-bezier(0.25, 0.1, 0.25, 1.0)',
+            transition: 'all 0.25s cubic-bezier(0.25, 0.1, 0.25, 1)',
             boxShadow: '0 2px 8px rgba(255,217,61,0.2), inset 0 1px 0 rgba(255,255,255,0.4)',
-            fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Display", system-ui, sans-serif',
-            minWidth: '90px',
+            fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Text", system-ui, sans-serif',
+            minWidth: '80px',
             textAlign: 'center'
           }}
         >
           📝 Notion
         </button>
 
-        <div className="w-px bg-coral-sunset/20 h-8 self-center" />
+        <div style={{ width: '1px', height: '24px', background: 'rgba(0, 0, 0, 0.08)', alignSelf: 'center', margin: '0 2px' }} />
 
         {/* Clear Action */}
         <button
@@ -396,16 +397,16 @@ export function CanvasToolbar() {
           style={{
             background: 'linear-gradient(135deg, #C4BCB5 0%, #9B8E85 100%)',
             color: 'rgba(255,255,255,0.98)',
-            fontSize: '13px',
+            fontSize: '12px',
             fontWeight: '600',
-            padding: '8px 16px',
-            borderRadius: '24px',
+            padding: '7px 14px',
+            borderRadius: '16px',
             border: 'none',
             cursor: 'pointer',
-            transition: 'all 0.3s cubic-bezier(0.25, 0.1, 0.25, 1.0)',
+            transition: 'all 0.25s cubic-bezier(0.25, 0.1, 0.25, 1)',
             boxShadow: '0 2px 8px rgba(196,188,181,0.2), inset 0 1px 0 rgba(255,255,255,0.4)',
-            fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Display", system-ui, sans-serif',
-            minWidth: '80px',
+            fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Text", system-ui, sans-serif',
+            minWidth: '70px',
             textAlign: 'center'
           }}
         >
