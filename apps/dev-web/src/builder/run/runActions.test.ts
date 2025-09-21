@@ -1,6 +1,7 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { startRun, pollRun, cancelRun } from './runActions';
 import { resetBuilderStore, useBuilderStore } from '../../core/state';
+import { useCredentialStore } from '../../core/credentials';
 
 // Test environment API base URL resolution (same as runActions.ts)
 const API_BASE = process.env.NEXT_PUBLIC_API_BASE || 'http://localhost:8080';
@@ -13,6 +14,12 @@ describe('runActions', () => {
   beforeEach(() => {
     resetBuilderStore();
     mockFetch.mockClear();
+
+    // Reset credential store
+    useCredentialStore.setState({
+      credentials: new Map(),
+      masterKey: null,
+    });
   });
 
   describe('startRun', () => {
@@ -60,6 +67,99 @@ describe('runActions', () => {
       // Check store state
       const state = useBuilderStore.getState();
       expect(state.runStatus).toBe('failed');
+    });
+
+    it('injects credentials into HTTP nodes during run', async () => {
+      // Mock crypto for credential store
+      const mockKey = { type: 'secret' };
+      const mockEncrypted = new ArrayBuffer(32);
+      const mockIV = new ArrayBuffer(12);
+
+      Object.defineProperty(global, 'crypto', {
+        value: {
+          subtle: {
+            generateKey: vi.fn().mockResolvedValue(mockKey),
+            encrypt: vi.fn().mockResolvedValue(mockEncrypted),
+            decrypt: vi.fn().mockResolvedValue(new TextEncoder().encode('Bearer test-token')),
+          },
+          getRandomValues: vi.fn().mockImplementation((array) => {
+            for (let i = 0; i < array.length; i++) {
+              array[i] = i % 256;
+            }
+            return array;
+          }),
+        },
+        writable: true,
+      });
+
+      // Setup credential
+      const credentialStore = useCredentialStore.getState();
+      await credentialStore.setCredential('notion-token', 'Bearer test-token');
+
+      // Mock successful API response
+      mockFetch.mockResolvedValueOnce({
+        ok: true,
+        json: () => Promise.resolve({ runId: 'test-run-123' }),
+      });
+
+      const workflowJson = {
+        nodes: [
+          {
+            id: 'http-1',
+            type: 'http',
+            config: {
+              method: 'POST',
+              url: 'https://api.notion.com/v1/pages',
+              headers: { 'Content-Type': 'application/json' },
+              auth: { credentialName: 'notion-token' }
+            }
+          }
+        ],
+        edges: []
+      };
+
+      await startRun(workflowJson);
+
+      // Check that the credential was injected and auth config was removed
+      const fetchCall = mockFetch.mock.calls[0];
+      const sentBody = JSON.parse(fetchCall[1].body);
+      const httpNode = sentBody.graph.nodes[0];
+
+      expect(httpNode.config.headers.Authorization).toBe('Bearer test-token');
+      expect(httpNode.config.auth).toBeUndefined(); // Should be removed
+    });
+
+    it('handles missing credentials gracefully', async () => {
+      // Mock successful API response
+      mockFetch.mockResolvedValueOnce({
+        ok: true,
+        json: () => Promise.resolve({ runId: 'test-run-123' }),
+      });
+
+      const workflowJson = {
+        nodes: [
+          {
+            id: 'http-1',
+            type: 'http',
+            config: {
+              method: 'POST',
+              url: 'https://api.notion.com/v1/pages',
+              auth: { credentialName: 'missing-credential' }
+            }
+          }
+        ],
+        edges: []
+      };
+
+      await startRun(workflowJson);
+
+      // Check that the node was sent without credential injection
+      const fetchCall = mockFetch.mock.calls[0];
+      const sentBody = JSON.parse(fetchCall[1].body);
+      const httpNode = sentBody.graph.nodes[0];
+
+      expect(httpNode.config.headers?.Authorization).toBeUndefined();
+      expect(httpNode.config.auth).toBeDefined(); // Auth config should remain when credential is missing
     });
   });
 
@@ -200,6 +300,88 @@ describe('runActions', () => {
       expect(state.runStatus).toBe('succeeded');
       // Note: nodeRunStatuses testing would require checking the actual store state
       // but the test setup doesn't include those specific assertions
+    });
+
+    it('handles step durations from API response', async () => {
+      // Add test nodes to the store first
+      useBuilderStore.getState().setGraph({
+        nodes: [
+          { id: 'node-1', type: 'start', position: { x: 0, y: 0 }, data: {} },
+          { id: 'node-2', type: 'http', position: { x: 100, y: 0 }, data: {} },
+        ],
+        edges: [],
+      });
+
+      // Initialize nodeRunStatuses
+      useBuilderStore.getState().setNodeRunStatuses({
+        'node-1': 'idle',
+        'node-2': 'idle',
+      });
+
+      mockFetch.mockResolvedValueOnce({
+        ok: true,
+        json: () =>
+          Promise.resolve({
+            id: 'test-run-123',
+            status: 'running',
+            steps: [
+              { id: 'step_1', nodeId: 'node-1', status: 'succeeded', durationMs: 150 },
+              { id: 'step_2', nodeId: 'node-2', status: 'running', durationMs: 500 },
+            ],
+          }),
+      });
+
+      pollRun('test-run-123');
+
+      await new Promise((resolve) => setTimeout(resolve, 50));
+
+      const state = useBuilderStore.getState();
+      expect(state.stepDurations['node-1']).toBe(150);
+      expect(state.stepDurations['node-2']).toBe(500);
+    });
+
+    it('handles step status mapping queued→running→succeeded→failed', async () => {
+      // Test the progression through different statuses
+      const steps = [
+        { status: 'queued', expectedStoredStatus: 'idle' }, // queued status is not processed, remains idle
+        { status: 'running', expectedStoredStatus: 'running' },
+        { status: 'succeeded', expectedStoredStatus: 'succeeded' },
+        { status: 'failed', expectedStoredStatus: 'failed' },
+      ];
+
+      // Add a test node
+      useBuilderStore.getState().setGraph({
+        nodes: [{ id: 'test-node', type: 'http', position: { x: 0, y: 0 }, data: {} }],
+        edges: [],
+      });
+
+      // Initialize nodeRunStatuses
+      useBuilderStore.getState().setNodeRunStatuses({
+        'test-node': 'idle',
+      });
+
+      for (const step of steps) {
+        mockFetch.mockResolvedValueOnce({
+          ok: true,
+          json: () =>
+            Promise.resolve({
+              id: 'test-run-123',
+              status: step.status,
+              steps: [
+                { id: 'step_1', nodeId: 'test-node', status: step.status, durationMs: 100 },
+              ],
+            }),
+        });
+
+        pollRun('test-run-123');
+        await new Promise((resolve) => setTimeout(resolve, 50));
+
+        const state = useBuilderStore.getState();
+        expect(state.nodeRunStatuses['test-node']).toBe(step.expectedStoredStatus);
+
+        // Reset for next iteration
+        mockFetch.mockClear();
+      }
     });
   });
   describe('cancelRun', () => {

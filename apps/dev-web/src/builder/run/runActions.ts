@@ -2,6 +2,7 @@
 // Integrates with API gateway (/runs endpoints) for workflow execution
 
 import { useBuilderStore } from '../../core/state';
+import { useCredentialStore } from '../../core/credentials';
 
 // Resolve API base at runtime (client or server) to support CI overrides and mocks
 function getApiBase(): string {
@@ -58,6 +59,10 @@ export async function startRun(
     resetRun();
     appendLog('Starting workflow run...');
 
+    // Pre-process workflow to inject credentials
+    const processedWorkflowJson = await injectCredentials(workflowJson);
+    appendLog('Credentials injected for secure run');
+
     // Generate idempotency key for this run
     const idempotencyKey = `ui_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
 
@@ -77,7 +82,7 @@ export async function startRun(
             'Content-Type': 'application/json',
             'Idempotency-Key': idempotencyKey,
           },
-          body: JSON.stringify({ graph: workflowJson }),
+          body: JSON.stringify({ graph: processedWorkflowJson }),
         });
 
         // If HTTP response received but it's an error status, treat as API error (do not retry)
@@ -161,7 +166,7 @@ export async function startRun(
  * Updates store state as run progresses
  */
 export async function pollRun(runId: string): Promise<void> {
-  const { setRunStatus, appendLog, updateNodeRunStatus } =
+  const { setRunStatus, appendLog, updateNodeRunStatus, setStepDuration } =
     useBuilderStore.getState();
 
   let pollCount = 0;
@@ -199,7 +204,7 @@ export async function pollRun(runId: string): Promise<void> {
       // Update status
       setRunStatus(run.status);
 
-      // Update per-node statuses if steps present
+      // Update per-node statuses and durations if steps present
       if (Array.isArray((run as any).steps)) {
         const { nodes, nodeRunStatuses } = useBuilderStore.getState();
         (run as any).steps.forEach((s: any) => {
@@ -226,7 +231,15 @@ export async function pollRun(runId: string): Promise<void> {
                 if (matchByType) targetId = matchByType.id;
               }
             }
-            if (targetId) updateNodeRunStatus(targetId, status);
+
+            if (targetId) {
+              updateNodeRunStatus(targetId, status);
+
+              // Store step duration if available
+              if (typeof s.durationMs === 'number') {
+                setStepDuration(targetId, s.durationMs);
+              }
+            }
           }
         });
       }
@@ -297,4 +310,51 @@ export async function cancelRun(runId: string): Promise<void> {
     const message = error instanceof Error ? error.message : 'Unknown error';
     appendLog(`Error cancelling run: ${message}`);
   }
+}
+
+/**
+ * Inject credentials into workflow nodes before execution
+ * Looks up credential values and injects them as Authorization headers
+ */
+async function injectCredentials(workflowJson: unknown): Promise<unknown> {
+  const { getCredential } = useCredentialStore.getState();
+  const graph = workflowJson as any;
+
+  if (!graph?.nodes) {
+    return workflowJson;
+  }
+
+  // Process each node and inject credentials if needed
+  const processedNodes = await Promise.all(
+    graph.nodes.map(async (node: any) => {
+      if (node.type === 'http' && node.config?.auth?.credentialName) {
+        const credentialName = node.config.auth.credentialName;
+
+        try {
+          const credentialValue = await getCredential(credentialName);
+
+          if (credentialValue) {
+            // Clone node config to avoid mutating original
+            const newConfig = { ...node.config };
+            const newHeaders = { ...newConfig.headers };
+
+            // Inject credential as Authorization header
+            newHeaders['Authorization'] = credentialValue;
+
+            // Remove auth config from the node (don't send credential names to backend)
+            delete newConfig.auth;
+            newConfig.headers = newHeaders;
+
+            return { ...node, config: newConfig };
+          }
+        } catch (error) {
+          console.warn(`Failed to retrieve credential "${credentialName}":`, error);
+        }
+      }
+
+      return node;
+    })
+  );
+
+  return { ...graph, nodes: processedNodes };
 }

@@ -8,14 +8,21 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useSelectedNode, useSelectionActions } from '@/core/state';
 import { NODE_SPECS } from '@/builder/registry/nodeSpecs';
 import { HttpConfigSchema, type HttpConfig } from '@automateos/workflow-schema';
+import { z } from 'zod';
+import { useCredentialList, useCredentials } from '@/core/credentials';
 
-// Form type that matches the schema input (method is optional with default)
-type HttpConfigFormInput = {
-  method?: 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE';
-  url: string;
-  headers?: Record<string, string>;
-  body?: string;
-};
+// Form schema with string headers (for JSON input)
+const HttpConfigFormSchema = z.object({
+  method: z.enum(['GET', 'POST', 'PUT', 'PATCH', 'DELETE']).optional(),
+  url: z.string().url('Please enter a valid URL').min(1, 'URL is required'),
+  headers: z.string().optional(), // JSON string in form
+  body: z.string().optional(),
+  auth: z.object({
+    credentialName: z.string(),
+  }).optional(),
+});
+
+type HttpConfigFormInput = z.infer<typeof HttpConfigFormSchema>;
 
 /**
  * Inspector: renders a form from the selected node's Zod schema.
@@ -79,14 +86,19 @@ function HttpConfigForm({
   currentConfig?: Partial<HttpConfig>;
 }) {
   const { updateNodeConfig } = useSelectionActions();
+  const credentialList = useCredentialList();
+  const { setCredential } = useCredentials();
 
   const form = useForm<HttpConfigFormInput>({
-    resolver: zodResolver(HttpConfigSchema),
+    resolver: zodResolver(HttpConfigFormSchema),
     defaultValues: {
       method: currentConfig?.method ?? 'GET',
       url: currentConfig?.url ?? '',
-      headers: currentConfig?.headers ?? {},
+      headers: JSON.stringify(currentConfig?.headers ?? {}, null, 2),
       body: currentConfig?.body ?? '',
+      auth: currentConfig?.auth ? {
+        credentialName: currentConfig.auth.credentialName
+      } : undefined,
     },
     mode: 'onChange',
   });
@@ -98,10 +110,44 @@ function HttpConfigForm({
     watch,
   } = form;
 
+  // Transform headers string to object for validation
+  const transformFormData = (values: any) => {
+    const transformed = { ...values };
+
+    // Parse headers from JSON string to object
+    if (typeof values.headers === 'string' && values.headers.trim()) {
+      try {
+        transformed.headers = JSON.parse(values.headers);
+      } catch (e) {
+        // If JSON parsing fails, keep as string for validation error
+        transformed.headers = values.headers;
+      }
+    }
+
+    // If body contains JSON, also set json_body for engine compatibility
+    if (typeof values.body === 'string' && values.body.trim()) {
+      try {
+        const parsedBody = JSON.parse(values.body);
+        transformed.json_body = parsedBody;
+        // Keep body as string for form display
+      } catch (e) {
+        // If not valid JSON, just keep as body string
+        // But clear any existing json_body to prevent conflicts
+        transformed.json_body = undefined;
+      }
+    } else {
+      // If no body, clear json_body
+      transformed.json_body = undefined;
+    }
+
+    return transformed;
+  };
+
   // Watch form changes and sync to store when valid
   React.useEffect(() => {
     const subscription = watch((values) => {
-      const result = HttpConfigSchema.safeParse(values);
+      const transformed = transformFormData(values);
+      const result = HttpConfigSchema.safeParse(transformed);
       if (result.success) {
         updateNodeConfig(nodeId, result.data);
       }
@@ -110,7 +156,8 @@ function HttpConfigForm({
   }, [watch, nodeId, updateNodeConfig]);
 
   const onSubmit = (data: any) => {
-    const validated = HttpConfigSchema.parse(data);
+    const transformed = transformFormData(data);
+    const validated = HttpConfigSchema.parse(transformed);
     updateNodeConfig(nodeId, validated);
   };
 
@@ -158,6 +205,50 @@ function HttpConfigForm({
         </label>
       </div>
 
+      {/* Credential Authentication */}
+      <div>
+        <label className="block">
+          <span className="text-sm font-medium text-gray-700">
+            Authentication (optional)
+          </span>
+          <select
+            {...register('auth.credentialName')}
+            className="mt-1 w-full rounded border border-gray-300 px-2 py-1 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+          >
+            <option value="">No authentication</option>
+            {credentialList.map((cred) => (
+              <option key={cred.name} value={cred.name}>
+                {cred.name} ({cred.maskedPreview})
+              </option>
+            ))}
+          </select>
+          {errors.auth?.credentialName && (
+            <p className="mt-1 text-xs text-red-600">
+              {errors.auth.credentialName.message}
+            </p>
+          )}
+        </label>
+
+        {/* Quick credential creation */}
+        <div className="mt-2">
+          <button
+            type="button"
+            className="text-xs text-blue-600 hover:text-blue-700"
+            onClick={() => {
+              const name = prompt('Credential name:');
+              const value = prompt('Credential value (e.g., Bearer token):');
+              if (name && value) {
+                setCredential(name, value).then(() => {
+                  // Re-render will happen automatically due to store update
+                });
+              }
+            }}
+          >
+            + Create new credential
+          </button>
+        </div>
+      </div>
+
       <div>
         <label className="block">
           <span className="text-sm font-medium text-gray-700">
@@ -175,9 +266,25 @@ function HttpConfigForm({
         </label>
       </div>
 
-      {/* Headers section - simplified for now */}
-      <div className="text-xs text-gray-500">
-        Headers configuration will be added in a future sprint.
+      {/* Headers section */}
+      <div>
+        <label className="block">
+          <span className="text-sm font-medium text-gray-700">
+            Headers (optional)
+          </span>
+          <textarea
+            {...register('headers')}
+            rows={3}
+            className="mt-1 w-full rounded border border-gray-300 px-2 py-1 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+            placeholder='{"Content-Type": "application/json", "Notion-Version": "2022-06-28"}'
+          />
+          <p className="mt-1 text-xs text-gray-500">
+            Enter headers as JSON object. For Notion API, include: {'"Notion-Version": "2022-06-28"'}
+          </p>
+          {errors.headers && (
+            <p className="mt-1 text-xs text-red-600">{errors.headers?.message}</p>
+          )}
+        </label>
       </div>
     </form>
   );

@@ -22,6 +22,9 @@ export const HttpConfigSchema = z
     headers: z.record(z.string(), z.string()).optional(),
     body: z.string().optional(),
     json_body: z.record(z.string(), z.unknown()).optional(), // For JSON payloads
+    auth: z.object({
+      credentialName: z.string(),
+    }).optional(), // Credential reference by name
   })
   .strict();
 

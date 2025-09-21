@@ -1,7 +1,31 @@
 // Minimal Engine v0.1 (REST) - sequential execution prototype
+import 'dotenv/config';
 import Fastify from 'fastify';
+import fetch from 'node-fetch';
 
 const app = Fastify({ logger: true });
+
+// Header masking utilities
+const SENSITIVE_HEADER_REGEX = /^(authorization|x-api-key|api-key|x-auth-token)$/i;
+
+function maskValue(v) {
+  if (!v) return v;
+  if (v.length <= 6) return '*'.repeat(v.length);
+  return v.slice(0, 3) + '***' + v.slice(-2);
+}
+
+function maskHeaders(headers) {
+  if (!headers) return {};
+  const masked = {};
+  for (const [key, value] of Object.entries(headers)) {
+    if (SENSITIVE_HEADER_REGEX.test(key)) {
+      masked[key] = typeof value === 'string' ? maskValue(value) : '***';
+    } else {
+      masked[key] = value;
+    }
+  }
+  return masked;
+}
 
 /** In-memory runtime state */
 const runs = new Map();
@@ -70,16 +94,45 @@ async function executeNode(run, node) {
       case 'start':
         await sleep(50);
         break;
-      case 'http_request_node':
-        // Placeholder: no outbound network (later add fetch) to keep deterministic
-        await sleep(120);
-        run.logs.push(
-          logLine(
-            'info',
-            `HTTP 200 (mock) ${node.config?.method || 'GET'} ${node.config?.url}`
-          )
-        );
+      case 'http_request_node': {
+        const { method = 'GET', url, headers = {}, json_body } = node.config || {};
+
+        if (!url) {
+          throw new Error('HTTP node missing URL configuration');
+        }
+
+        // Log request with masked headers
+        run.logs.push(logLine('info', `HTTP ${method} ${url} (headers: ${JSON.stringify(maskHeaders(headers))})`));
+
+        try {
+          const requestOptions = {
+            method,
+            headers,
+          };
+
+          if (json_body && (method === 'POST' || method === 'PUT' || method === 'PATCH')) {
+            requestOptions.body = JSON.stringify(json_body);
+            requestOptions.headers = {
+              'Content-Type': 'application/json',
+              ...headers
+            };
+          }
+
+          const res = await fetch(url, requestOptions);
+          run.logs.push(logLine('info', `HTTP ${res.status} ${method} ${url}`));
+
+          // Log response for debugging (could be made optional)
+          if (res.ok) {
+            run.logs.push(logLine('info', `Response: ${res.status} ${res.statusText}`));
+          } else {
+            run.logs.push(logLine('warn', `HTTP error: ${res.status} ${res.statusText}`));
+          }
+        } catch (fetchError) {
+          run.logs.push(logLine('error', `HTTP request failed: ${fetchError.message}`));
+          throw fetchError;
+        }
         break;
+      }
       default:
         throw new Error('Unsupported node type ' + node.type);
     }
@@ -111,7 +164,7 @@ function sleep(ms) {
 
 app.get('/health', async () => ({ ok: true }));
 
-app.listen({ port: 8082, host: '0.0.0.0' }).catch((e) => {
+app.listen({ port: Number(process.env.PORT) || 8082, host: '0.0.0.0' }).catch((e) => {
   app.log.error(e);
   process.exit(1);
 });
