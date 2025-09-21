@@ -17,10 +17,10 @@ export default function StartNode({ data, id }: StartNodeProps) {
 
   const getStatusColor = () => {
     switch (status) {
-      case 'running': return 'bg-system-blue';
-      case 'succeeded': return 'bg-system-green';
-      case 'failed': return 'bg-system-red';
-      default: return 'bg-secondary';
+      case 'running': return 'bg-golden-hour';
+      case 'succeeded': return 'bg-sage-whisper';
+      case 'failed': return 'bg-coral-sunset';
+      default: return 'bg-warm-gray-300';
     }
   };
 
@@ -29,12 +29,12 @@ export default function StartNode({ data, id }: StartNodeProps) {
       data-id="start"
       data-node-id={id}
       className={`
-        relative bg-white rounded-lg border border-separator px-6 py-4
-        min-w-[160px] cursor-pointer transition-all duration-micro ease-apple
-        focus-ring
+        relative bg-flow-sage rounded-3xl border-2 border-sage-whisper/30 px-8 py-6
+        min-w-[180px] cursor-pointer transition-all duration-300 ease-out
+        shadow-lg hover:shadow-xl backdrop-blur-sm
         ${isSelected
-          ? 'border-system-blue shadow-[0_0_0_2px_rgba(0,122,255,0.2)]'
-          : 'hover:border-primary hover:shadow-sm'
+          ? 'border-sage-whisper shadow-[0_0_0_3px_rgba(0,223,162,0.3)] scale-105'
+          : 'hover:border-sage-whisper/60 hover:scale-102'
         }
       `}
       variants={nodeEntranceVariants}
@@ -44,18 +44,17 @@ export default function StartNode({ data, id }: StartNodeProps) {
       whileTap={pressEffect}
       tabIndex={0}
     >
-      {/* Status indicator bar */}
-      <div className={`absolute top-0 left-0 right-0 h-1 rounded-t-lg ${getStatusColor()}`} />
+      {/* Organic status indicator */}
+      <div className={`absolute top-3 left-3 w-3 h-3 rounded-full ${getStatusColor()} ${status === 'running' ? 'animate-pulse' : ''}`} />
 
       <div className="text-center">
-        <div className="text-primary font-semibold text-body mb-1">
+        <div className="text-white font-display text-title-3 mb-2 drop-shadow-sm">
           {data?.label ?? 'Start'}
         </div>
-        <div className="text-secondary text-caption">
-          Workflow trigger
+        <div className="text-white/80 text-body font-medium">
+          Begin workflow
           {status !== 'idle' && (
-            <span className="ml-2 inline-block">
-              <span className={`inline-block w-2 h-2 rounded-full ${getStatusColor()} mr-1`} />
+            <span className="ml-2 inline-block text-white/60 text-caption">
               <span className="capitalize">{status}</span>
             </span>
           )}

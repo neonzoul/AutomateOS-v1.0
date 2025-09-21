@@ -22,20 +22,20 @@ export default function HttpNode({ data, id }: HttpNodeProps) {
 
   const getMethodColor = (method: string) => {
     switch (method.toUpperCase()) {
-      case 'GET': return 'text-system-blue bg-system-blue';
-      case 'POST': return 'text-system-green bg-system-green';
-      case 'PUT': return 'text-system-orange bg-system-orange';
-      case 'DELETE': return 'text-system-red bg-system-red';
-      default: return 'text-system-blue bg-system-blue';
+      case 'GET': return 'text-white bg-lavender-twilight';
+      case 'POST': return 'text-white bg-coral-sunset';
+      case 'PUT': return 'text-white bg-golden-hour';
+      case 'DELETE': return 'text-white bg-coral-sunset';
+      default: return 'text-white bg-lavender-twilight';
     }
   };
 
   const getStatusColor = () => {
     switch (status) {
-      case 'running': return 'bg-system-blue';
-      case 'succeeded': return 'bg-system-green';
-      case 'failed': return 'bg-system-red';
-      default: return 'bg-secondary';
+      case 'running': return 'bg-golden-hour';
+      case 'succeeded': return 'bg-sage-whisper';
+      case 'failed': return 'bg-coral-sunset';
+      default: return 'bg-warm-gray-300';
     }
   };
 
@@ -44,12 +44,12 @@ export default function HttpNode({ data, id }: HttpNodeProps) {
       data-id="http"
       data-node-id={id}
       className={`
-        relative bg-white rounded-lg border border-separator px-6 py-4
-        min-w-[240px] cursor-pointer transition-all duration-micro ease-apple
-        focus-ring
+        relative bg-flow-coral rounded-3xl border-2 border-coral-sunset/30 px-8 py-6
+        min-w-[240px] cursor-pointer transition-all duration-300 ease-out
+        shadow-lg hover:shadow-xl backdrop-blur-sm
         ${isSelected
-          ? 'border-system-blue shadow-[0_0_0_2px_rgba(0,122,255,0.2)]'
-          : 'hover:border-primary hover:shadow-sm'
+          ? 'border-coral-sunset shadow-[0_0_0_3px_rgba(255,107,107,0.3)] scale-105'
+          : 'hover:border-coral-sunset/60 hover:scale-102'
         }
       `}
       variants={nodeEntranceVariants}
@@ -59,27 +59,27 @@ export default function HttpNode({ data, id }: HttpNodeProps) {
       whileTap={pressEffect}
       tabIndex={0}
     >
-      {/* Status indicator bar */}
-      <div className={`absolute top-0 left-0 right-0 h-1 rounded-t-lg ${getStatusColor()}`} />
+      {/* Organic status indicator */}
+      <div className={`absolute top-3 left-3 w-3 h-3 rounded-full ${getStatusColor()} ${status === 'running' ? 'animate-pulse' : ''}`} />
 
       <div className="space-y-3">
         <div className="flex items-center gap-3">
           <span className={`
             inline-flex items-center justify-center text-caption font-medium
-            px-2 py-1 rounded-md min-w-[48px] text-white
+            px-3 py-1.5 rounded-full min-w-[60px] text-white drop-shadow-sm
             ${getMethodColor(method).split(' ')[1]}
           `}>
             {method}
           </span>
-          <div className="text-primary font-semibold text-body">
+          <div className="text-white font-display text-title-3 drop-shadow-sm">
             {data?.label ?? 'API Request'}
           </div>
         </div>
 
         <div className="space-y-2">
-          <div className="text-secondary text-caption">
+          <div className="text-white/80 text-body">
             {url ? (
-              <span className="font-mono text-xs truncate block" title={url}>
+              <span className="font-mono text-caption truncate block" title={url}>
                 {url}
               </span>
             ) : (
@@ -89,8 +89,9 @@ export default function HttpNode({ data, id }: HttpNodeProps) {
 
           {status !== 'idle' && (
             <div className="flex items-center gap-2 text-caption">
-              <span className={`inline-block w-2 h-2 rounded-full ${getStatusColor()}`} />
-              <span className="capitalize text-secondary">{status}</span>
+              <span className="text-white/60">
+                <span className="capitalize">{status}</span>
+              </span>
             </div>
           )}
         </div>
@@ -100,12 +101,12 @@ export default function HttpNode({ data, id }: HttpNodeProps) {
       <Handle
         type="target"
         position={Position.Left}
-        className="!bg-white !border-2 !border-separator !w-3 !h-3 hover:!border-system-blue"
+        className="!bg-white !border-2 !border-separator !w-3 !h-3 hover:!border-coral-sunset"
       />
       <Handle
         type="source"
         position={Position.Right}
-        className="!bg-white !border-2 !border-separator !w-3 !h-3 hover:!border-system-blue"
+        className="!bg-white !border-2 !border-separator !w-3 !h-3 hover:!border-coral-sunset"
       />
     </motion.div>
   );

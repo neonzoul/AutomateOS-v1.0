@@ -115,7 +115,11 @@ export function Canvas() {
   }, [setSelectedNode]);
 
   return (
-    <div className="h-full w-full bg-canvas relative overflow-hidden" data-testid="canvas">
+    <div className="h-full w-full bg-her-scene relative overflow-hidden" data-testid="canvas">
+      {/* Cinematic ambient elements */}
+      <div className="absolute inset-0 bg-canvas-dream opacity-60 pointer-events-none" />
+      <div className="absolute top-0 left-1/3 w-96 h-96 bg-coral-sunset/10 rounded-full blur-3xl pointer-events-none animate-pulse" style={{ animationDuration: '4s' }} />
+      <div className="absolute bottom-1/4 right-1/4 w-80 h-80 bg-lavender-twilight/8 rounded-full blur-3xl pointer-events-none animate-pulse" style={{ animationDuration: '6s', animationDelay: '2s' }} />
 
       <ReactFlow
         nodes={nodes}
@@ -133,10 +137,12 @@ export function Canvas() {
         selectionOnDrag
         defaultEdgeOptions={{
           style: {
-            strokeWidth: 2,
-            stroke: '#007AFF',
+            strokeWidth: 3,
+            stroke: '#FF6B6B',
+            strokeLinecap: 'round',
+            strokeDasharray: '8,8',
           },
-          animated: false,
+          animated: true,
         }}
         proOptions={{ hideAttribution: true }}
         style={{
@@ -147,11 +153,11 @@ export function Canvas() {
 
         <Background
           variant={BackgroundVariant.Dots}
-          gap={24}
-          size={1}
-          color="#D1D1D6"
+          gap={32}
+          size={2}
+          color="#FF6B6B"
           style={{
-            opacity: 0.4,
+            opacity: 0.12,
           }}
         />
 
@@ -160,28 +166,52 @@ export function Canvas() {
           showZoom
           showFitView
           showInteractive
+          style={{
+            background: 'rgba(255, 248, 240, 0.95)',
+            backdropFilter: 'blur(12px)',
+            border: '1px solid rgba(255, 107, 107, 0.15)',
+            borderRadius: '16px',
+            boxShadow: '0 8px 32px rgba(255, 107, 107, 0.08)',
+            padding: '8px',
+          }}
         />
 
         <MiniMap
           position="bottom-left"
-          nodeStrokeWidth={1}
+          nodeStrokeWidth={2}
           nodeColor={(node) => {
-            if (node.type === 'start') return '#34C759';
-            if (node.type === 'http') return '#007AFF';
-            return '#86868B';
+            if (node.type === 'start') return '#00DFA2';
+            if (node.type === 'http') return '#FF6B6B';
+            return '#A29BFE';
           }}
-          maskColor="rgba(0, 0, 0, 0.05)"
+          maskColor="rgba(255, 107, 107, 0.08)"
+          style={{
+            background: 'rgba(255, 248, 240, 0.95)',
+            backdropFilter: 'blur(12px)',
+            border: '1px solid rgba(255, 107, 107, 0.15)',
+            borderRadius: '16px',
+            boxShadow: '0 8px 32px rgba(255, 107, 107, 0.08)',
+            overflow: 'hidden',
+          }}
         />
 
         {nodes.length === 0 && (
           <Panel position="top-center" className="pointer-events-none">
-            <div className="text-center space-y-3 max-w-sm mx-auto mt-24">
-              <h2 className="text-title-3 text-primary">
-                Welcome to AutomateOS
+            <div className="text-center space-y-4 max-w-md mx-auto mt-32">
+              <div className="w-16 h-16 mx-auto mb-6 rounded-full bg-coral-sunset/20 flex items-center justify-center animate-pulse" style={{ animationDuration: '3s' }}>
+                <div className="w-8 h-8 rounded-full bg-coral-sunset/40"></div>
+              </div>
+              <h2 className="text-title-2 text-warm-gray-800 font-display">
+                Begin Your Creative Journey
               </h2>
-              <p className="text-body text-secondary">
-                Start by adding a trigger to begin building your workflow.
+              <p className="text-body text-warm-gray-600 leading-relaxed">
+                Every masterpiece starts with a single step. Click <span className="text-coral-sunset font-medium">Start</span> above to begin crafting something beautiful.
               </p>
+              <div className="flex items-center justify-center gap-2 text-warm-gray-400 text-caption mt-6">
+                <div className="w-2 h-2 bg-coral-sunset/60 rounded-full animate-pulse"></div>
+                <span>Let your creativity flow</span>
+                <div className="w-2 h-2 bg-lavender-twilight/60 rounded-full animate-pulse" style={{ animationDelay: '1s' }}></div>
+              </div>
             </div>
           </Panel>
         )}
