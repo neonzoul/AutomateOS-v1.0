@@ -147,7 +147,7 @@ export function MainHeader({ onRun, onExport, isRunning = false }: MainHeaderPro
               color: 'rgba(255, 255, 255, 0.98)',
               backdropFilter: 'blur(20px)',
               WebkitBackdropFilter: 'blur(20px)',
-              borderRadius: '18px',
+              borderRadius: '8px',
               border: '1px solid rgba(255, 255, 255, 0.18)',
               boxShadow: isRunning
                 ? 'inset 0 1px 0 rgba(255, 255, 255, 0.1)'
@@ -209,7 +209,7 @@ export function MainHeader({ onRun, onExport, isRunning = false }: MainHeaderPro
               color: 'rgba(255, 255, 255, 0.98)',
               backdropFilter: 'blur(20px)',
               WebkitBackdropFilter: 'blur(20px)',
-              borderRadius: '18px',
+              borderRadius: '8px',
               border: '1px solid rgba(255, 255, 255, 0.18)',
               boxShadow: '0 2px 8px rgba(0, 0, 0, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.25), inset 0 -1px 0 rgba(0, 0, 0, 0.05)',
               cursor: 'pointer',

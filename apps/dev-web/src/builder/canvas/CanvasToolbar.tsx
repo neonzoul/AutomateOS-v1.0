@@ -2,7 +2,7 @@
 
 'use client';
 
-import React, { useCallback, useRef } from 'react';
+import React, { useCallback, useRef, useState } from 'react';
 import { Panel, useReactFlow } from '@xyflow/react';
 
 import { useNodes, useEdges, useGraphActions } from '../../core/state';
@@ -10,6 +10,7 @@ import { NODE_SPECS } from '../registry/nodeSpecs';
 import { exportWorkflow, importWorkflow } from '../io/importExport';
 import { useBuilderStore } from '../../core/state';
 import { WorkflowSchema } from '@automateos/workflow-schema';
+import { SamplesPopup } from './SamplesPopup';
 
 // Lightweight toast shim (replace with real UI system later)
 function notify(opts: {
@@ -44,6 +45,7 @@ export function CanvasToolbar() {
 
   // Use state to avoid hydration mismatch
   const [hasStart, setHasStart] = React.useState(false);
+  const [isSamplesOpen, setIsSamplesOpen] = useState(false);
 
   React.useEffect(() => {
     setHasStart(nodes.some((n) => n.type === 'start'));
@@ -316,9 +318,9 @@ export function CanvasToolbar() {
           📁 Import
         </label>
         <button
-          onClick={onLoadSlackTemplate}
-          title="Load Slack workflow template"
-          aria-label="Load Slack template"
+          onClick={() => setIsSamplesOpen(true)}
+          title="Browse sample workflow templates"
+          aria-label="Browse sample templates"
           style={{
             background: 'linear-gradient(135deg, #FFD93D 0%, #F4C430 100%)',
             color: 'rgba(255,255,255,0.98)',
@@ -330,34 +332,23 @@ export function CanvasToolbar() {
             cursor: 'pointer',
             transition: 'all 0.25s cubic-bezier(0.25, 0.1, 0.25, 1)',
             boxShadow: '0 2px 8px rgba(255,217,61,0.2), inset 0 1px 0 rgba(255,255,255,0.4)',
+            transform: 'scale(1)',
             fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Text", system-ui, sans-serif',
-            minWidth: '80px',
+            minWidth: '90px',
             textAlign: 'center'
           }}
-        >
-          💬 Slack
-        </button>
-        <button
-          onClick={onLoadNotionTemplate}
-          title="Load Notion workflow template"
-          aria-label="Load Notion template"
-          style={{
-            background: 'linear-gradient(135deg, #FFD93D 0%, #F4C430 100%)',
-            color: 'rgba(255,255,255,0.98)',
-            fontSize: '12px',
-            fontWeight: '600',
-            padding: '7px 14px',
-            borderRadius: '16px',
-            border: 'none',
-            cursor: 'pointer',
-            transition: 'all 0.25s cubic-bezier(0.25, 0.1, 0.25, 1)',
-            boxShadow: '0 2px 8px rgba(255,217,61,0.2), inset 0 1px 0 rgba(255,255,255,0.4)',
-            fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Text", system-ui, sans-serif',
-            minWidth: '80px',
-            textAlign: 'center'
+          onMouseEnter={(e) => {
+            const target = e.target as HTMLButtonElement;
+            target.style.transform = 'scale(1.02)';
+            target.style.boxShadow = '0 6px 16px rgba(255,217,61,0.25), inset 0 1px 0 rgba(255,255,255,0.3)';
+          }}
+          onMouseLeave={(e) => {
+            const target = e.target as HTMLButtonElement;
+            target.style.transform = 'scale(1)';
+            target.style.boxShadow = '0 4px 12px rgba(255,217,61,0.2), inset 0 1px 0 rgba(255,255,255,0.3)';
           }}
         >
-          📝 Notion
+          ✨ Samples
         </button>
 
         <div style={{ width: '1px', height: '24px', background: 'rgba(0, 0, 0, 0.08)', alignSelf: 'center', margin: '0 2px' }} />
@@ -386,6 +377,14 @@ export function CanvasToolbar() {
           🗑️ Clear
         </button>
       </div>
+
+      {/* Samples Popup */}
+      <SamplesPopup
+        isOpen={isSamplesOpen}
+        onClose={() => setIsSamplesOpen(false)}
+        onLoadSlack={onLoadSlackTemplate}
+        onLoadNotion={onLoadNotionTemplate}
+      />
     </Panel>
   );
 }
