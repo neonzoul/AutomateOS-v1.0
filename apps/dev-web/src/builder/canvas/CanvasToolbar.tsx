@@ -41,7 +41,13 @@ export function CanvasToolbar() {
   const clearUiState = useBuilderStore((s) => s.clearUiState);
   const nodes = useNodes();
   const edges = useEdges();
-  const hasStart = nodes.some((n) => n.type === 'start');
+
+  // Use state to avoid hydration mismatch
+  const [hasStart, setHasStart] = React.useState(false);
+
+  React.useEffect(() => {
+    setHasStart(nodes.some((n) => n.type === 'start'));
+  }, [nodes]);
 
   // Ref for file input to enable programmatic reset
   const fileInputRef = useRef<HTMLInputElement>(null);

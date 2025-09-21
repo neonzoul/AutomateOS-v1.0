@@ -21,8 +21,11 @@ export default function BuilderPage() {
   const { nodes, edges } = useBuilderStore();
 
   const handleRun = async () => {
-    // Validate workflow
-    const workflow = { nodes, edges, name: 'Current Workflow' };
+    // Clean workflow data for validation - remove React Flow specific properties
+    const cleanNodes = nodes.map(({ style, animated, ...node }: any) => node);
+    const cleanEdges = edges.map(({ style, animated, ...edge }: any) => edge);
+    const workflow = { nodes: cleanNodes, edges: cleanEdges };
+
     const result = WorkflowSchema.safeParse(workflow);
 
     if (result.success) {
@@ -34,7 +37,10 @@ export default function BuilderPage() {
 
   const handleExport = async () => {
     try {
-      await exportWorkflow({ nodes, edges, name: 'Workflow' });
+      // Clean data for export - remove React Flow specific properties
+      const cleanNodes = nodes.map(({ style, animated, ...node }: any) => node);
+      const cleanEdges = edges.map(({ style, animated, ...edge }: any) => edge);
+      await exportWorkflow({ nodes: cleanNodes, edges: cleanEdges, name: 'Workflow' });
     } catch (error) {
       console.error('Export failed:', error);
     }
