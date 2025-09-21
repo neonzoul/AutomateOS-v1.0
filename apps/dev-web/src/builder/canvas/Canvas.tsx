@@ -115,11 +115,44 @@ export function Canvas() {
   }, [setSelectedNode]);
 
   return (
-    <div className="h-full w-full bg-her-scene relative overflow-hidden" data-testid="canvas">
-      {/* Cinematic ambient elements */}
-      <div className="absolute inset-0 bg-canvas-dream opacity-60 pointer-events-none" />
-      <div className="absolute top-0 left-1/3 w-96 h-96 bg-coral-sunset/10 rounded-full blur-3xl pointer-events-none animate-pulse" style={{ animationDuration: '4s' }} />
-      <div className="absolute bottom-1/4 right-1/4 w-80 h-80 bg-lavender-twilight/8 rounded-full blur-3xl pointer-events-none animate-pulse" style={{ animationDuration: '6s', animationDelay: '2s' }} />
+    <div
+      className="h-full w-full relative overflow-hidden"
+      data-testid="canvas"
+      style={{
+        background: 'linear-gradient(135deg, #FF8E8E 0%, #FFB4A2 25%, #FFF8F0 100%)',
+      }}
+    >
+      {/* Her movie inspired ambient elements */}
+      <div
+        className="absolute inset-0 pointer-events-none"
+        style={{
+          background: 'radial-gradient(circle at 30% 20%, rgba(255,107,107,0.15) 0%, transparent 50%), radial-gradient(circle at 70% 80%, rgba(162,155,254,0.08) 0%, transparent 50%)',
+          opacity: 0.6
+        }}
+      />
+      <div
+        className="absolute top-0 left-1/4 pointer-events-none animate-pulse"
+        style={{
+          width: '400px',
+          height: '400px',
+          background: 'radial-gradient(circle, rgba(255,107,107,0.12) 0%, transparent 70%)',
+          borderRadius: '50%',
+          filter: 'blur(60px)',
+          animationDuration: '8s'
+        }}
+      />
+      <div
+        className="absolute bottom-1/3 right-1/3 pointer-events-none animate-pulse"
+        style={{
+          width: '320px',
+          height: '320px',
+          background: 'radial-gradient(circle, rgba(162,155,254,0.08) 0%, transparent 70%)',
+          borderRadius: '50%',
+          filter: 'blur(40px)',
+          animationDuration: '12s',
+          animationDelay: '4s'
+        }}
+      />
 
       <ReactFlow
         nodes={nodes}
@@ -137,10 +170,11 @@ export function Canvas() {
         selectionOnDrag
         defaultEdgeOptions={{
           style: {
-            strokeWidth: 3,
+            strokeWidth: 4,
             stroke: '#FF6B6B',
             strokeLinecap: 'round',
-            strokeDasharray: '8,8',
+            strokeDasharray: '12,8',
+            filter: 'drop-shadow(0 2px 4px rgba(255,107,107,0.2))',
           },
           animated: true,
         }}
@@ -153,11 +187,11 @@ export function Canvas() {
 
         <Background
           variant={BackgroundVariant.Dots}
-          gap={32}
-          size={2}
-          color="#FF6B6B"
+          gap={40}
+          size={3}
+          color="rgba(255,107,107,0.15)"
           style={{
-            opacity: 0.12,
+            opacity: 0.08,
           }}
         />
 
@@ -197,20 +231,67 @@ export function Canvas() {
 
         {nodes.length === 0 && (
           <Panel position="top-center" className="pointer-events-none">
-            <div className="text-center space-y-4 max-w-md mx-auto mt-32">
-              <div className="w-16 h-16 mx-auto mb-6 rounded-full bg-coral-sunset/20 flex items-center justify-center animate-pulse" style={{ animationDuration: '3s' }}>
-                <div className="w-8 h-8 rounded-full bg-coral-sunset/40"></div>
+            <div className="text-center space-y-6 max-w-lg mx-auto mt-40">
+              <div
+                className="w-20 h-20 mx-auto mb-8 rounded-full flex items-center justify-center animate-pulse"
+                style={{
+                  background: 'linear-gradient(135deg, #FF6B6B 0%, #FFB4A2 100%)',
+                  boxShadow: '0 12px 32px rgba(255,107,107,0.3), inset 0 1px 0 rgba(255,255,255,0.2)',
+                  animationDuration: '4s'
+                }}
+              >
+                <div
+                  className="w-10 h-10 rounded-full"
+                  style={{
+                    background: 'rgba(255,255,255,0.4)',
+                    boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.3)'
+                  }}
+                ></div>
               </div>
-              <h2 className="text-title-2 text-warm-gray-800 font-display">
+              <h2
+                style={{
+                  color: 'rgba(58,52,47,0.9)',
+                  fontSize: '36px',
+                  fontWeight: '600',
+                  fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Display", system-ui, sans-serif',
+                  letterSpacing: '-1px',
+                  marginBottom: '16px'
+                }}
+              >
                 Begin Your Creative Journey
               </h2>
-              <p className="text-body text-warm-gray-600 leading-relaxed">
-                Every masterpiece starts with a single step. Click <span className="text-coral-sunset font-medium">Start</span> above to begin crafting something beautiful.
+              <p
+                style={{
+                  color: 'rgba(58,52,47,0.75)',
+                  fontSize: '18px',
+                  fontWeight: '500',
+                  lineHeight: '1.6',
+                  letterSpacing: '-0.3px',
+                  maxWidth: '420px',
+                  margin: '0 auto'
+                }}
+              >
+                Every masterpiece starts with a single step. Click{' '}
+                <span style={{ color: '#FF6B6B', fontWeight: '600' }}>✨ Start</span>{' '}
+                above to begin crafting something beautiful.
               </p>
-              <div className="flex items-center justify-center gap-2 text-warm-gray-400 text-caption mt-6">
-                <div className="w-2 h-2 bg-coral-sunset/60 rounded-full animate-pulse"></div>
-                <span>Let your creativity flow</span>
-                <div className="w-2 h-2 bg-lavender-twilight/60 rounded-full animate-pulse" style={{ animationDelay: '1s' }}></div>
+              <div className="flex items-center justify-center gap-3 mt-8">
+                <div
+                  className="w-3 h-3 rounded-full animate-pulse"
+                  style={{
+                    background: '#FF6B6B',
+                    boxShadow: '0 2px 8px rgba(255,107,107,0.4)'
+                  }}
+                ></div>
+                <span style={{ color: 'rgba(58,52,47,0.6)', fontSize: '16px', fontWeight: '500' }}>Let your creativity flow</span>
+                <div
+                  className="w-3 h-3 rounded-full animate-pulse"
+                  style={{
+                    background: '#A29BFE',
+                    boxShadow: '0 2px 8px rgba(162,155,254,0.4)',
+                    animationDelay: '2s'
+                  }}
+                ></div>
               </div>
             </div>
           </Panel>

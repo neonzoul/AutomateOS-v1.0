@@ -199,27 +199,86 @@ export function CanvasToolbar() {
 
   return (
     <Panel position="top-left" style={{ zIndex: 1000 }}>
-      <div className="flex gap-3 bg-cream-warm/95 backdrop-blur-xl px-6 py-4 rounded-3xl border border-coral-sunset/20 shadow-overlay">
+      <div
+        className="flex gap-4 backdrop-blur-xl"
+        style={{
+          background: 'rgba(255,248,240,0.95)',
+          padding: '16px 24px',
+          borderRadius: '32px',
+          border: '2px solid rgba(255,255,255,0.4)',
+          boxShadow: '0 16px 48px rgba(255,107,107,0.15), 0 4px 12px rgba(255,107,107,0.08), inset 0 1px 0 rgba(255,255,255,0.3)'
+        }}
+      >
         {/* Node Creation Buttons */}
         <button
-          className={`px-5 py-2.5 text-body font-medium rounded-full transition-all duration-300 ease-out drop-shadow-sm ${
-            hasStart
-              ? 'bg-warm-gray-300 text-warm-gray-500 cursor-not-allowed'
-              : 'bg-sage-whisper text-white hover:bg-sage-whisper/90 hover:scale-105 hover:shadow-lg'
-          }`}
           onClick={(e) => addAtCursor(e, 'start')}
           disabled={hasStart}
           title={hasStart ? 'Only one workflow trigger allowed' : 'Add workflow trigger'}
           aria-label={
             hasStart ? 'Only one workflow trigger allowed' : 'Add workflow trigger'
           }
+          style={{
+            background: hasStart
+              ? 'linear-gradient(135deg, #E5DFD9 0%, #C4BCB5 100%)'
+              : 'linear-gradient(135deg, #FF6B6B 0%, #FFB4A2 100%)',
+            color: hasStart ? 'rgba(117,107,98,0.8)' : 'rgba(255,255,255,0.95)',
+            fontSize: '16px',
+            fontWeight: '600',
+            padding: '12px 20px',
+            borderRadius: '24px',
+            border: '2px solid rgba(255,255,255,0.3)',
+            cursor: hasStart ? 'not-allowed' : 'pointer',
+            transition: 'all 0.4s ease',
+            boxShadow: hasStart
+              ? '0 4px 12px rgba(0,0,0,0.08)'
+              : '0 8px 24px rgba(255,107,107,0.25), inset 0 1px 0 rgba(255,255,255,0.2)',
+            transform: 'scale(1)',
+            fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Display", system-ui, sans-serif'
+          }}
+          onMouseEnter={(e) => {
+            if (!hasStart) {
+              const target = e.target as HTMLButtonElement;
+              target.style.transform = 'scale(1.05)';
+              target.style.boxShadow = '0 12px 32px rgba(255,107,107,0.35), inset 0 1px 0 rgba(255,255,255,0.2)';
+            }
+          }}
+          onMouseLeave={(e) => {
+            if (!hasStart) {
+              const target = e.target as HTMLButtonElement;
+              target.style.transform = 'scale(1)';
+              target.style.boxShadow = '0 8px 24px rgba(255,107,107,0.25), inset 0 1px 0 rgba(255,255,255,0.2)';
+            }
+          }}
         >
           ✨ Start
         </button>
         <button
-          className="px-5 py-2.5 text-body font-medium rounded-full bg-coral-sunset text-white hover:bg-coral-sunset/90 hover:scale-105 hover:shadow-lg transition-all duration-300 ease-out drop-shadow-sm"
           onClick={(e) => addAtCursor(e, 'http')}
           aria-label="Add HTTP request"
+          style={{
+            background: 'linear-gradient(135deg, #A29BFE 0%, #D1CEFF 100%)',
+            color: 'rgba(255,255,255,0.95)',
+            fontSize: '16px',
+            fontWeight: '600',
+            padding: '12px 20px',
+            borderRadius: '24px',
+            border: '2px solid rgba(255,255,255,0.3)',
+            cursor: 'pointer',
+            transition: 'all 0.4s ease',
+            boxShadow: '0 8px 24px rgba(162,155,254,0.25), inset 0 1px 0 rgba(255,255,255,0.2)',
+            transform: 'scale(1)',
+            fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Display", system-ui, sans-serif'
+          }}
+          onMouseEnter={(e) => {
+            const target = e.target as HTMLButtonElement;
+            target.style.transform = 'scale(1.05)';
+            target.style.boxShadow = '0 12px 32px rgba(162,155,254,0.35), inset 0 1px 0 rgba(255,255,255,0.2)';
+          }}
+          onMouseLeave={(e) => {
+            const target = e.target as HTMLButtonElement;
+            target.style.transform = 'scale(1)';
+            target.style.boxShadow = '0 8px 24px rgba(162,155,254,0.25), inset 0 1px 0 rgba(255,255,255,0.2)';
+          }}
         >
           🌐 HTTP
         </button>

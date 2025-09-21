@@ -44,16 +44,22 @@ export default function HttpNode({ data, id }: HttpNodeProps) {
       data-id="http"
       data-node-id={id}
       className={`
-        relative rounded-3xl border-2 border-coral-sunset/30 px-8 py-6
-        min-w-[240px] cursor-pointer transition-all duration-300 ease-out
-        shadow-lg hover:shadow-xl backdrop-blur-sm
+        relative cursor-pointer transition-all duration-500 ease-out
         ${isSelected
-          ? 'border-coral-sunset shadow-[0_0_0_3px_rgba(255,107,107,0.3)] scale-105'
-          : 'hover:border-coral-sunset/60 hover:scale-102'
+          ? 'scale-105'
+          : 'hover:scale-102'
         }
       `}
       style={{
-        background: 'linear-gradient(135deg, #FF6B6B 0%, #FF8E8E 50%, #FFB4A2 100%)'
+        background: 'linear-gradient(135deg, #A29BFE 0%, #B8B5FF 30%, #D1CEFF 100%)',
+        borderRadius: '32px',
+        padding: '24px 32px',
+        minWidth: '260px',
+        border: isSelected ? '3px solid rgba(255,255,255,0.6)' : '2px solid rgba(255,255,255,0.3)',
+        boxShadow: isSelected
+          ? '0 20px 60px rgba(162,155,254,0.4), 0 8px 24px rgba(162,155,254,0.3), inset 0 1px 0 rgba(255,255,255,0.2)'
+          : '0 12px 32px rgba(162,155,254,0.25), 0 4px 12px rgba(162,155,254,0.15), inset 0 1px 0 rgba(255,255,255,0.15)',
+        backdropFilter: 'blur(20px)',
       }}
       variants={nodeEntranceVariants}
       initial="initial"
@@ -62,39 +68,97 @@ export default function HttpNode({ data, id }: HttpNodeProps) {
       whileTap={pressEffect}
       tabIndex={0}
     >
-      {/* Organic status indicator */}
-      <div className={`absolute top-3 left-3 w-3 h-3 rounded-full ${getStatusColor()} ${status === 'running' ? 'animate-pulse' : ''}`} />
+      {/* Organic status indicator - Her style */}
+      <div
+        className={`absolute top-4 left-4 w-4 h-4 rounded-full ${status === 'running' ? 'animate-pulse' : ''}`}
+        style={{
+          background: status === 'running' ? '#FFD93D' :
+                     status === 'succeeded' ? '#00DFA2' :
+                     status === 'failed' ? '#FF6B6B' : 'rgba(255,255,255,0.4)',
+          boxShadow: '0 2px 8px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.3)'
+        }}
+      />
 
       <div className="space-y-3">
-        <div className="flex items-center gap-3">
-          <span className={`
-            inline-flex items-center justify-center text-caption font-medium
-            px-3 py-1.5 rounded-full min-w-[60px] text-white drop-shadow-sm
-            ${getMethodColor(method).split(' ')[1]}
-          `}>
+        <div className="flex items-center gap-4">
+          <span
+            style={{
+              background: method === 'GET' ? '#00DFA2' :
+                         method === 'POST' ? '#FF6B6B' :
+                         method === 'PUT' ? '#FFD93D' :
+                         method === 'DELETE' ? '#FF6B6B' : '#A29BFE',
+              color: 'rgba(255,255,255,0.95)',
+              fontSize: '14px',
+              fontWeight: '600',
+              padding: '8px 16px',
+              borderRadius: '20px',
+              minWidth: '64px',
+              textAlign: 'center',
+              boxShadow: '0 4px 12px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.2)',
+              letterSpacing: '0.5px'
+            }}
+          >
             {method}
           </span>
-          <div className="text-white font-display text-title-3 drop-shadow-sm">
-            {data?.label ?? 'API Request'}
+          <div
+            style={{
+              color: 'rgba(255,255,255,0.95)',
+              fontSize: '22px',
+              fontWeight: '600',
+              fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Display", system-ui, sans-serif',
+              letterSpacing: '-0.5px',
+              textShadow: '0 2px 4px rgba(0,0,0,0.1)'
+            }}
+          >
+            🌐 {data?.label ?? 'API Request'}
           </div>
         </div>
 
-        <div className="space-y-2">
-          <div className="text-white/80 text-body">
+        <div className="space-y-3 mt-3">
+          <div
+            style={{
+              color: 'rgba(255,255,255,0.85)',
+              fontSize: '15px',
+              fontWeight: '500',
+              lineHeight: '1.4'
+            }}
+          >
             {url ? (
-              <span className="font-mono text-caption truncate block" title={url}>
+              <span
+                className="font-mono truncate block"
+                title={url}
+                style={{
+                  fontSize: '13px',
+                  backgroundColor: 'rgba(255,255,255,0.1)',
+                  padding: '8px 12px',
+                  borderRadius: '12px',
+                  border: '1px solid rgba(255,255,255,0.15)'
+                }}
+              >
                 {url}
               </span>
             ) : (
-              <span className="italic">Configure request URL</span>
+              <span
+                className="italic"
+                style={{
+                  color: 'rgba(255,255,255,0.65)'
+                }}
+              >
+                Configure request URL
+              </span>
             )}
           </div>
 
           {status !== 'idle' && (
-            <div className="flex items-center gap-2 text-caption">
-              <span className="text-white/60">
-                <span className="capitalize">{status}</span>
-              </span>
+            <div
+              style={{
+                color: 'rgba(255,255,255,0.75)',
+                fontSize: '14px',
+                textTransform: 'capitalize',
+                marginTop: '8px'
+              }}
+            >
+              {status}
             </div>
           )}
         </div>
@@ -104,12 +168,28 @@ export default function HttpNode({ data, id }: HttpNodeProps) {
       <Handle
         type="target"
         position={Position.Left}
-        className="!bg-white !border-2 !border-separator !w-3 !h-3 hover:!border-coral-sunset"
+        style={{
+          background: 'rgba(255,255,255,0.9)',
+          border: '2px solid rgba(255,255,255,0.6)',
+          width: '14px',
+          height: '14px',
+          boxShadow: '0 4px 12px rgba(162,155,254,0.2), inset 0 1px 0 rgba(255,255,255,0.3)',
+          transition: 'all 0.3s ease'
+        }}
+        className="hover:!scale-110"
       />
       <Handle
         type="source"
         position={Position.Right}
-        className="!bg-white !border-2 !border-separator !w-3 !h-3 hover:!border-coral-sunset"
+        style={{
+          background: 'rgba(255,255,255,0.9)',
+          border: '2px solid rgba(255,255,255,0.6)',
+          width: '14px',
+          height: '14px',
+          boxShadow: '0 4px 12px rgba(162,155,254,0.2), inset 0 1px 0 rgba(255,255,255,0.3)',
+          transition: 'all 0.3s ease'
+        }}
+        className="hover:!scale-110"
       />
     </motion.div>
   );
