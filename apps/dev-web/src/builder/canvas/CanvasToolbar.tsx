@@ -199,13 +199,13 @@ export function CanvasToolbar() {
 
   return (
     <Panel position="top-left" style={{ zIndex: 1000 }}>
-      <div className="flex gap-2 bg-white/95 backdrop-blur-md px-3 py-2 rounded-lg border border-gray-200 shadow-sm">
+      <div className="flex gap-3 bg-cream-warm/95 backdrop-blur-xl px-6 py-4 rounded-3xl border border-coral-sunset/20 shadow-overlay">
         {/* Node Creation Buttons */}
         <button
-          className={`px-3 py-1.5 text-sm font-medium rounded transition-all duration-200 ${
+          className={`px-5 py-2.5 text-body font-medium rounded-full transition-all duration-300 ease-out drop-shadow-sm ${
             hasStart
-              ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
-              : 'bg-green-500 text-white hover:bg-green-600'
+              ? 'bg-warm-gray-300 text-warm-gray-500 cursor-not-allowed'
+              : 'bg-sage-whisper text-white hover:bg-sage-whisper/90 hover:scale-105 hover:shadow-lg'
           }`}
           onClick={(e) => addAtCursor(e, 'start')}
           disabled={hasStart}
@@ -214,20 +214,20 @@ export function CanvasToolbar() {
             hasStart ? 'Only one workflow trigger allowed' : 'Add workflow trigger'
           }
         >
-          Start
+          ✨ Start
         </button>
         <button
-          className="px-3 py-1.5 text-sm font-medium rounded bg-blue-500 text-white hover:bg-blue-600 transition-all duration-200"
+          className="px-5 py-2.5 text-body font-medium rounded-full bg-coral-sunset text-white hover:bg-coral-sunset/90 hover:scale-105 hover:shadow-lg transition-all duration-300 ease-out drop-shadow-sm"
           onClick={(e) => addAtCursor(e, 'http')}
           aria-label="Add HTTP request"
         >
-          HTTP
+          🌐 HTTP
         </button>
 
-        <div className="w-px bg-gray-300 h-6 self-center" />
+        <div className="w-px bg-coral-sunset/20 h-8 self-center" />
 
         {/* Import/Export Actions */}
-        <label className="px-3 py-1.5 text-sm font-medium rounded bg-gray-500 text-white hover:bg-gray-600 transition-all duration-200 cursor-pointer">
+        <label className="px-5 py-2.5 text-body font-medium rounded-full bg-lavender-twilight text-white hover:bg-lavender-twilight/90 hover:scale-105 hover:shadow-lg transition-all duration-300 ease-out cursor-pointer drop-shadow-sm">
           <input
             ref={fileInputRef}
             type="file"
@@ -237,43 +237,43 @@ export function CanvasToolbar() {
             data-testid="import-input"
             aria-label="Import workflow template"
           />
-          Import
+          📁 Import
         </label>
         <button
-          className="px-3 py-1.5 text-sm font-medium rounded bg-gray-500 text-white hover:bg-gray-600 transition-all duration-200"
+          className="px-5 py-2.5 text-body font-medium rounded-full bg-lavender-twilight text-white hover:bg-lavender-twilight/90 hover:scale-105 hover:shadow-lg transition-all duration-300 ease-out drop-shadow-sm"
           onClick={onExport}
           data-testid="export-btn"
           aria-label="Export workflow"
         >
-          Export
+          💾 Export
         </button>
         <button
-          className="px-3 py-1.5 text-sm font-medium rounded bg-purple-500 text-white hover:bg-purple-600 transition-all duration-200"
+          className="px-5 py-2.5 text-body font-medium rounded-full bg-golden-hour text-white hover:bg-golden-hour/90 hover:scale-105 hover:shadow-lg transition-all duration-300 ease-out drop-shadow-sm"
           onClick={onLoadSlackTemplate}
           title="Load Slack workflow template"
           aria-label="Load Slack template"
         >
-          Slack
+          💬 Slack
         </button>
         <button
-          className="px-3 py-1.5 text-sm font-medium rounded bg-blue-600 text-white hover:bg-blue-700 transition-all duration-200"
+          className="px-5 py-2.5 text-body font-medium rounded-full bg-golden-hour text-white hover:bg-golden-hour/90 hover:scale-105 hover:shadow-lg transition-all duration-300 ease-out drop-shadow-sm"
           onClick={onLoadNotionTemplate}
           title="Load Notion workflow template"
           aria-label="Load Notion template"
         >
-          Notion
+          📝 Notion
         </button>
 
-        <div className="w-px bg-gray-300 h-6 self-center" />
+        <div className="w-px bg-coral-sunset/20 h-8 self-center" />
 
         {/* Clear Action */}
         <button
-          className="px-3 py-1.5 text-sm font-medium rounded bg-red-500 text-white hover:bg-red-600 transition-all duration-200"
+          className="px-5 py-2.5 text-body font-medium rounded-full bg-warm-gray-400 text-white hover:bg-warm-gray-500 hover:scale-105 hover:shadow-lg transition-all duration-300 ease-out drop-shadow-sm"
           onClick={handleClearWorkflow}
           title="Clear workflow"
           aria-label="Clear workflow"
         >
-          Clear
+          🗑️ Clear
         </button>
       </div>
     </Panel>
