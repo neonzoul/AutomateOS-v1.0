@@ -5,7 +5,7 @@
 import React from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useSelectedNode, useSelectionActions } from '@/core/state';
+import { useSelectedNode, useSelectionActions, useBuilderStore } from '@/core/state';
 import { NODE_SPECS } from '@/builder/registry/nodeSpecs';
 import { HttpConfigSchema, type HttpConfig } from '@automateos/workflow-schema';
 import { z } from 'zod';
