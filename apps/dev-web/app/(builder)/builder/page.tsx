@@ -92,7 +92,16 @@ export default function BuilderPage() {
           </div>
 
           {/* Run Panel - Fixed height */}
-          <div className="custom-scrollbar" style={{ height: '300px', overflowY: 'scroll', overflowX: 'auto' }}>
+          <div
+            className="custom-scrollbar"
+            style={{
+              height: '300px',
+              overflowY: 'scroll',
+              overflowX: 'auto',
+              background: 'linear-gradient(180deg, #FFF9F2 0%, #FFF5E6 50%, #FFEDE0 100%)',
+              backdropFilter: 'blur(20px)'
+            }}
+          >
             <RunPanel />
           </div>
         </div>

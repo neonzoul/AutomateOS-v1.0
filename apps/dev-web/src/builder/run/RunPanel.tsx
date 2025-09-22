@@ -125,8 +125,6 @@ export function RunPanel() {
     <aside
       className="p-8 space-y-6"
       style={{
-        background: 'linear-gradient(180deg, #FFF9F2 0%, #FFF5E6 50%, #FFEDE0 100%)',
-        backdropFilter: 'blur(20px)',
         height: '100%'
       }}
       aria-label="Run Panel"
