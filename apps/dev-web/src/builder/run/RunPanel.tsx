@@ -66,8 +66,11 @@ export function RunPanel() {
         })),
       };
 
-      console.log('DEBUG: Current nodes data:', nodes.map(n => ({ id: n.id, type: n.type, config: n.data?.config })));
-      console.log('DEBUG: Workflow JSON being sent:', JSON.stringify(workflowJson, null, 2));
+      // Debug: Log what we're actually sending
+      console.log('=== FRONTEND DEBUG ===');
+      console.log('Raw nodes from store:', nodes);
+      console.log('Mapped workflow nodes:', workflowJson.nodes);
+      console.log('Full workflow JSON:', JSON.stringify(workflowJson, null, 2));
 
       await startRun(workflowJson);
     } catch (error) {

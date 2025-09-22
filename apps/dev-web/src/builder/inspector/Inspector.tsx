@@ -155,7 +155,7 @@ function HttpConfigForm({
     resolver: zodResolver(HttpConfigFormSchema),
     defaultValues: {
       method: currentConfig?.method ?? 'GET',
-      url: currentConfig?.url ?? '',
+      url: currentConfig?.url ?? 'https://api.example.com',
       headers: JSON.stringify(currentConfig?.headers ?? {}, null, 2),
       body: currentConfig?.body ?? '',
       auth: currentConfig?.auth ? {
@@ -205,6 +205,15 @@ function HttpConfigForm({
 
     return transformed;
   };
+
+  // Initialize form with proper URL if not set
+  React.useEffect(() => {
+    if (!currentConfig?.url) {
+      console.log('No URL in currentConfig, setting default URL');
+      setValue('url', 'https://api.example.com');
+      updateNodeConfig(nodeId, { url: 'https://api.example.com' });
+    }
+  }, [currentConfig, nodeId, updateNodeConfig, setValue]);
 
   // Watch form changes and sync to store when valid
   React.useEffect(() => {
