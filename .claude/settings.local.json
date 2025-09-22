@@ -35,7 +35,15 @@
       "Bash(pnpm -C apps/dev-web test)",
       "Bash(pnpm:*)",
       "WebFetch(domain:localhost)",
-      "WebFetch(domain:172.27.208.1)"
+      "WebFetch(domain:172.27.208.1)",
+      "Bash(netstat:*)",
+      "Bash(findstr:*)",
+      "Bash(taskkill:*)",
+      "Bash(docker compose:*)",
+      "Bash(curl:*)",
+      "Bash(docker logs:*)",
+      "Bash(set NEXT_PUBLIC_API_BASE=http://localhost:8080)",
+      "Bash(gh pr create:*)"
     ],
     "deny": [],
     "ask": []
