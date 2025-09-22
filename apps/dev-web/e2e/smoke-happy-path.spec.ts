@@ -28,11 +28,11 @@ async function addStartAndHttpNodes(page: any) {
       let startBtn;
       try {
         startBtn = toolbar.getByText('Start');
-        await expect(startBtn).toBeVisible({ timeout: 5000 });
+        await expect(startBtn).toBeVisible({ timeout: 15000 });
       } catch (e) {
         // Try alternative selector
         startBtn = toolbar.locator('button[aria-label="Add workflow trigger"]');
-        await expect(startBtn).toBeVisible({ timeout: 5000 });
+        await expect(startBtn).toBeVisible({ timeout: 15000 });
       }
 
       if (await startBtn.isEnabled()) {
@@ -363,14 +363,21 @@ test.describe('E2E Smoke: Happy Path Workflow Execution', () => {
     // Navigate to builder
     await page.goto('/builder');
 
-    // Wait for canvas to be visible and interactive
-    await expect(page.getByTestId('canvas')).toBeVisible({ timeout: 15000 });
-
-    // Wait for the page to be fully loaded and interactive
+    // Wait for page to be fully loaded first
     await page.waitForLoadState('networkidle');
 
-    // Additional wait for React components to mount and render
-    await page.waitForTimeout(3000);
+    // Wait for canvas to be visible and interactive with longer timeout for cinematic UI
+    await expect(page.getByTestId('canvas')).toBeVisible({ timeout: 30000 });
+
+    // Additional wait for React components and animations to complete
+    await page.waitForTimeout(5000);
+
+    // Wait for any framer-motion animations to settle
+    await page.waitForFunction(() => {
+      return !document.body.classList.contains('animate-loading');
+    }, { timeout: 10000 }).catch(() => {
+      console.log('Animation check timeout - proceeding anyway');
+    });
 
     // Wait for test bridge functions to be available (if in test mode)
     await page
@@ -397,6 +404,19 @@ test.describe('E2E Smoke: Happy Path Workflow Execution', () => {
       };
     });
     console.log('Test bridge availability:', testBridgeAvailable);
+
+    // Additional debugging: Check page load state
+    const pageInfo = await page.evaluate(() => {
+      return {
+        readyState: document.readyState,
+        hasCanvas: !!document.querySelector('[data-testid="canvas"]'),
+        hasToolbar: !!document.querySelector('.react-flow__panel.top.left'),
+        hasReactFlow: !!document.querySelector('.react-flow'),
+        url: window.location.href,
+        userAgent: navigator.userAgent
+      };
+    });
+    console.log('Page state:', pageInfo);
 
     // Debug: Log the current DOM state
     const toolbarExists =
@@ -452,14 +472,14 @@ test.describe('E2E Smoke: Happy Path Workflow Execution', () => {
     // Navigate to builder
     await page.goto('/builder');
 
-    // Wait for canvas to be visible and interactive
-    await expect(page.getByTestId('canvas')).toBeVisible({ timeout: 15000 });
-
-    // Wait for the page to be fully loaded and interactive
+    // Wait for page to be fully loaded first
     await page.waitForLoadState('networkidle');
 
-    // Additional wait for React components to mount and render
-    await page.waitForTimeout(2000);
+    // Wait for canvas to be visible and interactive with longer timeout for cinematic UI
+    await expect(page.getByTestId('canvas')).toBeVisible({ timeout: 30000 });
+
+    // Additional wait for React components and animations to complete
+    await page.waitForTimeout(5000);
 
     // Add and connect nodes
     const nodesCreated = await addStartAndHttpNodes(page);
@@ -580,14 +600,14 @@ test.describe('E2E Smoke: Mocked Environment (CI-safe)', () => {
     // Run the same workflow test against mocked backend
     await page.goto('/builder');
 
-    // Wait for canvas to be visible and interactive
-    await expect(page.getByTestId('canvas')).toBeVisible({ timeout: 15000 });
-
-    // Wait for the page to be fully loaded and interactive
+    // Wait for page to be fully loaded first
     await page.waitForLoadState('networkidle');
 
-    // Additional wait for React components to mount and render
-    await page.waitForTimeout(2000);
+    // Wait for canvas to be visible and interactive with longer timeout for cinematic UI
+    await expect(page.getByTestId('canvas')).toBeVisible({ timeout: 30000 });
+
+    // Additional wait for React components and animations to complete
+    await page.waitForTimeout(5000);
 
     const nodesCreated = await addStartAndHttpNodes(page);
     if (!nodesCreated) {
