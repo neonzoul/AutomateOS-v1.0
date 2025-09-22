@@ -37,7 +37,7 @@ export function MainHeader({ onRun, onExport, isRunning = false }: MainHeaderPro
         right: 0,
         height: '56px',
         zIndex: 9999,
-        background: 'linear-gradient(135deg, #FF6B6B 0%, #E84B4B 100%)',
+        background: '#E84B4B',
         backdropFilter: 'saturate(180%) blur(20px)',
         WebkitBackdropFilter: 'saturate(180%) blur(20px)',
         borderBottom: scrolled ? '1px solid rgba(255, 255, 255, 0.1)' : '1px solid transparent',

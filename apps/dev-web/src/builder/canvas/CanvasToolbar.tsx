@@ -197,16 +197,29 @@ export function CanvasToolbar() {
   return (
     <Panel position="top-left" style={{ zIndex: 1000 }}>
       <div
-        className="flex backdrop-blur-xl"
+        className="flex items-center backdrop-blur-xl"
         style={{
           gap: '4px',
-          background: 'rgba(255, 255, 255, 0.98)',
+          background: 'linear-gradient(145deg, #B8BCC8 0%, #A8ADB8 25%, #9CA3AF 50%, #8B959E 75%, #7A8490 100%)',
           padding: '6px 8px',
           borderRadius: '20px',
-          border: '1px solid rgba(0, 0, 0, 0.06)',
-          boxShadow: '0 2px 12px rgba(0, 0, 0, 0.08), 0 1px 3px rgba(0, 0, 0, 0.04), inset 0 1px 0 rgba(255, 255, 255, 0.9)'
+          border: '1px solid rgba(156, 163, 175, 0.25)',
+          boxShadow: '0 1px 3px rgba(0, 0, 0, 0.15), 0 4px 12px rgba(0, 0, 0, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.3), inset 0 -1px 0 rgba(0, 0, 0, 0.12), inset 1px 0 0 rgba(255, 255, 255, 0.15), inset -1px 0 0 rgba(0, 0, 0, 0.06)',
+          position: 'relative',
+          overflow: 'hidden'
         }}
       >
+        {/* Aluminum texture overlay */}
+        <div
+          style={{
+            position: 'absolute',
+            inset: 0,
+            background: 'linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.1) 50%, transparent 100%)',
+            pointerEvents: 'none',
+            borderRadius: '20px'
+          }}
+        />
+
         {/* Node Creation Buttons */}
         <button
           onClick={(e) => addAtCursor(e, 'start')}
@@ -233,7 +246,10 @@ export function CanvasToolbar() {
             transform: 'scale(1)',
             fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Text", system-ui, sans-serif',
             minWidth: '70px',
-            textAlign: 'center'
+            textAlign: 'center',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center'
           }}
           onMouseEnter={(e) => {
             if (!hasStart) {
@@ -250,7 +266,10 @@ export function CanvasToolbar() {
             }
           }}
         >
-          ✨ Start
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" style={{ marginRight: '6px' }}>
+            <path d="M8 5v14l11-7z"/>
+          </svg>
+          Start
         </button>
         <button
           onClick={(e) => addAtCursor(e, 'http')}
@@ -269,7 +288,10 @@ export function CanvasToolbar() {
             transform: 'scale(1)',
             fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Text", system-ui, sans-serif',
             minWidth: '70px',
-            textAlign: 'center'
+            textAlign: 'center',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center'
           }}
           onMouseEnter={(e) => {
             const target = e.target as HTMLButtonElement;
@@ -282,7 +304,10 @@ export function CanvasToolbar() {
             target.style.boxShadow = '0 4px 12px rgba(162,155,254,0.15), inset 0 1px 0 rgba(255,255,255,0.3)';
           }}
         >
-          🌐 HTTP
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" style={{ marginRight: '6px' }}>
+            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.94-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/>
+          </svg>
+          HTTP
         </button>
 
         <div style={{ width: '1px', height: '24px', background: 'rgba(0, 0, 0, 0.08)', alignSelf: 'center', margin: '0 2px' }} />
@@ -303,7 +328,9 @@ export function CanvasToolbar() {
             fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Text", system-ui, sans-serif',
             minWidth: '80px',
             textAlign: 'center',
-            display: 'inline-block'
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center'
           }}
         >
           <input
@@ -315,7 +342,10 @@ export function CanvasToolbar() {
             data-testid="import-input"
             aria-label="Import workflow template"
           />
-          📁 Import
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" style={{ marginRight: '6px' }}>
+            <path d="M5,20H19V18H5M19,9H15V3H9V9H5L12,16L19,9Z"/>
+          </svg>
+          Import
         </label>
         <button
           onClick={() => setIsSamplesOpen(true)}
@@ -335,7 +365,10 @@ export function CanvasToolbar() {
             transform: 'scale(1)',
             fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Text", system-ui, sans-serif',
             minWidth: '90px',
-            textAlign: 'center'
+            textAlign: 'center',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center'
           }}
           onMouseEnter={(e) => {
             const target = e.target as HTMLButtonElement;
@@ -348,7 +381,10 @@ export function CanvasToolbar() {
             target.style.boxShadow = '0 4px 12px rgba(255,217,61,0.2), inset 0 1px 0 rgba(255,255,255,0.3)';
           }}
         >
-          ✨ Samples
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" style={{ marginRight: '6px' }}>
+            <path d="M3,11H11V3H3M3,21H11V13H3M13,21H21V13H13M13,3V11H21V3"/>
+          </svg>
+          Samples
         </button>
 
         <div style={{ width: '1px', height: '24px', background: 'rgba(0, 0, 0, 0.08)', alignSelf: 'center', margin: '0 2px' }} />
@@ -371,10 +407,16 @@ export function CanvasToolbar() {
             boxShadow: '0 2px 8px rgba(196,188,181,0.2), inset 0 1px 0 rgba(255,255,255,0.4)',
             fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Text", system-ui, sans-serif',
             minWidth: '70px',
-            textAlign: 'center'
+            textAlign: 'center',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center'
           }}
         >
-          🗑️ Clear
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" style={{ marginRight: '6px' }}>
+            <path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/>
+          </svg>
+          Clear
         </button>
       </div>
 

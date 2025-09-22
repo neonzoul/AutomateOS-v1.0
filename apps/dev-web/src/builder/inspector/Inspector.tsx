@@ -10,6 +10,7 @@ import { NODE_SPECS } from '@/builder/registry/nodeSpecs';
 import { HttpConfigSchema, type HttpConfig } from '@automateos/workflow-schema';
 import { z } from 'zod';
 import { useCredentialList, useCredentials } from '@/core/credentials';
+import { CustomDropdown } from '@/components/ui/CustomDropdown';
 
 // Form schema with string headers (for JSON input)
 const HttpConfigFormSchema = z.object({
@@ -60,7 +61,13 @@ export function Inspector() {
   }
 
   return (
-    <div className="p-8 space-y-8 bg-warm-glow min-h-full">
+    <div
+      className="p-8 space-y-8"
+      style={{
+        background: 'linear-gradient(180deg, #FFF9F2 0%, #FFF5E6 50%, #FFEDE0 100%)',
+        backdropFilter: 'blur(20px)',
+      }}
+    >
       <div className="space-y-4">
         <div className="flex items-center gap-3 mb-2">
           <div className={`p-2 rounded-xl border ${selected.type === 'start'
@@ -236,17 +243,22 @@ function HttpConfigForm({
         <div className="grid grid-cols-2 gap-4">
           <div>
             <label className="block">
-              <span className="text-body font-medium text-warm-gray-700 mb-3 block">Request Method</span>
-              <select
-                {...register('method')}
-                className="w-full rounded-xl border-2 border-coral-sunset/20 px-4 py-3 text-body focus:border-coral-sunset focus:ring-4 focus:ring-coral-sunset/10 transition-all duration-300 ease-out bg-cream-warm backdrop-blur-sm"
-              >
-                {['GET', 'POST', 'PUT', 'PATCH', 'DELETE'].map((m) => (
-                  <option key={m} value={m}>
-                    {m}
-                  </option>
-                ))}
-              </select>
+              <span className="text-body font-medium text-warm-gray-700 mb-3 block flex items-center gap-2">
+                <div className="w-1.5 h-1.5 rounded-full bg-coral-sunset/60"></div>
+                Request Method
+              </span>
+              <CustomDropdown
+                options={[
+                  { value: 'GET', label: 'GET' },
+                  { value: 'POST', label: 'POST' },
+                  { value: 'PUT', label: 'PUT' },
+                  { value: 'PATCH', label: 'PATCH' },
+                  { value: 'DELETE', label: 'DELETE' },
+                ]}
+                value={watch('method') || 'GET'}
+                onChange={(value) => setValue('method', value as any)}
+                placeholder="Select method"
+              />
               {errors.method && (
                 <p className="mt-2 text-body text-coral-sunset">{errors.method.message}</p>
               )}
@@ -255,18 +267,22 @@ function HttpConfigForm({
 
           <div>
             <label className="block">
-              <span className="text-body font-medium text-warm-gray-700 mb-3 block">API Key</span>
-              <select
-                {...register('auth.credentialName')}
-                className="w-full rounded-xl border-2 border-coral-sunset/20 px-4 py-3 text-body focus:border-coral-sunset focus:ring-4 focus:ring-coral-sunset/10 transition-all duration-300 ease-out bg-cream-warm backdrop-blur-sm"
-              >
-                <option value="">No authentication needed</option>
-                {credentialList.map((cred) => (
-                  <option key={cred.name} value={cred.name}>
-                    {cred.name} ({cred.maskedPreview})
-                  </option>
-                ))}
-              </select>
+              <span className="text-body font-medium text-warm-gray-700 mb-3 block flex items-center gap-2">
+                <div className="w-1.5 h-1.5 rounded-full bg-golden-hour/60"></div>
+                API Key
+              </span>
+              <CustomDropdown
+                options={[
+                  { value: '', label: 'No authentication needed' },
+                  ...credentialList.map((cred) => ({
+                    value: cred.name,
+                    label: `${cred.name} (${cred.maskedPreview})`
+                  }))
+                ]}
+                value={watch('auth.credentialName') || ''}
+                onChange={(value) => setValue('auth.credentialName', value)}
+                placeholder="Select authentication"
+              />
               {errors.auth?.credentialName && (
                 <p className="mt-2 text-body text-coral-sunset">
                   {errors.auth.credentialName.message}
