@@ -32,7 +32,7 @@ describe('RunPanel', () => {
 
     expect(btn).toBeInTheDocument();
     expect(btn.disabled).toBe(true);
-    expect(status.textContent).toMatch(/No runs yet/i);
+    expect(status.textContent).toMatch(/Ready to Run/i);
   });
 
   it('enables run button when nodes are present and run is idle', () => {
@@ -65,7 +65,7 @@ describe('RunPanel', () => {
 
     render(<RunPanel />);
 
-    expect(screen.getByText('Logs')).toBeInTheDocument();
+    expect(screen.getByText('Execution Logs')).toBeInTheDocument();
     expect(screen.getByText('Test log message 1')).toBeInTheDocument();
     expect(screen.getByText('Test log message 2')).toBeInTheDocument();
   });
@@ -280,8 +280,8 @@ describe('RunPanel', () => {
       const { rerender } = render(<RunPanel />);
 
       // Initially no logs - should show "No runs yet"
-      expect(screen.getByTestId('run-status')).toHaveTextContent('No runs yet');
-      expect(screen.queryByText('Logs')).not.toBeInTheDocument();
+      expect(screen.getByTestId('run-status')).toHaveTextContent('Ready to Run');
+      expect(screen.queryByText('Execution Logs')).not.toBeInTheDocument();
 
       // Add logs - should show logs section
       act(() => {
@@ -289,7 +289,7 @@ describe('RunPanel', () => {
       });
       rerender(<RunPanel />);
 
-      expect(screen.getByText('Logs')).toBeInTheDocument();
+      expect(screen.getByText('Execution Logs')).toBeInTheDocument();
       expect(screen.getByText('First log entry')).toBeInTheDocument();
       expect(screen.queryByTestId('run-status')).not.toBeInTheDocument();
 
@@ -299,8 +299,8 @@ describe('RunPanel', () => {
       });
       rerender(<RunPanel />);
 
-      expect(screen.getByTestId('run-status')).toHaveTextContent('No runs yet');
-      expect(screen.queryByText('Logs')).not.toBeInTheDocument();
+      expect(screen.getByTestId('run-status')).toHaveTextContent('Ready to Run');
+      expect(screen.queryByText('Execution Logs')).not.toBeInTheDocument();
     });
 
     it('displays status text correctly with and without run IDs', async () => {
