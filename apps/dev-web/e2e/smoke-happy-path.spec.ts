@@ -27,11 +27,11 @@ async function addStartAndHttpNodes(page: any) {
       // Try multiple selectors for the Start button
       let startBtn;
       try {
-        startBtn = toolbar.getByText('+ Start');
+        startBtn = toolbar.getByText('Start');
         await expect(startBtn).toBeVisible({ timeout: 5000 });
       } catch (e) {
         // Try alternative selector
-        startBtn = toolbar.locator('button[aria-label="Add Start node"]');
+        startBtn = toolbar.locator('button[aria-label="Add workflow trigger"]');
         await expect(startBtn).toBeVisible({ timeout: 5000 });
       }
 
@@ -134,11 +134,11 @@ async function addStartAndHttpNodes(page: any) {
     // Try multiple selectors for the HTTP button
     let httpBtn;
     try {
-      httpBtn = toolbar.getByText('+ HTTP');
+      httpBtn = toolbar.getByText('HTTP');
       await expect(httpBtn).toBeVisible({ timeout: 10000 });
     } catch (e) {
       // Try alternative selector
-      httpBtn = toolbar.locator('button[aria-label="Add HTTP node"]');
+      httpBtn = toolbar.locator('button[aria-label="Add HTTP request"]');
       await expect(httpBtn).toBeVisible({ timeout: 10000 });
     }
 
