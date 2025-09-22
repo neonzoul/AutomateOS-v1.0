@@ -116,13 +116,14 @@ export function Canvas() {
 
   return (
     <div
-      className="h-full w-full relative overflow-hidden"
+      className="absolute inset-0"
       data-testid="canvas"
       style={{
-        background: '#FFF9F2',
+        background: '#FCDCD6FF',
+        width: '100%',
+        height: '100%',
       }}
     >
-
       <ReactFlow
         nodes={nodes}
         edges={edges}
@@ -150,6 +151,8 @@ export function Canvas() {
         proOptions={{ hideAttribution: true }}
         style={{
           background: 'transparent',
+          width: '100%',
+          height: '100%',
         }}
       >
         <CanvasToolbar />
@@ -205,14 +208,15 @@ export function Canvas() {
                 className="w-16 h-16 mx-auto mb-8 rounded-full flex items-center justify-center animate-pulse"
                 style={{
                   background: '#E84B4B',
-                  boxShadow: '0 8px 24px rgba(232,75,75,0.2), inset 0 1px 0 rgba(255,255,255,0.3)',
-                  animationDuration: '4s'
+                  boxShadow:
+                    '0 8px 24px rgba(232,75,75,0.2), inset 0 1px 0 rgba(255,255,255,0.3)',
+                  animationDuration: '4s',
                 }}
               >
                 <div
                   className="w-8 h-8 rounded-full"
                   style={{
-                    background: 'rgba(255,255,255,0.9)'
+                    background: 'rgba(255,255,255,0.9)',
                   }}
                 ></div>
               </div>
@@ -221,9 +225,10 @@ export function Canvas() {
                   color: '#2D1B1B',
                   fontSize: '32px',
                   fontWeight: '600',
-                  fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Display", system-ui, sans-serif',
+                  fontFamily:
+                    '-apple-system, BlinkMacSystemFont, "SF Pro Display", system-ui, sans-serif',
                   letterSpacing: '-0.5px',
-                  marginBottom: '16px'
+                  marginBottom: '16px',
                 }}
               >
                 Begin Your Creative Journey
@@ -236,11 +241,13 @@ export function Canvas() {
                   lineHeight: '1.6',
                   letterSpacing: '-0.2px',
                   maxWidth: '400px',
-                  margin: '0 auto'
+                  margin: '0 auto',
                 }}
               >
                 Every masterpiece starts with a single step. Click{' '}
-                <span style={{ color: '#E84B4B', fontWeight: '600' }}>✨ Start</span>{' '}
+                <span style={{ color: '#E84B4B', fontWeight: '600' }}>
+                  ✨ Start
+                </span>{' '}
                 above to begin crafting something beautiful.
               </p>
               <div className="flex items-center justify-center gap-2 mt-6">
@@ -248,16 +255,24 @@ export function Canvas() {
                   className="w-2 h-2 rounded-full animate-pulse"
                   style={{
                     background: '#E84B4B',
-                    boxShadow: '0 2px 6px rgba(232,75,75,0.3)'
+                    boxShadow: '0 2px 6px rgba(232,75,75,0.3)',
                   }}
                 ></div>
-                <span style={{ color: 'rgba(45,27,27,0.5)', fontSize: '15px', fontWeight: '400' }}>Let your creativity flow</span>
+                <span
+                  style={{
+                    color: 'rgba(45,27,27,0.5)',
+                    fontSize: '15px',
+                    fontWeight: '400',
+                  }}
+                >
+                  Let your creativity flow
+                </span>
                 <div
                   className="w-2 h-2 rounded-full animate-pulse"
                   style={{
                     background: '#E84B4B',
                     boxShadow: '0 2px 6px rgba(232,75,75,0.3)',
-                    animationDelay: '2s'
+                    animationDelay: '2s',
                   }}
                 ></div>
               </div>

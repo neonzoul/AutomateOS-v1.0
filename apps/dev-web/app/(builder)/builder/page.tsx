@@ -47,7 +47,7 @@ export default function BuilderPage() {
   };
 
   return (
-    <>
+    <div style={{ height: '100vh', overflow: 'hidden' }}>
       {/* Main Header */}
       <MainHeader
         onRun={handleRun}
@@ -55,32 +55,48 @@ export default function BuilderPage() {
         isRunning={useBuilderStore((s) => s.runStatus === 'running')}
       />
 
-      {/* Main Content - Adjusted for header height */}
-      <div
-        className="grid bg-gray-50"
-        style={{
-          gridTemplateColumns: '1fr 360px',
-          height: 'calc(100vh - 56px)',
-          marginTop: '56px'
-        }}
-      >
-        {/* Left: Canvas area */}
-        <div className="min-w-0">
+      {/* Main Content - Absolutely positioned for perfect isolation */}
+      <div style={{ position: 'relative', height: 'calc(100vh - 56px)', marginTop: '56px', overflow: 'hidden' }}>
+
+        {/* Left: Canvas area - Absolutely positioned, never moves */}
+        <div style={{ position: 'absolute', top: 0, left: 0, width: 'calc(100vw - 420px)', height: '100%' }}>
           <ReactFlowProvider>
             <Canvas />
           </ReactFlowProvider>
         </div>
 
-        {/* Right: Inspector + Run panels */}
-        <div className="bg-white border-l border-gray-200 flex flex-col">
-          {/* Inspector Panel */}
-          <div className="flex-1 border-b border-gray-200">
+        {/* Right: Inspector + Run panels - Absolutely positioned, fixed size */}
+        <div
+          className="bg-white border-l border-gray-200"
+          style={{
+            position: 'absolute',
+            top: 0,
+            right: 0,
+            width: '420px',
+            height: '100%',
+            display: 'flex',
+            flexDirection: 'column'
+          }}
+        >
+          {/* Inspector Panel - Fixed height with scroll */}
+          <div
+            className="custom-scrollbar"
+            style={{
+              height: 'calc(100% - 300px)',
+              overflowY: 'scroll',
+              overflowX: 'auto',
+              borderBottom: '1px solid #E5E7EB'
+            }}
+          >
             <Inspector />
           </div>
 
-          <RunPanel />
+          {/* Run Panel - Fixed height */}
+          <div className="custom-scrollbar" style={{ height: '300px', overflowY: 'scroll', overflowX: 'auto' }}>
+            <RunPanel />
+          </div>
         </div>
       </div>
-    </>
+    </div>
   );
 }
