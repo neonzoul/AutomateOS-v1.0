@@ -5,11 +5,12 @@
 import React from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useSelectedNode, useSelectionActions } from '@/core/state';
+import { useSelectedNode, useSelectionActions, useBuilderStore } from '@/core/state';
 import { NODE_SPECS } from '@/builder/registry/nodeSpecs';
 import { HttpConfigSchema, type HttpConfig } from '@automateos/workflow-schema';
 import { z } from 'zod';
 import { useCredentialList, useCredentials } from '@/core/credentials';
+import { CustomDropdown } from '@/components/ui/CustomDropdown';
 
 // Form schema with string headers (for JSON input)
 const HttpConfigFormSchema = z.object({
@@ -35,8 +36,14 @@ export function Inspector() {
 
   if (!selected) {
     return (
-      <div className="p-4 text-sm text-gray-500">
-        Select a node to configure its properties
+      <div className="p-8 text-center space-y-6">
+        <div className="w-16 h-16 mx-auto mb-6 rounded-full bg-coral-sunset/20 flex items-center justify-center animate-pulse" style={{ animationDuration: '3s' }}>
+          <div className="w-8 h-8 rounded-full bg-coral-sunset/40"></div>
+        </div>
+        <h3 className="text-title-3 text-warm-gray-800 font-display">Inspector</h3>
+        <p className="text-body text-warm-gray-600 leading-relaxed">
+          Select a node to configure its settings and bring your workflow to life
+        </p>
       </div>
     );
   }
@@ -45,20 +52,49 @@ export function Inspector() {
 
   if (!nodeSpec) {
     return (
-      <div className="p-4 text-sm text-red-500">
-        Unknown node type: {selected.type}
+      <div className="p-6 bg-coral-sunset/10 rounded-2xl border border-coral-sunset/20">
+        <p className="text-body text-coral-sunset font-medium">
+          Unknown node type: {selected.type}
+        </p>
       </div>
     );
   }
 
   return (
-    <div className="p-4 space-y-4">
-      <div>
-        <h3 className="text-lg font-semibold text-gray-900">Inspector</h3>
-        <p className="text-xs text-gray-500">
-          Type: <span className="font-mono">{selected.type}</span> · ID:{' '}
-          <span className="font-mono">{selected.id}</span>
-        </p>
+    <div
+      className="p-8 space-y-8"
+      style={{
+        background: 'linear-gradient(180deg, #FFF9F2 0%, #FFF5E6 50%, #FFEDE0 100%)',
+        backdropFilter: 'blur(20px)',
+      }}
+    >
+      <div className="space-y-4">
+        <div className="flex items-center gap-3 mb-2">
+          <div className={`p-2 rounded-xl border ${selected.type === 'start'
+            ? 'bg-gradient-to-br from-sage-whisper/10 to-golden-hour/10 border-sage-whisper/20'
+            : 'bg-gradient-to-br from-coral-sunset/10 to-golden-hour/10 border-coral-sunset/20'
+          }`}>
+            {selected.type === 'start' ? (
+              <svg className="w-5 h-5 text-sage-whisper" viewBox="0 0 20 20" fill="currentColor">
+                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clipRule="evenodd" />
+              </svg>
+            ) : (
+              <svg className="w-5 h-5 text-coral-sunset" viewBox="0 0 20 20" fill="currentColor">
+                <path fillRule="evenodd" d="M4.083 9h1.946c.089-1.546.383-2.97.837-4.118A6.004 6.004 0 004.083 9zM10 2a8 8 0 100 16 8 8 0 000-16zm0 2c-.076 0-.232.032-.465.262-.238.234-.497.623-.737 1.182-.389.907-.673 2.142-.766 3.556h3.936c-.093-1.414-.377-2.649-.766-3.556-.24-.56-.5-.948-.737-1.182C10.232 4.032 10.076 4 10 4zm3.971 5c-.089-1.546-.383-2.97-.837-4.118A6.004 6.004 0 0115.917 9h-1.946zm-2.003 2H8.032c.093 1.414.377 2.649.766 3.556.24.56.5.948.737 1.182.233.23.389.262.465.262.076 0 .232-.032.465-.262.238-.234.498-.623.737-1.182.389-.907.673-2.142.766-3.556zm1.166 4.118c.454-1.147.748-2.572.837-4.118h1.946a6.004 6.004 0 01-2.783 4.118zm-6.268 0C6.412 13.97 6.118 12.546 6.03 11H4.083a6.004 6.004 0 002.783 4.118z" clipRule="evenodd" />
+              </svg>
+            )}
+          </div>
+          <h3 className="text-title-2 text-warm-gray-800 font-display">
+            Configure {selected.type === 'start' ? 'Start' : 'HTTP'} Node
+          </h3>
+        </div>
+        <div className="flex items-center gap-3 text-caption">
+          <span className="px-3 py-1.5 bg-coral-sunset/10 border border-coral-sunset/20 rounded-full font-mono text-xs text-coral-sunset">
+            {selected.type}
+          </span>
+          <span className="text-coral-sunset/40">·</span>
+          <span className="text-warm-gray-500 font-mono text-xs">{selected.id}</span>
+        </div>
       </div>
 
       {selected.type === 'http' ? (
@@ -66,9 +102,34 @@ export function Inspector() {
           nodeId={selected.id}
           currentConfig={selected.data?.config as HttpConfig}
         />
+      ) : selected.type === 'start' ? (
+        <div className="space-y-6">
+          <div className="p-6 bg-sage-whisper/10 border border-sage-whisper/20 rounded-2xl backdrop-blur-sm">
+            <div className="flex items-center gap-3 mb-3">
+              <div className="p-1.5 rounded-lg bg-sage-whisper/20">
+                <svg className="w-4 h-4 text-sage-whisper" viewBox="0 0 16 16" fill="currentColor">
+                  <path d="M8 1a.5.5 0 01.5.5v5.793l2.146-2.147a.5.5 0 01.708.708l-3 3a.5.5 0 01-.708 0l-3-3a.5.5 0 11.708-.708L7.5 7.293V1.5A.5.5 0 018 1z"/>
+                  <path d="M3 9.5a.5.5 0 01.5-.5h9a.5.5 0 010 1H3.5a.5.5 0 01-.5-.5zM2.5 12a.5.5 0 000 1h11a.5.5 0 000-1h-11z"/>
+                </svg>
+              </div>
+              <h4 className="text-title-3 font-display text-warm-gray-800">
+                Workflow Trigger
+              </h4>
+            </div>
+            <p className="text-body text-warm-gray-600 leading-relaxed">
+              This magical node starts your workflow journey. When triggered, it begins the flow of automation through your connected nodes.
+            </p>
+          </div>
+        </div>
       ) : (
-        <div className="text-xs text-gray-500">
-          No configurable fields for this node yet.
+        <div className="text-center py-12 space-y-4">
+          <div className="w-12 h-12 mx-auto mb-4 rounded-full bg-lavender-twilight/20 flex items-center justify-center">
+            <div className="w-6 h-6 rounded-full bg-lavender-twilight/40"></div>
+          </div>
+          <div className="text-title-3 font-display text-warm-gray-800">No configuration available</div>
+          <div className="text-body text-warm-gray-600">
+            This node type doesn't have configurable settings
+          </div>
         </div>
       )}
     </div>
@@ -88,12 +149,13 @@ function HttpConfigForm({
   const { updateNodeConfig } = useSelectionActions();
   const credentialList = useCredentialList();
   const { setCredential } = useCredentials();
+  const [showAdvanced, setShowAdvanced] = React.useState(false);
 
   const form = useForm<HttpConfigFormInput>({
     resolver: zodResolver(HttpConfigFormSchema),
     defaultValues: {
       method: currentConfig?.method ?? 'GET',
-      url: currentConfig?.url ?? '',
+      url: currentConfig?.url ?? 'https://api.example.com',
       headers: JSON.stringify(currentConfig?.headers ?? {}, null, 2),
       body: currentConfig?.body ?? '',
       auth: currentConfig?.auth ? {
@@ -108,6 +170,7 @@ function HttpConfigForm({
     handleSubmit,
     formState: { errors },
     watch,
+    setValue,
   } = form;
 
   // Transform headers string to object for validation
@@ -143,13 +206,41 @@ function HttpConfigForm({
     return transformed;
   };
 
+  // Initialize form with proper URL if not set
+  React.useEffect(() => {
+    if (!currentConfig?.url) {
+      console.log('No URL in currentConfig, setting default URL');
+      setValue('url', 'https://api.example.com');
+      updateNodeConfig(nodeId, { url: 'https://api.example.com' });
+    }
+  }, [currentConfig, nodeId, updateNodeConfig, setValue]);
+
   // Watch form changes and sync to store when valid
   React.useEffect(() => {
-    const subscription = watch((values) => {
+    const subscription = watch((values, { name, type }) => {
+      console.log('Form values changed:', { values, name, type });
+
+      // Always update config immediately for URL changes
+      if (name === 'url' && values.url && typeof values.url === 'string') {
+        try {
+          new URL(values.url); // Validate URL format
+          console.log('URL changed, updating immediately:', values.url);
+          updateNodeConfig(nodeId, { url: values.url });
+        } catch (e) {
+          console.log('Invalid URL format:', values.url);
+        }
+      }
+
+      // Also do the full validation and update
       const transformed = transformFormData(values);
+      console.log('Transformed values:', transformed);
       const result = HttpConfigSchema.safeParse(transformed);
+      console.log('Validation result:', result);
       if (result.success) {
+        console.log('Updating node config with full data:', nodeId, result.data);
         updateNodeConfig(nodeId, result.data);
+      } else {
+        console.log('Validation failed:', result.error);
       }
     });
     return () => subscription.unsubscribe();
@@ -161,130 +252,208 @@ function HttpConfigForm({
     updateNodeConfig(nodeId, validated);
   };
 
+
+  const watchedMethod = watch('method');
+  const needsBody = watchedMethod === 'POST' || watchedMethod === 'PUT' || watchedMethod === 'PATCH';
+
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="space-y-3">
-      <div>
-        <label className="block">
-          <span className="text-sm font-medium text-gray-700">Method</span>
-          <select
-            {...register('method')}
-            className="mt-1 w-full rounded border border-gray-300 px-2 py-1 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
-          >
-            {['GET', 'POST', 'PUT', 'PATCH', 'DELETE'].map((m) => (
-              <option key={m} value={m}>
-                {m}
-              </option>
-            ))}
-          </select>
-          {errors.method && (
-            <p className="mt-1 text-xs text-red-600">{errors.method.message}</p>
-          )}
-        </label>
-      </div>
+    <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
 
-      <div>
-        <label className="block">
-          <span className="text-sm font-medium text-gray-700">URL</span>
-          <input
-            {...register('url')}
-            type="url"
-            aria-invalid={!!errors.url}
-            aria-describedby={errors.url ? 'url-error' : undefined}
-            className={`mt-1 w-full rounded border px-2 py-1 text-sm focus:ring-1 ${
-              errors.url
-                ? 'border-red-500 focus:border-red-500 focus:ring-red-500'
-                : 'border-gray-300 focus:border-blue-500 focus:ring-blue-500'
-            }`}
-            placeholder="https://api.example.com"
-          />
-          {errors.url && (
-            <p id="url-error" className="mt-1 text-xs text-red-600">
-              {errors.url.message}
-            </p>
-          )}
-        </label>
-      </div>
+      {/* Basic Configuration */}
+      <div className="space-y-4">
+        <div className="flex items-center gap-3 mb-4">
+          <div className="w-2 h-8 bg-gradient-to-b from-coral-sunset to-golden-hour rounded-full"></div>
+          <h4 className="text-title-3 font-display text-warm-gray-800">
+            Basic Configuration
+          </h4>
+        </div>
 
-      {/* Credential Authentication */}
-      <div>
-        <label className="block">
-          <span className="text-sm font-medium text-gray-700">
-            Authentication (optional)
-          </span>
-          <select
-            {...register('auth.credentialName')}
-            className="mt-1 w-full rounded border border-gray-300 px-2 py-1 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
-          >
-            <option value="">No authentication</option>
-            {credentialList.map((cred) => (
-              <option key={cred.name} value={cred.name}>
-                {cred.name} ({cred.maskedPreview})
-              </option>
-            ))}
-          </select>
-          {errors.auth?.credentialName && (
-            <p className="mt-1 text-xs text-red-600">
-              {errors.auth.credentialName.message}
-            </p>
-          )}
-        </label>
+        <div className="grid grid-cols-2 gap-4">
+          <div>
+            <label className="block">
+              <span className="text-body font-medium text-warm-gray-700 mb-3 block flex items-center gap-2">
+                <div className="w-1.5 h-1.5 rounded-full bg-coral-sunset/60"></div>
+                Request Method
+              </span>
+              <CustomDropdown
+                options={[
+                  { value: 'GET', label: 'GET' },
+                  { value: 'POST', label: 'POST' },
+                  { value: 'PUT', label: 'PUT' },
+                  { value: 'PATCH', label: 'PATCH' },
+                  { value: 'DELETE', label: 'DELETE' },
+                ]}
+                value={watch('method') || 'GET'}
+                onChange={(value) => setValue('method', value as any)}
+                placeholder="Select method"
+              />
+              {errors.method && (
+                <p className="mt-2 text-body text-coral-sunset">{errors.method.message}</p>
+              )}
+            </label>
+          </div>
+
+          <div>
+            <label className="block">
+              <span className="text-body font-medium text-warm-gray-700 mb-3 block flex items-center gap-2">
+                <div className="w-1.5 h-1.5 rounded-full bg-golden-hour/60"></div>
+                API Key
+              </span>
+              <CustomDropdown
+                options={[
+                  { value: '', label: 'No authentication needed' },
+                  ...credentialList.map((cred) => ({
+                    value: cred.name,
+                    label: `${cred.name} (${cred.maskedPreview})`
+                  }))
+                ]}
+                value={watch('auth.credentialName') || ''}
+                onChange={(value) => setValue('auth.credentialName', value)}
+                placeholder="Select authentication"
+              />
+              {errors.auth?.credentialName && (
+                <p className="mt-2 text-body text-coral-sunset">
+                  {errors.auth.credentialName.message}
+                </p>
+              )}
+            </label>
+          </div>
+        </div>
+
+        <div>
+          <label className="block">
+            <span className="text-body font-medium text-warm-gray-700 mb-3 block">Service URL</span>
+            <input
+              {...register('url')}
+              type="url"
+              aria-invalid={!!errors.url}
+              aria-describedby={errors.url ? 'url-error' : undefined}
+              className={`w-full rounded-xl border-2 px-4 py-3 text-body focus:ring-4 transition-all duration-300 ease-out bg-cream-warm backdrop-blur-sm ${
+                errors.url
+                  ? 'border-coral-sunset focus:border-coral-sunset focus:ring-coral-sunset/10'
+                  : 'border-coral-sunset/20 focus:border-coral-sunset focus:ring-coral-sunset/10'
+              }`}
+              placeholder="https://api.example.com/endpoint"
+              onChange={(e) => {
+                // Immediate update for URL changes
+                const url = e.target.value;
+                if (url) {
+                  try {
+                    new URL(url);
+                    console.log('Direct URL change, updating immediately:', url);
+                    updateNodeConfig(nodeId, { url });
+                    // Force localStorage update
+                    setTimeout(() => {
+                      const state = useBuilderStore.getState();
+                      localStorage.setItem('automateos.dev.graph', JSON.stringify({
+                        nodes: state.nodes,
+                        edges: state.edges,
+                        metadata: { version: '1.0', exportedAt: new Date().toISOString() }
+                      }));
+                    }, 100);
+                  } catch (err) {
+                    console.log('Invalid URL in direct change:', url);
+                  }
+                }
+              }}
+            />
+            {errors.url && (
+              <p id="url-error" className="mt-2 text-body text-coral-sunset">
+                {errors.url.message}
+              </p>
+            )}
+          </label>
+        </div>
 
         {/* Quick credential creation */}
-        <div className="mt-2">
+        <button
+          type="button"
+          className="group w-full p-4 border-2 border-dashed border-coral-sunset/30 rounded-2xl text-body text-warm-gray-600 hover:border-coral-sunset hover:text-coral-sunset hover:bg-coral-sunset/5 transition-all duration-300 ease-out flex items-center justify-center gap-3 backdrop-blur-sm"
+          onClick={() => {
+            const name = prompt('Enter a name for your API key:');
+            const value = prompt('Enter your API key or token:');
+            if (name && value) {
+              setCredential(name, value).then(() => {
+                setValue('auth.credentialName', name);
+              });
+            }
+          }}
+        >
+          <svg className="w-5 h-5 text-coral-sunset/60 group-hover:text-coral-sunset transition-colors" viewBox="0 0 20 20" fill="currentColor">
+            <path fillRule="evenodd" d="M8 7a3 3 0 016 0v2.5a1.5 1.5 0 01-1.5 1.5h-9A1.5 1.5 0 012 9.5V9a3 3 0 013-3v1a2 2 0 104 0V7z" clipRule="evenodd" />
+            <path d="M6 11.5a1.5 1.5 0 113 0 1.5 1.5 0 01-3 0z" />
+          </svg>
+          <span>Create New API Key</span>
+        </button>
+      </div>
+
+      {/* Advanced Configuration */}
+      <div className="space-y-4">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="w-2 h-8 bg-gradient-to-b from-lavender-twilight to-coral-sunset rounded-full"></div>
+            <h4 className="text-title-3 font-display text-warm-gray-800">
+              Advanced Options
+            </h4>
+          </div>
           <button
             type="button"
-            className="text-xs text-blue-600 hover:text-blue-700"
-            onClick={() => {
-              const name = prompt('Credential name:');
-              const value = prompt('Credential value (e.g., Bearer token):');
-              if (name && value) {
-                setCredential(name, value).then(() => {
-                  // Re-render will happen automatically due to store update
-                });
-              }
-            }}
+            onClick={() => setShowAdvanced(!showAdvanced)}
+            className="text-body text-coral-sunset hover:text-coral-sunset/80 transition-colors duration-300 ease-out font-medium"
           >
-            + Create new credential
+            {showAdvanced ? 'Hide' : 'Show'}
           </button>
         </div>
-      </div>
 
-      <div>
-        <label className="block">
-          <span className="text-sm font-medium text-gray-700">
-            Body (optional)
-          </span>
-          <textarea
-            {...register('body')}
-            rows={3}
-            className="mt-1 w-full rounded border border-gray-300 px-2 py-1 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
-            placeholder="Request body (JSON, text, etc.)"
-          />
-          {errors.body && (
-            <p className="mt-1 text-xs text-red-600">{errors.body.message}</p>
-          )}
-        </label>
-      </div>
+        {showAdvanced && (
+          <div className="space-y-6">
+              {/* Headers */}
+              <div>
+                <label className="block">
+                  <span className="text-body font-medium text-warm-gray-700 mb-3 block">Headers (JSON)</span>
+                  <textarea
+                    {...register('headers')}
+                    rows={4}
+                    className="w-full rounded-2xl border-2 border-coral-sunset/20 px-4 py-3 text-body font-mono focus:border-coral-sunset focus:ring-4 focus:ring-coral-sunset/10 transition-all duration-300 ease-out bg-cream-warm backdrop-blur-sm"
+                    placeholder='{"Content-Type": "application/json"}'
+                  />
+                  {errors.headers && (
+                    <p className="mt-2 text-body text-coral-sunset">{errors.headers.message}</p>
+                  )}
+                </label>
+              </div>
 
-      {/* Headers section */}
-      <div>
-        <label className="block">
-          <span className="text-sm font-medium text-gray-700">
-            Headers (optional)
-          </span>
-          <textarea
-            {...register('headers')}
-            rows={3}
-            className="mt-1 w-full rounded border border-gray-300 px-2 py-1 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
-            placeholder='{"Content-Type": "application/json", "Notion-Version": "2022-06-28"}'
-          />
-          <p className="mt-1 text-xs text-gray-500">
-            Enter headers as JSON object. For Notion API, include: {'"Notion-Version": "2022-06-28"'}
-          </p>
-          {errors.headers && (
-            <p className="mt-1 text-xs text-red-600">{errors.headers?.message}</p>
-          )}
-        </label>
+              {/* Request Body - only show for methods that support body */}
+              {needsBody && (
+                <div>
+                  <label className="block">
+                    <span className="text-body font-medium text-warm-gray-700 mb-3 block">Request Body (JSON)</span>
+                    <textarea
+                      {...register('body')}
+                      rows={6}
+                      className="w-full rounded-2xl border-2 border-coral-sunset/20 px-4 py-3 text-body font-mono focus:border-coral-sunset focus:ring-4 focus:ring-coral-sunset/10 transition-all duration-300 ease-out bg-cream-warm backdrop-blur-sm"
+                      placeholder='{"message": "Hello from AutomateOS!"}'
+                    />
+                    {errors.body && (
+                      <p className="mt-2 text-body text-coral-sunset">{errors.body.message}</p>
+                    )}
+                  </label>
+                </div>
+              )}
+
+              {!needsBody && (
+                <div className="p-6 bg-lavender-twilight/10 border border-lavender-twilight/20 rounded-2xl backdrop-blur-sm">
+                  <p className="text-body font-medium text-warm-gray-800 mb-2">
+                    No Request Body Needed
+                  </p>
+                  <p className="text-body text-warm-gray-600 leading-relaxed">
+                    {watchedMethod} requests typically don't include a request body.
+                    Switch to POST, PUT, or PATCH if you need to send data.
+                  </p>
+                </div>
+              )}
+          </div>
+        )}
       </div>
     </form>
   );

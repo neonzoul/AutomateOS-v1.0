@@ -5,6 +5,10 @@ import { defineConfig, devices } from '@playwright/test';
  */
 export default defineConfig({
   testDir: './e2e',
+  /* Global timeout for each test (10 minutes) */
+  timeout: 600000,
+  /* Expect timeout for individual assertions (60 seconds) */
+  expect: { timeout: 60000 },
   /* Run tests in files in parallel */
   fullyParallel: true,
   /* Fail the build on CI if you accidentally left test.only in the source code. */

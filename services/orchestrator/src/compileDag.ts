@@ -105,13 +105,26 @@ function mapNodeType(type: string): string {
 
 function buildConfig(n: SimpleNode): Record<string, unknown> | undefined {
   if (n.type === 'http') {
-    const cfg = (n as any).data?.config || {};
-    return {
+    // Try both n.config (direct) and n.data.config (nested) for compatibility
+    const cfg = n.config || (n as any).data?.config || {};
+
+    // Debug logging
+    console.log('🔍 buildConfig DEBUG:');
+    console.log('  nodeId:', n.id);
+    console.log('  n.config:', n.config);
+    console.log('  n.data?.config:', (n as any).data?.config);
+    console.log('  final cfg:', cfg);
+    console.log('  cfg.url:', cfg.url);
+
+    const result = {
       method: cfg.method || 'GET',
       url: cfg.url,
       headers: cfg.headers,
       json_body: safeParseJson(cfg.body),
     };
+
+    console.log('  final result:', result);
+    return result;
   }
   return undefined;
 }

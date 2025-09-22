@@ -51,10 +51,21 @@ app.post('/internal/runs', async (req, rep) => {
   req.log.info({ idem, headers: maskHeaders(req.headers) }, 'startRun request');
 
   // Convert to Engine DAG format using compileDag
+  req.log.info({
+    inputNodes: body.graph.nodes,
+    message: 'Input nodes for compileDag'
+  }, 'compileDag.input');
+
   const dag = compileDag({
     nodes: body.graph.nodes,
     edges: body.graph.edges || []
   });
+
+  req.log.info({
+    outputNodes: dag.nodes,
+    message: 'Output DAG nodes from compileDag'
+  }, 'compileDag.output');
+
   await startRunWithDag(runId, dag, idem);
   return rep.code(202).send({ runId });
 });

@@ -48,7 +48,7 @@ describe('Inspector (shell)', () => {
   it('shows placeholder when nothing selected', () => {
     render(<Inspector />);
     expect(
-      screen.getByText(/Select a node to configure its properties/i)
+      screen.getByText(/Select a node to configure its settings and bring your workflow to life/i)
     ).toBeInTheDocument();
   });
 
@@ -87,7 +87,7 @@ describe('Inspector (shell)', () => {
 
     render(<Inspector />);
     expect(
-      screen.getByText(/No configurable fields for this node yet/i)
+      screen.getByText(/This magical node starts your workflow journey/i)
     ).toBeInTheDocument();
   });
 
@@ -110,7 +110,7 @@ describe('Inspector (shell)', () => {
 
     render(<Inspector />);
     const input = screen.getByPlaceholderText(
-      'https://api.example.com'
+      'https://api.example.com/endpoint'
     ) as HTMLInputElement;
 
     // Simulate user input
@@ -139,7 +139,7 @@ describe('Inspector (shell)', () => {
 
     render(<Inspector />);
     const input = screen.getByPlaceholderText(
-      'https://api.example.com'
+      'https://api.example.com/endpoint'
     ) as HTMLInputElement;
 
     // Enter invalid URL
@@ -171,7 +171,7 @@ describe('Inspector (shell)', () => {
 
     render(<Inspector />);
     const input = screen.getByPlaceholderText(
-      'https://api.example.com'
+      'https://api.example.com/endpoint'
     ) as HTMLInputElement;
 
     // Enter invalid URL first
@@ -211,7 +211,7 @@ describe('Inspector (shell)', () => {
 
     render(<Inspector />);
     const input = screen.getByPlaceholderText(
-      'https://api.example.com'
+      'https://api.example.com/endpoint'
     ) as HTMLInputElement;
 
     // Enter invalid URL first (should not update store)

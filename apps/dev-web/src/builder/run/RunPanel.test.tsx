@@ -32,7 +32,7 @@ describe('RunPanel', () => {
 
     expect(btn).toBeInTheDocument();
     expect(btn.disabled).toBe(true);
-    expect(status.textContent).toMatch(/No runs yet/i);
+    expect(status.textContent).toMatch(/Ready to Run/i);
   });
 
   it('enables run button when nodes are present and run is idle', () => {
@@ -65,7 +65,7 @@ describe('RunPanel', () => {
 
     render(<RunPanel />);
 
-    expect(screen.getByText('Logs')).toBeInTheDocument();
+    expect(screen.getByText('Execution Logs')).toBeInTheDocument();
     expect(screen.getByText('Test log message 1')).toBeInTheDocument();
     expect(screen.getByText('Test log message 2')).toBeInTheDocument();
   });
@@ -118,36 +118,40 @@ describe('RunPanel', () => {
   });
 
   describe('Status pill mapping', () => {
-    it('shows queued status with gray styling', () => {
+    it('shows queued status with cinematic styling', () => {
       useBuilderStore.getState().setRunStatus('queued', 'test-run-123');
       render(<RunPanel />);
 
-      const statusPill = screen.getByText('Queued (test-run-123)');
-      expect(statusPill).toHaveClass('text-gray-600', 'bg-gray-50');
+      const statusText = screen.getByText('Queued (test-run-123)');
+      const statusPill = statusText.closest('div');
+      expect(statusPill).toHaveClass('text-warm-gray-600', 'bg-lavender-twilight/10');
     });
 
-    it('shows running status with blue styling and pulse', () => {
+    it('shows running status with golden styling and pulse', () => {
       useBuilderStore.getState().setRunStatus('running', 'test-run-456');
       render(<RunPanel />);
 
-      const statusPill = screen.getByText('Running (test-run-456)');
-      expect(statusPill).toHaveClass('text-blue-600', 'bg-blue-50');
+      const statusText = screen.getByText('Running (test-run-456)');
+      const statusPill = statusText.closest('div');
+      expect(statusPill).toHaveClass('text-white', 'bg-golden-hour');
     });
 
-    it('shows succeeded status with green styling', () => {
+    it('shows succeeded status with sage styling', () => {
       useBuilderStore.getState().setRunStatus('succeeded', 'test-run-789');
       render(<RunPanel />);
 
-      const statusPill = screen.getByText('Succeeded (test-run-789)');
-      expect(statusPill).toHaveClass('text-green-600', 'bg-green-50');
+      const statusText = screen.getByText('Succeeded (test-run-789)');
+      const statusPill = statusText.closest('div');
+      expect(statusPill).toHaveClass('text-white', 'bg-sage-whisper');
     });
 
-    it('shows failed status with red styling', () => {
+    it('shows failed status with coral styling', () => {
       useBuilderStore.getState().setRunStatus('failed', 'test-run-999');
       render(<RunPanel />);
 
-      const statusPill = screen.getByText('Failed (test-run-999)');
-      expect(statusPill).toHaveClass('text-red-600', 'bg-red-50');
+      const statusText = screen.getByText('Failed (test-run-999)');
+      const statusPill = statusText.closest('div');
+      expect(statusPill).toHaveClass('text-white', 'bg-coral-sunset');
     });
   });
 
@@ -170,7 +174,7 @@ describe('RunPanel', () => {
       render(<RunPanel />);
 
       const btn = screen.getByTestId('run-button');
-      expect(btn).toHaveAttribute('title', 'Start workflow run');
+      expect(btn).toHaveAttribute('title', 'Start workflow');
     });
 
     it('has descriptive title when run button is disabled', () => {
@@ -178,7 +182,7 @@ describe('RunPanel', () => {
       render(<RunPanel />);
 
       const btn = screen.getByTestId('run-button') as HTMLButtonElement;
-      expect(btn).toHaveAttribute('title', 'Cannot run workflow');
+      expect(btn).toHaveAttribute('title', 'Add nodes to run');
       expect(btn.disabled).toBe(true);
     });
   });
@@ -188,7 +192,7 @@ describe('RunPanel', () => {
       // Initially disabled with no nodes
       const { rerender } = render(<RunPanel />);
       let btn = screen.getByTestId('run-button') as HTMLButtonElement;
-      expect(btn.textContent).toBe('Run');
+      expect(btn.textContent).toBe('Run Workflow');
       expect(btn.disabled).toBe(true);
 
       // Add nodes - button becomes enabled
@@ -201,7 +205,7 @@ describe('RunPanel', () => {
       });
       rerender(<RunPanel />);
 
-      expect(btn.textContent).toBe('Run');
+      expect(btn.textContent).toBe('Run Workflow');
       expect(btn.disabled).toBe(false);
 
       // Set to running state - button shows "Running..." and is disabled
@@ -219,7 +223,7 @@ describe('RunPanel', () => {
       });
       rerender(<RunPanel />);
 
-      expect(btn.textContent).toBe('Run');
+      expect(btn.textContent).toBe('Run Workflow');
       expect(btn.disabled).toBe(false);
     });
 
@@ -241,7 +245,7 @@ describe('RunPanel', () => {
         {
           status: 'queued' as const,
           expectedDisabled: true,
-          expectedText: 'Run',
+          expectedText: 'Run Workflow',
         }, // queued doesn't change button text
         {
           status: 'running' as const,
@@ -251,17 +255,17 @@ describe('RunPanel', () => {
         {
           status: 'succeeded' as const,
           expectedDisabled: false,
-          expectedText: 'Run',
+          expectedText: 'Run Workflow',
         },
         {
           status: 'failed' as const,
           expectedDisabled: false,
-          expectedText: 'Run',
+          expectedText: 'Run Workflow',
         },
         {
           status: 'idle' as const,
           expectedDisabled: false,
-          expectedText: 'Run',
+          expectedText: 'Run Workflow',
         },
       ];
 
@@ -280,8 +284,8 @@ describe('RunPanel', () => {
       const { rerender } = render(<RunPanel />);
 
       // Initially no logs - should show "No runs yet"
-      expect(screen.getByTestId('run-status')).toHaveTextContent('No runs yet');
-      expect(screen.queryByText('Logs')).not.toBeInTheDocument();
+      expect(screen.getByTestId('run-status')).toHaveTextContent('Ready to Run');
+      expect(screen.queryByText('Execution Logs')).not.toBeInTheDocument();
 
       // Add logs - should show logs section
       act(() => {
@@ -289,7 +293,7 @@ describe('RunPanel', () => {
       });
       rerender(<RunPanel />);
 
-      expect(screen.getByText('Logs')).toBeInTheDocument();
+      expect(screen.getByText('Execution Logs')).toBeInTheDocument();
       expect(screen.getByText('First log entry')).toBeInTheDocument();
       expect(screen.queryByTestId('run-status')).not.toBeInTheDocument();
 
@@ -299,8 +303,8 @@ describe('RunPanel', () => {
       });
       rerender(<RunPanel />);
 
-      expect(screen.getByTestId('run-status')).toHaveTextContent('No runs yet');
-      expect(screen.queryByText('Logs')).not.toBeInTheDocument();
+      expect(screen.getByTestId('run-status')).toHaveTextContent('Ready to Run');
+      expect(screen.queryByText('Execution Logs')).not.toBeInTheDocument();
     });
 
     it('displays status text correctly with and without run IDs', async () => {
@@ -359,8 +363,8 @@ describe('RunPanel', () => {
 
       render(<RunPanel />);
 
-      // Check that Steps section is displayed
-      expect(screen.getByText('Steps')).toBeInTheDocument();
+      // Check that Workflow Steps section is displayed
+      expect(screen.getByText('Workflow Steps')).toBeInTheDocument();
       const stepsContainer = screen.getByTestId('run-steps');
       expect(stepsContainer).toBeInTheDocument();
 
@@ -369,8 +373,8 @@ describe('RunPanel', () => {
       expect(screen.getByText('HTTP Request')).toBeInTheDocument();
 
       // Check status pills
-      expect(screen.getByText('succeeded')).toBeInTheDocument();
-      expect(screen.getByText('running')).toBeInTheDocument();
+      expect(screen.getByText('Completed')).toBeInTheDocument();
+      expect(screen.getByText('Running')).toBeInTheDocument();
 
       // Check durations
       expect(screen.getByText('150ms')).toBeInTheDocument();
@@ -393,8 +397,9 @@ describe('RunPanel', () => {
 
       render(<RunPanel />);
 
-      const statusPill = screen.getByText('succeeded');
-      expect(statusPill).toHaveClass('text-green-600', 'bg-green-50');
+      const statusText = screen.getByText('Completed');
+      const statusPill = statusText.closest('span');
+      expect(statusPill).toHaveClass('text-white', 'bg-sage-whisper');
     });
 
     it('handles missing step durations gracefully', () => {
@@ -413,11 +418,11 @@ describe('RunPanel', () => {
 
       render(<RunPanel />);
 
-      // Steps section should be shown since run is active
-      expect(screen.getByText('Steps')).toBeInTheDocument();
+      // Workflow Steps section should be shown since run is active
+      expect(screen.getByText('Workflow Steps')).toBeInTheDocument();
       // Node should be displayed but without duration
       expect(screen.getByText('Start Node')).toBeInTheDocument();
-      expect(screen.getByText('running')).toBeInTheDocument();
+      expect(screen.getByText('Running')).toBeInTheDocument();
       // No duration text should be present
       expect(screen.queryByText(/\d+ms$/)).not.toBeInTheDocument();
       expect(screen.queryByText(/\d+\.\d+s$/)).not.toBeInTheDocument();
@@ -434,8 +439,8 @@ describe('RunPanel', () => {
 
       render(<RunPanel />);
 
-      // Steps section should not be visible
-      expect(screen.queryByText('Steps')).not.toBeInTheDocument();
+      // Workflow Steps section should not be visible
+      expect(screen.queryByText('Workflow Steps')).not.toBeInTheDocument();
       expect(screen.queryByTestId('run-steps')).not.toBeInTheDocument();
     });
 
@@ -492,8 +497,8 @@ describe('RunPanel', () => {
 
       render(<RunPanel />);
 
-      // Should display node type as fallback
-      expect(screen.getByText('http')).toBeInTheDocument();
+      // Should display HTTP Request as fallback for http type
+      expect(screen.getByText('HTTP Request')).toBeInTheDocument();
     });
   });
 });

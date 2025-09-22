@@ -4,7 +4,11 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-AutomateOS is a visual workflow automation platform (monorepo) that enables users to build, share, and run workflows without code. The platform consists of a Next.js creator studio, Node.js backend services, and is architected to support a future template ecosystem.
+AutomateOS is not just another visual workflow automation platform - it's a transformative creative experience that makes automation feel magical. We're building the **"Final Cut Pro of Automation"** - a tool so beautiful, intuitive, and powerful that creators will fall in love with building workflows.
+
+This is not about building software; this is about crafting an emotional experience that rivals Apple's greatest products. Every pixel, every animation, every interaction must contribute to a cohesive aesthetic that feels timeless, not trendy. We're creating something people will want to use every day, not because they have to, but because it brings them joy.
+
+The platform consists of a Next.js creator studio, Node.js backend services, and is architected to support a future template ecosystem where creators can share their workflows as digital art pieces.
 
 ## Repository Structure
 
@@ -77,33 +81,102 @@ Frontend communicates with backend via REST API:
 
 ## Current Development Focus
 
-The project is in Sprint 4 focusing on credentials and run feedback. Key areas:
+The project is in Sprint 5 focusing on the **Cinematic UX/UI Revolution**. We are transforming AutomateOS into a magical, emotionally engaging creative experience inspired by the movies "Her" and "La La Land".
 
-- Workflow builder with Start and HTTP nodes
-- Run execution with real-time status updates
-- Import/export functionality
-- Schema-driven node configuration
+Key areas:
+- Cinematic workflow builder with organic, flowing design
+- Warm, inviting color palette inspired by "Her" and "La La Land"
+- Magical interactions and organic animations
+- Emotionally engaging creator experience
 
-## User Experience Delivery Standards
+## The AutomateOS Cinematic Experience
 
-### First Impression Goals
+### Design Philosophy: Crafting Digital Poetry
 
-Every feature delivered must exceed expectations and create a **"wow"** moment for users like Apple do with technology like Macintosh,iPhone in Automation, AI Agent sector. We aim to deliver the unexpected - an experience so polished and delightful that it surpasses what users anticipate from workflow automation tools.
+We are creating more than software - we are crafting a **cinematic experience** that makes automation feel like digital poetry. Inspired by the emotional warmth of "Her" and the dreamy creativity of "La La Land," every interaction should feel magical and deeply human.
 
-### Quality Benchmarks
+**Core Design Principles:**
+- **Cinematic over Functional**: Every screen should feel like a beautiful movie scene
+- **Warm over Cold**: Technology that feels alive, breathing, and emotionally engaging
+- **Organic over Rigid**: Flowing, natural shapes that invite touch and exploration
+- **Magical over Mechanical**: Automation that feels like conducting a symphony of creativity
+- **Inspiring over Efficient**: Tools that make creators excited to build something beautiful every day
 
-- **Visual Polish:** Every UI element should feel crafted, not generic
-- **Micro-interactions:** Subtle animations that provide feedback and delight
-- **Performance:** Instant response times, smooth 60fps animations
-- **Accessibility:** Keyboard navigation, screen reader support, proper contrast
-- **Mobile Responsive:** Works beautifully across all device sizes
+**The "Her" & "La La Land" Aesthetic:**
+- **Warm coral gradients** that evoke sunset and intimate connections
+- **Soft, flowing shapes** that feel organic and alive
+- **Breathing animations** that make the interface feel conscious
+- **Gentle, dreamy interactions** that surprise and delight
+- **Cinematic typography** that tells a story with every word
 
-### Delivery Philosophy
+### The Apple Standard
 
-- Ship features that feel **finished**, not just functional
-- Every interaction should reinforce the AutomateOS brand experience
-- Users should feel empowered and creative, never confused or frustrated
-- The interface should anticipate user needs and provide helpful guidance
+We measure ourselves against Apple's iconic products:
+- **iPhone**: Intuitive gestures, glass-like surfaces, liquid animations
+- **macOS**: Spatial organization, depth, subtle shadows and lighting
+- **iPod**: Minimal controls, maximum impact, perfect proportions
+- **Final Cut Pro**: Professional power wrapped in elegant simplicity
+
+### Cinematic Color Psychology
+
+**"Her" Inspired Warmth:**
+- **Coral Sunset** (#FF6B6B): Love, creativity, human connection, the warmth of Samantha's voice
+- **Soft Peach** (#FFB4A2): Intimacy, comfort, the glow of evening conversations
+- **Warm Cream** (#FFF8F0): Canvas for possibilities, the light of understanding
+
+**"La La Land" Dream Palette:**
+- **Golden Hour** (#FFD93D): Dreams, possibility, the magic of Los Angeles sunsets
+- **Lavender Twilight** (#A29BFE): Mystery, romance, the space between day and night
+- **Sage Whisper** (#00DFA2): Growth, harmony, the quiet moments of reflection
+
+**Cinematic Implementation:**
+- **Gradient Backgrounds**: Flowing coral to peach, like movie lighting
+- **Organic Shapes**: Soft, pill-like forms that feel alive and touchable
+- **Breathing Elements**: Subtle animations that make the interface feel conscious
+- **Contextual Color**: Different hues for different emotional states and actions
+
+### Quality Standards (Non-Negotiable)
+
+1. **Pixel-Perfect Craftsmanship**
+   - Every icon, button, and layout refined to perfection
+   - Typography that feels intentional and harmonious
+   - Colors that evoke emotion, not just convey information
+
+2. **Fluid Motion Design**
+   - 60fps animations with organic easing curves
+   - Transitions that feel inevitable, never jarring
+   - Loading states that maintain user engagement
+   - Hover effects that invite interaction
+
+3. **Emotional Feedback**
+   - Success states that feel celebratory
+   - Error states that feel helpful, not punishing
+   - Empty states that inspire action
+   - Progress indicators that build anticipation
+
+4. **Contextual Intelligence**
+   - Interface adapts to user intent
+   - Smart defaults that demonstrate understanding
+   - Progressive disclosure that prevents overwhelm
+   - Anticipatory design that feels telepathic
+
+### Implementation Mandate
+
+**NEVER ship anything that feels:**
+- Generic or template-like
+- Rushed or unfinished
+- Cold or mechanical
+- Confusing or overwhelming
+
+**ALWAYS ship features that feel:**
+- Handcrafted and intentional
+- Polished and complete
+- Warm and inviting
+- Intuitive and empowering
+
+### The "Quit Test"
+
+If any feature doesn't meet our aesthetic standards, we don't ship it. Period. We would rather delay than compromise the vision. Every release must reinforce that AutomateOS is something special - a tool that creators are proud to use and excited to share.
 
 ## Important Patterns from Copilot Instructions
 
@@ -162,43 +235,91 @@ Services available:
 - Engine (mock): http://localhost:8081
 - Orchestrator: http://localhost:3002
 
-## UX/UI & Branding Guidelines
+## Aesthetic Implementation Guidelines
 
-### Design Philosophy
+### Visual Hierarchy & Typography
 
-AutomateOS follows the principle of **"GarageBand for Workflows"** - creators should feel joy and creativity while building. The interface should be **Mac-like in simplicity** where everything "just works" with minimal complexity.
+**Typography System:**
+- **Headlines**: SF Pro Display or similar (Apple's choice) - confident, modern
+- **Body Text**: SF Pro Text - readable, neutral, professional
+- **Code/Technical**: SF Mono - precise, technical, authoritative
+- **Emotional Moments**: Custom selection for warmth (consider Avenir Next or similar)
 
-### Brand Identity
+**Color Psychology:**
+- **Primary Coral `#E84B4B`**: Love, creativity, human warmth (inspired by "Her")
+- **Accent Gold `#F4C2A1`**: Possibility, dreams, dawn light (inspired by "La La Land")
+- **Deep Navy `#1A1B3A`**: Depth, professionalism, night sky elegance
+- **Soft Cream `#FFF8F0`**: Canvas, possibilities, paper texture
+- **Grays**: Sophisticated neutral progression from `#FAFAFA` to `#1C1C1E`
 
-- **Primary Color:** Warm Coral Red `#E84B4B` - human, emotional, inspired by _Her_
-- **Secondary Colors:**
-  - Soft Cream `#FFF3E9` - approachable, warm background
-  - Deep Burgundy `#7A1E1E` - strong accent, dark mode contrast
-  - Neutral Grays `#F5F5F5` (light) / `#222222` (dark) - text and structural balance
+### Motion Language
 
-### Motion Design System
+**Spring Physics:**
+```css
+/* Signature easing for all AutomateOS animations */
+transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
 
-- **Transitions:** Smooth cross-dissolves with spring easing
-- **Micro-interactions:**
-  - Hover → subtle expansion
-  - Active nodes → pulsing glow
-  - Connector lines → flowing liquid effect
-- **Overall Feel:** Gentle, organic motion that feels alive and conversational
+/* Micro-interactions */
+transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
 
-### UX Principles
+/* Page transitions */
+transition: all 0.6s cubic-bezier(0.25, 0.8, 0.25, 1);
+```
 
-1. **Delight > Function** - Every action should reward the user
-2. **Contextual Simplicity** - Forms, toggles, previews - never raw JSON for end-users
-3. **Creator-First** - Profiles, templates as digital products, easy share/export
-4. **Transparency** - Clear usage and cost visualization
+**Interaction States:**
+- **Idle**: Soft, breathing animations
+- **Hover**: Gentle lift with subtle shadow
+- **Active**: Confident scale with haptic-like feedback
+- **Success**: Celebratory expansion with particle effects
+- **Error**: Gentle shake with warm, helpful messaging
 
-### Implementation Guidelines
+### Spatial Design
 
-- Never expose raw JSON to end-users
-- Smart defaults everywhere
-- Animations with purpose, not gimmick
-- Templates framed as digital products with preview, gallery, creator branding
-- Interface should feel alive, conversational, and emotional
+**Layout Principles:**
+- **Golden Ratio** proportions wherever possible
+- **Generous whitespace** - never cramped or cluttered
+- **Depth layers**: Background → Surface → Elevated → Overlay
+- **Edge-to-edge thinking**: Full canvas utilization like Final Cut Pro
+
+**Component Architecture:**
+- **Cards**: Subtle elevation, rounded corners (8px), gentle shadows
+- **Buttons**: Pill-shaped for primary actions, minimal for secondary
+- **Forms**: Floating labels, progressive validation, contextual help
+- **Panels**: Slide transitions, backdrop blur, spatial awareness
+
+### Interaction Patterns
+
+**Navigation Philosophy:**
+- **Spatial navigation**: Users navigate through spaces, not pages
+- **Contextual panels**: Inspector slides from right, properties from left
+- **Gesture-friendly**: Swipe, pinch, drag feel natural on all devices
+- **Keyboard mastery**: Power users can flow entirely via shortcuts
+
+**Feedback Systems:**
+- **Visual**: Color changes, shape transforms, size adjustments
+- **Motion**: Organic animations that feel alive
+- **Sound**: (Future) Subtle audio cues for major actions
+- **Haptic**: (Mobile) Gentle vibrations for confirmations
+
+### Implementation Rules
+
+**Code Standards:**
+- All animations must use CSS transforms (not layout properties)
+- Implement prefers-reduced-motion for accessibility
+- Use CSS custom properties for theming consistency
+- Component libraries should export motion variants
+
+**Performance Mandates:**
+- 60fps animations on all supported devices
+- <100ms response time for all interactions
+- Progressive loading with beautiful skeleton states
+- Memory-efficient animation cleanup
+
+**Cross-Platform Consistency:**
+- Gesture patterns must work on touch and mouse
+- Responsive breakpoints that feel intentional, not automatic
+- Dark mode that's not just inverted colors, but considered mood
+- High DPI support with vector-first assets
 
 ## Security & Open Source Considerations
 

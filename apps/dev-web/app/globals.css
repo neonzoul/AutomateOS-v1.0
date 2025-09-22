@@ -3,30 +3,421 @@
 /* React Flow base styles */
 @import '@xyflow/react/dist/style.css';
 
-/* App baseline */
+/* Cinematic classes safeguard */
+@import '../src/styles/cinematic-classes.css';
+
+/* Cinematic baseline inspired by Her and La La Land */
 html,
 body {
   height: 100%;
   margin: 0;
   font-family:
-    system-ui,
     -apple-system,
-    Segoe UI,
-    Roboto,
+    BlinkMacSystemFont,
+    'Inter',
+    system-ui,
     sans-serif;
-  background-color: #f9fafb; /* gray-50 */
+  background: #FFF9F2; /* Sophisticated peachy canvas - incredibly subtle warmth */
 }
 
-/* React Flow customizations */
+/* Custom dropdown styling */
+.custom-dropdown {
+  /* Hide default dropdown arrow on webkit browsers */
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+}
+
+/* Custom option styling */
+.custom-dropdown option {
+  padding: 8px 12px;
+  color: #374151;
+  background: #FFF8F0;
+}
+
+.custom-dropdown option:hover {
+  background: #E84B4B;
+  color: white;
+}
+
+/* Better optgroup styling */
+.custom-dropdown optgroup {
+  font-weight: 600;
+  color: #6B7280;
+  font-size: 12px;
+  padding: 4px 12px;
+  background: #F3F4F6;
+  color: #3A342F; /* Warm gray text */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow: hidden;
+}
+
+/* Custom scrollbar for dropdowns */
+.custom-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: #E84B4B #FFF8F0;
+}
+
+.custom-scrollbar::-webkit-scrollbar {
+  width: 6px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: rgba(255, 248, 240, 0.4);
+  border-radius: 3px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, #E84B4B 0%, #D73A3A 100%);
+  border-radius: 3px;
+  transition: background 0.2s ease;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(180deg, #D73A3A 0%, #C52A2A 100%);
+}
+
+/* Ensure proper scroll behavior isolation */
+.react-flow__renderer {
+  height: 100% !important;
+}
+
+/* Prevent body scroll when interacting with canvas */
+.react-flow__pane {
+  cursor: grab;
+}
+
+.react-flow__pane:active {
+  cursor: grabbing;
+}
+
+/* Remove default focus outlines (we'll use custom ones) */
+*:focus {
+  outline: none;
+}
+
+/* React Flow customizations - Clean and minimal */
 .react-flow__node {
   cursor: pointer;
-  transition:
-    box-shadow 0.15s ease,
-    border-color 0.15s ease;
+  font-family: inherit;
 }
 
-/* Subtle hover styling */
-.react-flow__node:hover {
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
-  border-color: #3b82f6; /* blue-500 */
+.react-flow__node:focus,
+.react-flow__node:focus-visible {
+  outline: 2px solid #007AFF;
+  outline-offset: 2px;
+}
+
+/* Her-style edge styling */
+.react-flow__edge-path {
+  stroke-width: 3px;
+  stroke: #E84B4B; /* Perfect Her coral */
+  stroke-linecap: round;
+  opacity: 0.8;
+}
+
+.react-flow__edge.animated .react-flow__edge-path {
+  stroke-dasharray: 8,8; /* Organic dashes */
+}
+
+/* Connection line styling */
+.react-flow__connectionline {
+  stroke: #E84B4B;
+  stroke-width: 3px;
+  stroke-linecap: round;
+  opacity: 0.8;
+}
+
+/* Her-style controls styling */
+.react-flow__controls {
+  background: rgba(255, 251, 247, 0.95);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(232, 75, 75, 0.15);
+  border-radius: 16px !important;
+  box-shadow: 0 8px 32px rgba(232, 75, 75, 0.08);
+  overflow: hidden;
+}
+
+.react-flow__controls-button {
+  background: transparent !important;
+  border: none !important;
+  border-radius: 8px !important;
+  margin: 4px !important;
+  padding: 8px !important;
+  color: #3A342F !important;
+  transition: all 300ms cubic-bezier(0.25, 0.1, 0.25, 1.0) !important;
+}
+
+.react-flow__controls-button:hover {
+  background: rgba(232, 75, 75, 0.1) !important;
+  transform: scale(1.05);
+}
+
+.react-flow__controls-button:active {
+  background: rgba(232, 75, 75, 0.15) !important;
+  transform: scale(0.98);
+}
+
+/* Her-style minimap */
+.react-flow__minimap {
+  background: rgba(255, 251, 247, 0.95);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(232, 75, 75, 0.15);
+  border-radius: 16px !important;
+  box-shadow: 0 8px 32px rgba(232, 75, 75, 0.08);
+  overflow: hidden;
+}
+
+/* Selection box styling */
+.react-flow__selection {
+  background: rgba(232, 75, 75, 0.08);
+  border: 2px solid #E84B4B;
+  border-radius: 8px;
+}
+
+/* Handle styling - Cinematic and organic */
+.react-flow__handle {
+  width: 12px;
+  height: 12px;
+  background: #FFFFFF;
+  border: 2px solid #E5DFD9;
+  border-radius: 50%;
+  transition: all 300ms cubic-bezier(0.25, 0.1, 0.25, 1.0);
+}
+
+.react-flow__handle:hover {
+  border-color: #E84B4B;
+  box-shadow: 0 0 0 3px rgba(232, 75, 75, 0.3);
+  transform: scale(1.1);
+}
+
+.react-flow__handle.react-flow__handle-connecting {
+  border-color: #E84B4B;
+  box-shadow: 0 0 0 3px rgba(232, 75, 75, 0.3);
+}
+
+/* Background pattern - Cinematic and organic */
+.react-flow__background {
+  opacity: 0.12;
+}
+
+/* Panel styling for overlay elements */
+.react-flow__panel {
+  z-index: 10;
+}
+
+/* Custom focus ring utility class - Her style */
+.focus-ring:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px #E84B4B, 0 0 0 4px rgba(232, 75, 75, 0.2);
+}
+
+/* Premium Dropdown Styling - Apple-caliber sophistication */
+select {
+  /* Enhanced text rendering */
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+
+  /* Better cursor */
+  cursor: pointer;
+
+  /* Subtle typography improvements */
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.01em;
+
+  /* Position for glass effect */
+  position: relative;
+  overflow: hidden;
+}
+
+/* Option styling - creating premium feel */
+select option {
+  background: #FFFBF7; /* her-cream-light */
+  color: #3A342F; /* warm-gray-800 */
+  padding: 12px 16px;
+  font-weight: 400;
+  line-height: 1.4;
+  letter-spacing: -0.01em;
+  border: none;
+
+  /* Subtle shadow for depth */
+  border-bottom: 1px solid rgba(229, 223, 217, 0.5);
+}
+
+/* Selected option styling */
+select option:checked {
+  background: linear-gradient(135deg, #E84B4B 0%, #F4C2A1 100%);
+  color: #FFFFFF;
+  font-weight: 500;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+/* Hover states for options (where supported) */
+select option:hover {
+  background: rgba(232, 75, 75, 0.08);
+  color: #E84B4B;
+}
+
+/* Focus states for better accessibility */
+select:focus {
+  border-color: #E84B4B !important;
+  box-shadow: 0 0 0 4px rgba(232, 75, 75, 0.1), 0 4px 16px rgba(232, 75, 75, 0.16), 0 2px 4px rgba(232, 75, 75, 0.08) !important;
+  outline: none;
+  transform: translateY(-1px);
+}
+
+/* Disabled state styling */
+select:disabled {
+  background: #F0ECE8 !important;
+  color: #C4BCB5 !important;
+  cursor: not-allowed;
+  opacity: 0.7;
+  border-color: #E5DFD9 !important;
+}
+
+/* Enhanced active/pressed state */
+select:active {
+  transform: translateY(0px);
+  box-shadow: 0 0 0 4px rgba(232, 75, 75, 0.1), 0 2px 8px rgba(232, 75, 75, 0.12), 0 1px 2px rgba(232, 75, 75, 0.08) !important;
+}
+
+/* Custom dropdown arrow refinements */
+select.custom-dropdown {
+  background-size: 16px !important;
+  transition: all 300ms cubic-bezier(0.25, 0.1, 0.25, 1.0);
+}
+
+/* Arrow color change on focus */
+select.custom-dropdown:focus {
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%23E84B4B' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M6 8l4 4 4-4'/%3e%3c/svg%3e") !important;
+}
+
+/* Hover effect for dropdown arrow */
+select.custom-dropdown:hover {
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%23E84B4B' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.75' d='M6 8l4 4 4-4'/%3e%3c/svg%3e") !important;
+}
+
+/* Optgroup styling for sophisticated categorization */
+select optgroup {
+  background: linear-gradient(135deg, #F0ECE8 0%, #F8F6F3 100%);
+  color: #756B62; /* warm-gray-600 */
+  font-weight: 600;
+  font-size: 0.8125rem; /* caption size */
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  padding: 8px 16px 4px 16px;
+  margin: 0;
+  border: none;
+  border-bottom: 1px solid rgba(232, 75, 75, 0.1);
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.8);
+}
+
+/* Enhanced option styling within groups */
+select optgroup option {
+  background: #FFFBF7; /* her-cream-light */
+  color: #3A342F; /* warm-gray-800 */
+  padding: 10px 20px 10px 24px; /* Extra left padding for grouped options */
+  font-weight: 400;
+  line-height: 1.4;
+  letter-spacing: -0.01em;
+  border: none;
+  margin: 0;
+
+  /* Subtle indentation line for visual hierarchy */
+  border-left: 3px solid transparent;
+  transition: all 200ms cubic-bezier(0.25, 0.1, 0.25, 1.0);
+}
+
+/* Hover states for grouped options */
+select optgroup option:hover {
+  background: rgba(232, 75, 75, 0.06);
+  color: #E84B4B;
+  border-left-color: rgba(232, 75, 75, 0.3);
+}
+
+/* Selected grouped option styling */
+select optgroup option:checked {
+  background: linear-gradient(135deg, #E84B4B 0%, #F4C2A1 100%);
+  color: #FFFFFF;
+  font-weight: 500;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+  border-left-color: rgba(255, 255, 255, 0.4);
+}
+
+/* Focus within optgroup */
+select optgroup option:focus {
+  background: rgba(232, 75, 75, 0.08);
+  color: #E84B4B;
+  border-left-color: #E84B4B;
+  outline: none;
+}
+
+/* Subtle breathing animation for premium feel */
+@keyframes subtle-breathe {
+  0%, 100% {
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.08);
+  }
+  50% {
+    box-shadow: 0 2px 4px rgba(232, 75, 75, 0.08), 0 1px 3px rgba(232, 75, 75, 0.06);
+  }
+}
+
+/* Apply breathing to dropdowns in idle state */
+select.custom-dropdown:not(:focus):not(:hover) {
+  animation: subtle-breathe 4s ease-in-out infinite;
+}
+
+/* Enhanced visual hierarchy for empty states */
+select optgroup option[value=""] {
+  background: linear-gradient(135deg, #F8F6F3 0%, #F0ECE8 100%);
+  color: #9B8E85; /* warm-gray-500 */
+  font-style: italic;
+  border-left: 3px solid rgba(159, 142, 133, 0.2);
+}
+
+/* Special styling for emoji options */
+select option[value^="🔓"],
+select option[value*="🔑"] {
+  font-family: -apple-system, BlinkMacSystemFont, 'Inter', system-ui, sans-serif;
+}
+
+/* Micro-interaction on option selection */
+@keyframes option-select {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.02); }
+  100% { transform: scale(1); }
+}
+
+select option:checked {
+  animation: option-select 200ms ease-out;
+}
+
+/* Refined shadow progression for depth */
+select.custom-dropdown {
+  box-shadow:
+    0 1px 3px rgba(0, 0, 0, 0.12),
+    0 1px 2px rgba(0, 0, 0, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+select.custom-dropdown:hover {
+  box-shadow:
+    0 4px 16px rgba(232, 75, 75, 0.16),
+    0 2px 4px rgba(232, 75, 75, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.15);
+}
+
+/* Glass-like effect for ultimate sophistication */
+select.custom-dropdown::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 50%;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.1) 0%, transparent 100%);
+  border-radius: 12px 12px 0 0;
+  pointer-events: none;
 }

@@ -115,7 +115,15 @@ export function Canvas() {
   }, [setSelectedNode]);
 
   return (
-    <div className="h-full w-full" data-testid="canvas">
+    <div
+      className="absolute inset-0"
+      data-testid="canvas"
+      style={{
+        background: '#FCDCD6FF',
+        width: '100%',
+        height: '100%',
+      }}
+    >
       <ReactFlow
         nodes={nodes}
         edges={edges}
@@ -127,44 +135,150 @@ export function Canvas() {
         onPaneClick={onPaneClick}
         fitView
         snapToGrid
-        snapGrid={[16, 16]}
+        snapGrid={[20, 20]}
         connectOnClick={true}
         selectionOnDrag
         defaultEdgeOptions={{
-          style: { strokeWidth: 2, stroke: '#6366f1' },
-          animated: false,
+          style: {
+            strokeWidth: 4,
+            stroke: '#FF6B6B',
+            strokeLinecap: 'round',
+            strokeDasharray: '12,8',
+            filter: 'drop-shadow(0 2px 4px rgba(255,107,107,0.2))',
+          },
+          animated: true,
         }}
         proOptions={{ hideAttribution: true }}
+        style={{
+          background: 'transparent',
+          width: '100%',
+          height: '100%',
+        }}
       >
         <CanvasToolbar />
-        {/* Background with dot pattern */}
+
         <Background
           variant={BackgroundVariant.Dots}
-          gap={20}
-          size={1}
-          color="#e2e8f0"
+          gap={40}
+          size={3}
+          color="rgba(255,107,107,0.15)"
+          style={{
+            opacity: 0.08,
+          }}
         />
 
-        {/* Controls for zoom/pan/fit */}
         <Controls
           position="bottom-right"
           showZoom
           showFitView
           showInteractive
-        />
-
-        {/* Mini map for navigation */}
-        <MiniMap
-          position="bottom-left"
-          nodeStrokeWidth={3}
-          nodeColor="#6366f1"
-          maskColor="rgba(0, 0, 0, 0.1)"
           style={{
-            backgroundColor: '#f8fafc',
-            border: '1px solid #e2e8f0',
-            borderRadius: '8px',
+            background: 'rgba(255, 248, 240, 0.95)',
+            backdropFilter: 'blur(12px)',
+            border: '1px solid rgba(255, 107, 107, 0.15)',
+            borderRadius: '16px',
+            boxShadow: '0 8px 32px rgba(255, 107, 107, 0.08)',
+            padding: '8px',
           }}
         />
+
+        <MiniMap
+          position="bottom-left"
+          nodeStrokeWidth={2}
+          nodeColor={(node) => {
+            if (node.type === 'start') return '#00DFA2';
+            if (node.type === 'http') return '#FF6B6B';
+            return '#A29BFE';
+          }}
+          maskColor="rgba(255, 107, 107, 0.08)"
+          style={{
+            background: 'rgba(255, 248, 240, 0.95)',
+            backdropFilter: 'blur(12px)',
+            border: '1px solid rgba(255, 107, 107, 0.15)',
+            borderRadius: '16px',
+            boxShadow: '0 8px 32px rgba(255, 107, 107, 0.08)',
+            overflow: 'hidden',
+          }}
+        />
+
+        {nodes.length === 0 && (
+          <Panel position="top-center" className="pointer-events-none">
+            <div className="text-center space-y-6 max-w-lg mx-auto mt-40">
+              <div
+                className="w-16 h-16 mx-auto mb-8 rounded-full flex items-center justify-center animate-pulse"
+                style={{
+                  background: '#E84B4B',
+                  boxShadow:
+                    '0 8px 24px rgba(232,75,75,0.2), inset 0 1px 0 rgba(255,255,255,0.3)',
+                  animationDuration: '4s',
+                }}
+              >
+                <div
+                  className="w-8 h-8 rounded-full"
+                  style={{
+                    background: 'rgba(255,255,255,0.9)',
+                  }}
+                ></div>
+              </div>
+              <h2
+                style={{
+                  color: '#2D1B1B',
+                  fontSize: '32px',
+                  fontWeight: '600',
+                  fontFamily:
+                    '-apple-system, BlinkMacSystemFont, "SF Pro Display", system-ui, sans-serif',
+                  letterSpacing: '-0.5px',
+                  marginBottom: '16px',
+                }}
+              >
+                Begin Your Creative Journey
+              </h2>
+              <p
+                style={{
+                  color: 'rgba(45,27,27,0.7)',
+                  fontSize: '17px',
+                  fontWeight: '400',
+                  lineHeight: '1.6',
+                  letterSpacing: '-0.2px',
+                  maxWidth: '400px',
+                  margin: '0 auto',
+                }}
+              >
+                Every masterpiece starts with a single step. Click{' '}
+                <span style={{ color: '#E84B4B', fontWeight: '600' }}>
+                  ✨ Start
+                </span>{' '}
+                above to begin crafting something beautiful.
+              </p>
+              <div className="flex items-center justify-center gap-2 mt-6">
+                <div
+                  className="w-2 h-2 rounded-full animate-pulse"
+                  style={{
+                    background: '#E84B4B',
+                    boxShadow: '0 2px 6px rgba(232,75,75,0.3)',
+                  }}
+                ></div>
+                <span
+                  style={{
+                    color: 'rgba(45,27,27,0.5)',
+                    fontSize: '15px',
+                    fontWeight: '400',
+                  }}
+                >
+                  Let your creativity flow
+                </span>
+                <div
+                  className="w-2 h-2 rounded-full animate-pulse"
+                  style={{
+                    background: '#E84B4B',
+                    boxShadow: '0 2px 6px rgba(232,75,75,0.3)',
+                    animationDelay: '2s',
+                  }}
+                ></div>
+              </div>
+            </div>
+          </Panel>
+        )}
       </ReactFlow>
     </div>
   );

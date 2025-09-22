@@ -1,0 +1,271 @@
+/* AutomateOS Main Header - Apple-Level Design System */
+/* Reference: Clean coral header with white text and action buttons */
+
+/* ============================================
+   COLOR PALETTE
+   ============================================ */
+:root {
+  /* Primary Brand Colors */
+  --header-coral-primary: #E84B4B;
+  --header-coral-light: #FF6B6B;
+  --header-coral-dark: #D83A3A;
+
+  /* Text Colors */
+  --header-text-primary: rgba(255, 255, 255, 0.98);
+  --header-text-secondary: rgba(255, 255, 255, 0.85);
+  --header-text-disabled: rgba(255, 255, 255, 0.5);
+
+  /* Button Backgrounds */
+  --header-button-bg: rgba(255, 255, 255, 0.15);
+  --header-button-bg-hover: rgba(255, 255, 255, 0.22);
+  --header-button-bg-active: rgba(255, 255, 255, 0.12);
+  --header-button-border: rgba(255, 255, 255, 0.18);
+
+  /* Effects */
+  --header-shadow-ambient: rgba(232, 75, 75, 0.06);
+  --header-shadow-direct: rgba(232, 75, 75, 0.10);
+  --header-shadow-spread: rgba(232, 75, 75, 0.05);
+  --header-inner-light: rgba(255, 255, 255, 0.1);
+}
+
+/* ============================================
+   LAYOUT SPECIFICATIONS
+   ============================================ */
+.main-header {
+  /* Positioning */
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 9999;
+
+  /* Dimensions */
+  height: 56px; /* Apple standard navbar height */
+  padding: 0 24px;
+
+  /* Layout */
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  /* Background */
+  background: linear-gradient(135deg, var(--header-coral-light) 0%, var(--header-coral-primary) 100%);
+
+  /* Glass Effect */
+  backdrop-filter: saturate(180%) blur(20px);
+  -webkit-backdrop-filter: saturate(180%) blur(20px);
+
+  /* Border */
+  border-bottom: 1px solid var(--header-inner-light);
+
+  /* Shadow System */
+  box-shadow:
+    0 1px 3px rgba(232, 75, 75, 0.12),
+    0 1px 2px rgba(232, 75, 75, 0.24),
+    inset 0 1px 0 var(--header-inner-light);
+
+  /* Animation */
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+
+/* Scrolled State */
+.main-header.scrolled {
+  box-shadow:
+    0 2px 4px -1px var(--header-shadow-ambient),
+    0 4px 6px -1px var(--header-shadow-direct),
+    0 1px 0 var(--header-shadow-spread),
+    inset 0 1px 0 var(--header-inner-light);
+}
+
+/* ============================================
+   TYPOGRAPHY SYSTEM
+   ============================================ */
+.header-brand {
+  /* Font Stack */
+  font-family:
+    -apple-system,
+    BlinkMacSystemFont,
+    "SF Pro Display",
+    system-ui,
+    sans-serif;
+
+  /* Text Properties */
+  font-size: 18px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1;
+  color: var(--header-text-primary);
+
+  /* Layout */
+  display: flex;
+  align-items: center;
+  gap: 10px;
+
+  /* Interaction */
+  cursor: pointer;
+  user-select: none;
+}
+
+/* Infinity Symbol Animation */
+.header-infinity {
+  font-size: 22px;
+  opacity: 0.95;
+  animation: float 6s ease-in-out infinite;
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-2px);
+  }
+}
+
+/* ============================================
+   BUTTON SPECIFICATIONS
+   ============================================ */
+.header-button {
+  /* Reset */
+  appearance: none;
+  outline: none;
+
+  /* Dimensions */
+  padding: 8px 20px;
+  min-width: 80px;
+  height: 36px;
+
+  /* Typography */
+  font-family:
+    -apple-system,
+    BlinkMacSystemFont,
+    "SF Pro Text",
+    system-ui,
+    sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  line-height: 1;
+
+  /* Colors */
+  background: var(--header-button-bg);
+  color: var(--header-text-primary);
+
+  /* Glass Effect */
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+
+  /* Shape */
+  border-radius: 18px;
+  border: 1px solid var(--header-button-border);
+
+  /* Shadow */
+  box-shadow:
+    0 2px 8px rgba(0, 0, 0, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.25),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.05);
+
+  /* Layout */
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+
+  /* Interaction */
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+  user-select: none;
+}
+
+/* Hover State */
+.header-button:hover:not(:disabled) {
+  background: var(--header-button-bg-hover);
+  transform: translateY(-1px);
+  box-shadow:
+    0 4px 12px rgba(0, 0, 0, 0.12),
+    inset 0 1px 0 rgba(255, 255, 255, 0.3);
+}
+
+/* Active State */
+.header-button:active:not(:disabled) {
+  background: var(--header-button-bg-active);
+  transform: translateY(0);
+}
+
+/* Disabled State */
+.header-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  background: rgba(255, 255, 255, 0.08);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+/* ============================================
+   MOTION PRINCIPLES
+   ============================================ */
+
+/* Spring Physics for Natural Motion */
+.spring-animation {
+  transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+/* Micro-interactions */
+.micro-interaction {
+  transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+/* Page Transitions */
+.page-transition {
+  transition: all 0.6s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+
+/* ============================================
+   RESPONSIVE BREAKPOINTS
+   ============================================ */
+@media (max-width: 768px) {
+  .main-header {
+    padding: 0 16px;
+  }
+
+  .header-button {
+    min-width: 70px;
+    padding: 8px 16px;
+    font-size: 13px;
+  }
+
+  .header-brand {
+    font-size: 16px;
+  }
+
+  .header-infinity {
+    font-size: 20px;
+  }
+}
+
+/* ============================================
+   ACCESSIBILITY
+   ============================================ */
+@media (prefers-reduced-motion: reduce) {
+  .header-infinity {
+    animation: none;
+  }
+
+  .main-header,
+  .header-button {
+    transition: none;
+  }
+}
+
+/* Focus Visible */
+.header-button:focus-visible {
+  outline: 2px solid rgba(255, 255, 255, 0.5);
+  outline-offset: 2px;
+}
+
+/* High Contrast Mode */
+@media (prefers-contrast: high) {
+  .header-button {
+    border-width: 2px;
+    font-weight: 700;
+  }
+}
