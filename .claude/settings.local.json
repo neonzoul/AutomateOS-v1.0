@@ -43,7 +43,9 @@
       "Bash(curl:*)",
       "Bash(docker logs:*)",
       "Bash(set NEXT_PUBLIC_API_BASE=http://localhost:8080)",
-      "Bash(gh pr create:*)"
+      "Bash(gh pr create:*)",
+      "Bash(gh pr edit:*)",
+      "WebFetch(domain:github.com)"
     ],
     "deny": [],
     "ask": []
