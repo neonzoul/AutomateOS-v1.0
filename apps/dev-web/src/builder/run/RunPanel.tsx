@@ -3,7 +3,7 @@
 'use client';
 
 import React from 'react';
-import { useRunState, useNodes, useEdges } from '../../core/state';
+import { useRunState, useNodes, useEdges, useBuilderStore } from '../../core/state';
 import { startRun, cancelRun } from './runActions';
 
 // Apple-inspired SVG icons with clean, minimal design
@@ -40,6 +40,7 @@ export function RunPanel() {
   const { runStatus, currentRunId, logs, nodeRunStatuses, stepDurations } = useRunState();
   const nodes = useNodes();
   const edges = useEdges();
+  const { clearWorkflow } = useBuilderStore();
 
   // Check if workflow is valid and run can be started
   const canRun =
@@ -65,9 +66,24 @@ export function RunPanel() {
         })),
       };
 
+      console.log('DEBUG: Current nodes data:', nodes.map(n => ({ id: n.id, type: n.type, config: n.data?.config })));
+      console.log('DEBUG: Workflow JSON being sent:', JSON.stringify(workflowJson, null, 2));
+
       await startRun(workflowJson);
     } catch (error) {
       console.error('Failed to start run:', error);
+    }
+  };
+
+  const handleClearCache = () => {
+    try {
+      localStorage.removeItem('automateos.dev.graph');
+      clearWorkflow();
+      console.log('Cache cleared successfully');
+      // Refresh the page to start completely fresh
+      window.location.reload();
+    } catch (error) {
+      console.error('Failed to clear cache:', error);
     }
   };
 
@@ -233,6 +249,16 @@ export function RunPanel() {
               </div>
             </button>
           )}
+
+          {/* Temporary Debug Button */}
+          <button
+            type="button"
+            className="px-4 py-2 rounded-lg bg-red-500 text-white text-sm hover:bg-red-600 transition-colors"
+            onClick={handleClearCache}
+            title="Clear workflow cache and refresh"
+          >
+            Clear Cache
+          </button>
         </div>
 
         {/* Status Indicator with refined spacing */}

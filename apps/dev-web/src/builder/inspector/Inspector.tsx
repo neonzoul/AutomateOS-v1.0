@@ -208,11 +208,30 @@ function HttpConfigForm({
 
   // Watch form changes and sync to store when valid
   React.useEffect(() => {
-    const subscription = watch((values) => {
+    const subscription = watch((values, { name, type }) => {
+      console.log('Form values changed:', { values, name, type });
+
+      // Always update config immediately for URL changes
+      if (name === 'url' && values.url && typeof values.url === 'string') {
+        try {
+          new URL(values.url); // Validate URL format
+          console.log('URL changed, updating immediately:', values.url);
+          updateNodeConfig(nodeId, { url: values.url });
+        } catch (e) {
+          console.log('Invalid URL format:', values.url);
+        }
+      }
+
+      // Also do the full validation and update
       const transformed = transformFormData(values);
+      console.log('Transformed values:', transformed);
       const result = HttpConfigSchema.safeParse(transformed);
+      console.log('Validation result:', result);
       if (result.success) {
+        console.log('Updating node config with full data:', nodeId, result.data);
         updateNodeConfig(nodeId, result.data);
+      } else {
+        console.log('Validation failed:', result.error);
       }
     });
     return () => subscription.unsubscribe();
@@ -306,6 +325,28 @@ function HttpConfigForm({
                   : 'border-coral-sunset/20 focus:border-coral-sunset focus:ring-coral-sunset/10'
               }`}
               placeholder="https://api.example.com/endpoint"
+              onChange={(e) => {
+                // Immediate update for URL changes
+                const url = e.target.value;
+                if (url) {
+                  try {
+                    new URL(url);
+                    console.log('Direct URL change, updating immediately:', url);
+                    updateNodeConfig(nodeId, { url });
+                    // Force localStorage update
+                    setTimeout(() => {
+                      const state = useBuilderStore.getState();
+                      localStorage.setItem('automateos.dev.graph', JSON.stringify({
+                        nodes: state.nodes,
+                        edges: state.edges,
+                        metadata: { version: '1.0', exportedAt: new Date().toISOString() }
+                      }));
+                    }, 100);
+                  } catch (err) {
+                    console.log('Invalid URL in direct change:', url);
+                  }
+                }
+              }}
             />
             {errors.url && (
               <p id="url-error" className="mt-2 text-body text-coral-sunset">
