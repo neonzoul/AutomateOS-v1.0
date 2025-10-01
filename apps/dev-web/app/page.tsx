@@ -27,7 +27,7 @@ export default function Home() {
           position: 'relative',
         }}
       >
-        {/* Ribbon Logo Placeholder */}
+        {/* Ribbon Logo */}
         <motion.div
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -36,18 +36,17 @@ export default function Home() {
             width: '326px',
             height: '102px',
             marginBottom: '32px',
-            background: 'rgba(255, 255, 255, 0.1)',
-            borderRadius: '12px',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            fontFamily: 'Helvetica, sans-serif',
-            fontSize: '24px',
-            fontWeight: 700,
-            color: '#FFFFFF',
           }}
         >
-          🎀 AutomateOS
+          <img
+            src="/assets/ribbon_logo.svg"
+            alt="AutomateOS Ribbon Logo"
+            style={{
+              width: '100%',
+              height: '100%',
+              objectFit: 'contain',
+            }}
+          />
         </motion.div>
 
         {/* Main Title */}
@@ -161,22 +160,29 @@ export default function Home() {
           position: 'relative',
         }}
       >
-        {/* Watermark Ribbon */}
+        {/* Watermark Ribbon Logo */}
         <div
           style={{
             position: 'absolute',
             top: '50%',
             left: '50%',
             transform: 'translate(-50%, -50%)',
-            fontSize: '180px',
-            fontWeight: 700,
-            color: 'rgba(230, 57, 70, 0.05)',
             pointerEvents: 'none',
             userSelect: 'none',
-            fontFamily: 'Helvetica, sans-serif',
+            opacity: 0.03,
+            width: '800px',
+            height: '250px',
           }}
         >
-          🎀 Samantha
+          <img
+            src="/assets/ribbon_logo.svg"
+            alt="Watermark"
+            style={{
+              width: '100%',
+              height: '100%',
+              objectFit: 'contain',
+            }}
+          />
         </div>
 
         {/* Chat Container */}
