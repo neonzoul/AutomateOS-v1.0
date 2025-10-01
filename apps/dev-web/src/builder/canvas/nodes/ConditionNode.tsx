@@ -49,8 +49,8 @@ export default function ConditionNode({ data, id }: ConditionNodeProps) {
         transition: { duration: 0.2 }
       }}
       style={{
-        width: '120px',
-        height: '120px',
+        width: '160px',
+        height: '160px',
         background: 'linear-gradient(135deg, #F3E5F5 0%, #E1BEE7 100%)',
         border: isSelected ? `3px solid #E63946` : `3px solid #9C27B0`,
         boxShadow: '0px 4px 16px rgba(156, 39, 176, 0.2)',
@@ -60,6 +60,7 @@ export default function ConditionNode({ data, id }: ConditionNodeProps) {
         alignItems: 'center',
         justifyContent: 'center',
         transform: 'rotate(45deg)',
+        borderRadius: '8px',
       }}
     >
       {/* Inner content - counter-rotate to keep upright */}
@@ -91,22 +92,23 @@ export default function ConditionNode({ data, id }: ConditionNodeProps) {
         <div style={{
           fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Helvetica", "Arial", sans-serif',
           fontWeight: 700,
-          fontSize: '14px',
+          fontSize: '16px',
           color: '#4A148C',
           textAlign: 'center',
           letterSpacing: '0.5px',
           textTransform: 'uppercase',
         }}>
-          {data?.label ?? 'Decision'}
+          {data?.label ?? 'If/Else'}
         </div>
 
         {/* Question mark icon or condition hint */}
         {!condition && !field && (
           <div style={{
-            fontSize: '24px',
+            fontSize: '32px',
             color: '#9C27B0',
-            marginTop: '4px',
+            marginTop: '6px',
             opacity: 0.6,
+            fontWeight: 300,
           }}>
             ?
           </div>
@@ -150,16 +152,17 @@ export default function ConditionNode({ data, id }: ConditionNodeProps) {
       {/* True Label */}
       <div style={{
         position: 'absolute',
-        right: '-44px',
+        right: '-48px',
         top: '50%',
         transform: 'translateY(-50%)',
-        fontSize: '11px',
+        fontSize: '12px',
         fontWeight: 700,
         color: '#00D98E',
-        textShadow: '0 1px 2px rgba(0,0,0,0.15)',
-        background: 'rgba(0, 217, 142, 0.1)',
-        padding: '2px 6px',
-        borderRadius: '4px',
+        textShadow: '0 1px 3px rgba(0,0,0,0.2)',
+        background: 'rgba(0, 217, 142, 0.15)',
+        padding: '3px 8px',
+        borderRadius: '6px',
+        border: '1px solid rgba(0, 217, 142, 0.3)',
       }}>
         True
       </div>
@@ -184,17 +187,18 @@ export default function ConditionNode({ data, id }: ConditionNodeProps) {
       {/* False Label */}
       <div style={{
         position: 'absolute',
-        bottom: '-26px',
+        bottom: '-30px',
         left: '50%',
         transform: 'translateX(-50%)',
-        fontSize: '11px',
+        fontSize: '12px',
         fontWeight: 700,
         color: '#9E9E9E',
-        textShadow: '0 1px 2px rgba(0,0,0,0.15)',
-        background: 'rgba(158, 158, 158, 0.1)',
-        padding: '2px 6px',
-        borderRadius: '4px',
+        textShadow: '0 1px 3px rgba(0,0,0,0.2)',
+        background: 'rgba(158, 158, 158, 0.15)',
+        padding: '3px 8px',
+        borderRadius: '6px',
         whiteSpace: 'nowrap',
+        border: '1px solid rgba(158, 158, 158, 0.3)',
       }}>
         False
       </div>
