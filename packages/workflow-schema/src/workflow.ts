@@ -41,6 +41,25 @@ export const ConditionConfigSchema = z
 // Stop node has no specific config
 export const StopConfigSchema = z.object({}).strict();
 
+// Agent node config schema
+export const AgentConfigSchema = z
+  .object({
+    model: z.string().optional(), // e.g., "gpt-4", "claude-3"
+    temperature: z.number().min(0).max(2).optional(),
+    maxTokens: z.number().optional(),
+    systemPrompt: z.string().optional(),
+    memory: z.object({
+      type: z.enum(['buffer', 'summary', 'vector']).optional(),
+      config: z.record(z.string(), z.unknown()).optional(),
+    }).optional(),
+    tools: z.array(z.object({
+      name: z.string(),
+      type: z.string(),
+      config: z.record(z.string(), z.unknown()).optional(),
+    })).optional(),
+  })
+  .strict();
+
 // Base node data structure
 export const BaseNodeDataSchema = z.object({
   label: z.string().optional(),
@@ -49,6 +68,7 @@ export const BaseNodeDataSchema = z.object({
   description: z.string().optional(),
   tags: z.array(z.string()).optional(),
   icon: z.string().optional(),
+  isCollapsed: z.boolean().optional(), // For collapsible nodes (e.g., Agent)
 });
 
 // === Node Type Schemas ===
@@ -101,12 +121,25 @@ export const StopNodeSchema = z.object({
   }),
 });
 
+export const AgentNodeSchema = z.object({
+  id: z.string(),
+  type: z.literal('agent'),
+  position: z.object({
+    x: z.number(),
+    y: z.number(),
+  }),
+  data: BaseNodeDataSchema.extend({
+    config: AgentConfigSchema.optional(),
+  }),
+});
+
 // Union of all node types - ensures type safety across the platform
 export const NodeSchema = z.discriminatedUnion('type', [
   StartNodeSchema,
   HttpNodeSchema,
   ConditionNodeSchema,
   StopNodeSchema,
+  AgentNodeSchema,
 ]);
 
 // === Edge Schema ===
@@ -163,11 +196,13 @@ export type StartConfig = z.infer<typeof StartConfigSchema>;
 export type HttpConfig = z.output<typeof HttpConfigSchema>;
 export type ConditionConfig = z.output<typeof ConditionConfigSchema>;
 export type StopConfig = z.infer<typeof StopConfigSchema>;
+export type AgentConfig = z.output<typeof AgentConfigSchema>;
 export type BaseNodeData = z.infer<typeof BaseNodeDataSchema>;
 export type StartNode = z.infer<typeof StartNodeSchema>;
 export type HttpNode = z.infer<typeof HttpNodeSchema>;
 export type ConditionNode = z.infer<typeof ConditionNodeSchema>;
 export type StopNode = z.infer<typeof StopNodeSchema>;
+export type AgentNode = z.infer<typeof AgentNodeSchema>;
 export type WorkflowNode = z.infer<typeof NodeSchema>;
 export type WorkflowEdge = z.infer<typeof EdgeSchema>;
 export type WorkflowMeta = z.infer<typeof WorkflowMetaSchema>;
@@ -203,6 +238,11 @@ export interface NodeSpec<TConfig = any> {
   defaultData: {
     label?: string;
     config?: TConfig;
+    // UI-only fields
+    description?: string;
+    tags?: string[];
+    icon?: string;
+    isCollapsed?: boolean;
   };
   runtime?: { adapter: string };
 }

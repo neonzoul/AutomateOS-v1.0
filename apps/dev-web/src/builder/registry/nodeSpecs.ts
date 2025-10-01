@@ -10,10 +10,12 @@ import {
   HttpConfigSchema,
   ConditionConfigSchema,
   StopConfigSchema,
+  AgentConfigSchema,
   type StartConfig,
   type HttpConfig,
   type ConditionConfig,
   type StopConfig,
+  type AgentConfig,
   type NodeSpec as BaseNodeSpec,
 } from '@automateos/workflow-schema';
 
@@ -61,6 +63,23 @@ export const NODE_SPECS = {
     runtime: { adapter: 'stop' as const },
     defaultData: { label: 'Stop', config: {} },
   } satisfies NodeSpec<StopConfig>,
+
+  agent: {
+    type: 'agent',
+    label: 'AI Agent',
+    description: 'Conversational AI agent with model, memory, and tools',
+    configSchema: AgentConfigSchema,
+    runtime: { adapter: 'agent' as const },
+    defaultData: {
+      label: 'AI Agent',
+      config: {
+        model: 'gpt-4',
+        temperature: 0.7,
+        systemPrompt: 'You are a helpful AI assistant.',
+      } as AgentConfig,
+      isCollapsed: false as boolean,
+    } as const,
+  } satisfies NodeSpec<AgentConfig>,
 } as const;
 
-export type NodeTypeKey = keyof typeof NODE_SPECS; // 'start' | 'http' | 'condition' | 'stop'
+export type NodeTypeKey = keyof typeof NODE_SPECS; // 'start' | 'http' | 'condition' | 'stop' | 'agent'
