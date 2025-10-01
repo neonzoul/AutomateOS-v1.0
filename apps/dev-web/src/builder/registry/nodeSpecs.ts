@@ -9,9 +9,11 @@ import {
   StartConfigSchema,
   HttpConfigSchema,
   ConditionConfigSchema,
+  StopConfigSchema,
   type StartConfig,
   type HttpConfig,
   type ConditionConfig,
+  type StopConfig,
   type NodeSpec as BaseNodeSpec,
 } from '@automateos/workflow-schema';
 
@@ -50,6 +52,15 @@ export const NODE_SPECS = {
       config: { condition: '' },
     },
   } satisfies NodeSpec<ConditionConfig>,
+
+  stop: {
+    type: 'stop',
+    label: 'Stop',
+    description: 'End workflow execution',
+    configSchema: StopConfigSchema,
+    runtime: { adapter: 'stop' as const },
+    defaultData: { label: 'Stop', config: {} },
+  } satisfies NodeSpec<StopConfig>,
 } as const;
 
-export type NodeTypeKey = keyof typeof NODE_SPECS; // 'start' | 'http' | 'condition'
+export type NodeTypeKey = keyof typeof NODE_SPECS; // 'start' | 'http' | 'condition' | 'stop'

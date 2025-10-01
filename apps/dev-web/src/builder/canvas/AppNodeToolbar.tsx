@@ -173,6 +173,16 @@ function ConditionIcon() {
   );
 }
 
+// Stop Icon Component
+function StopIcon() {
+  return (
+    <svg width="32" height="32" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="none">
+      <circle cx="12" cy="12" r="10" stroke="white" strokeWidth="2" fill="none"/>
+      <line x1="7" y1="12" x2="17" y2="12" stroke="white" strokeWidth="2.5" strokeLinecap="round"/>
+    </svg>
+  );
+}
+
 export function AppNodeToolbar({ appNodeHandlers }: AppNodeToolbarProps) {
   // App icons - Google, Slack, LINE, Notion, Facebook, TikTok
   const appIcons = [
@@ -184,10 +194,11 @@ export function AppNodeToolbar({ appNodeHandlers }: AppNodeToolbarProps) {
     { name: 'TikTok', icon: <TikTokIcon />, onClick: appNodeHandlers.tiktok },
   ];
 
-  // Control icons - HTTP, Condition, AutomateOS, Workflow, AI
+  // Control icons - HTTP, Condition, Stop, AutomateOS, Workflow, AI
   const controlIcons = [
     { name: 'HTTP', icon: <HttpIcon />, isDark: true, onClick: appNodeHandlers.http },
     { name: 'Condition', icon: <ConditionIcon />, isDark: true, onClick: appNodeHandlers.condition },
+    { name: 'Stop', icon: <StopIcon />, isDark: true, onClick: appNodeHandlers.stop },
     { name: 'AutomateOS', icon: <DNAIcon />, isDark: true },
     { name: 'Workflow', icon: <WorkflowIcon />, isDark: true },
     { name: 'AI Agent', icon: <AIAgentIcon />, isDark: true },

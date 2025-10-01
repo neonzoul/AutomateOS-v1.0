@@ -31,6 +31,7 @@ import HttpNode from './nodes/HttpNode';
 import AppNode from './nodes/AppNode';
 import AgentNode from './nodes/AgentNode';
 import ConditionNode from './nodes/ConditionNode';
+import StopNode from './nodes/StopNode';
 import { NODE_SPECS } from '../registry/nodeSpecs';
 import { AppNodeToolbar } from './AppNodeToolbar';
 import { LeftSidebar } from '../sidebar/LeftSidebar';
@@ -47,6 +48,7 @@ const nodeTypes: NodeTypes = {
   app: AppNode,
   agent: AgentNode,
   condition: ConditionNode,
+  stop: StopNode,
 };
 
 interface CanvasProps {
@@ -158,6 +160,38 @@ export function Canvas({
     [screenToFlowPosition, addNode]
   );
 
+  // Stop node creation handler
+  const handleStopNodeCreate = useCallback(
+    (evt: React.MouseEvent) => {
+      let position;
+      try {
+        const base = screenToFlowPosition({
+          x: evt.clientX,
+          y: evt.clientY + 40,
+        });
+        position = base;
+      } catch (error) {
+        console.warn(
+          'screenToFlowPosition failed, using fallback position:',
+          error
+        );
+        position = { x: 200, y: 200 };
+      }
+
+      const spec = NODE_SPECS['stop'];
+      addNode({
+        type: 'stop',
+        position,
+        data: {
+          ...spec.defaultData,
+          description: 'End workflow execution',
+          tags: ['Control', 'Flow', 'End'],
+        }
+      });
+    },
+    [screenToFlowPosition, addNode]
+  );
+
   // Create handlers for all app nodes
   const appNodeHandlers = useCallback(() => {
     return {
@@ -169,8 +203,9 @@ export function Canvas({
       tiktok: createNodeHandler('TikTok'),
       http: handleHttpNodeCreate,
       condition: handleConditionNodeCreate,
+      stop: handleStopNodeCreate,
     };
-  }, [createNodeHandler, handleHttpNodeCreate, handleConditionNodeCreate]);
+  }, [createNodeHandler, handleHttpNodeCreate, handleConditionNodeCreate, handleStopNodeCreate]);
 
   // Expose HTTP node creation handler to parent
   useEffect(() => {
