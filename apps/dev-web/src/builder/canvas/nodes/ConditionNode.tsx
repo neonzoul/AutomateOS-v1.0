@@ -46,205 +46,69 @@ export default function ConditionNode({ data, id }: ConditionNodeProps) {
         transition: { duration: 0.2 }
       }}
       style={{
-        width: '140px',
-        height: '170px',
+        width: '80px',
+        height: '80px',
         position: 'relative',
         cursor: 'pointer',
+        background: 'linear-gradient(135deg, rgba(168, 85, 247, 0.95) 0%, rgba(147, 51, 234, 0.92) 100%)',
+        borderRadius: '12px',
+        border: isSelected ? '3px solid #E63946' : '2px solid rgba(147, 51, 234, 0.6)',
+        boxShadow: `
+          0 8px 24px rgba(147, 51, 234, 0.35),
+          inset 0 1px 0 rgba(255, 255, 255, 0.3),
+          inset 0 -2px 8px rgba(0, 0, 0, 0.2)
+        `,
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
       }}
     >
-      {/* SVG Diamond with Layered Glass Effect */}
-      <svg
-        viewBox="0 0 100 120"
+      {/* Status dot */}
+      <div
         style={{
-          width: '100%',
-          height: '100%',
-          filter: 'drop-shadow(0px 8px 24px rgba(147, 51, 234, 0.35))',
+          position: 'absolute',
+          top: '6px',
+          right: '6px',
+          width: '8px',
+          height: '8px',
+          borderRadius: '50%',
+          background: getStatusColor(),
+          boxShadow: `
+            0 0 8px ${getStatusColor()},
+            0 0 12px ${getStatusColor()}80,
+            inset 0 1px 2px rgba(255, 255, 255, 0.5)
+          `,
+          border: '1px solid rgba(255, 255, 255, 0.4)',
+        }}
+      />
+
+      {/* Branch icon (SVG) */}
+      <svg
+        width="40"
+        height="40"
+        viewBox="0 0 24 24"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+        style={{
+          filter: 'drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3))',
         }}
       >
-        <defs>
-          {/* Main glass gradient - Purple spectrum */}
-          <linearGradient id={`mainGradient-${id}`} x1="0%" y1="0%" x2="0%" y2="100%">
-            <stop offset="0%" stopColor="rgba(147, 51, 234, 0.92)" />
-            <stop offset="50%" stopColor="rgba(168, 85, 247, 0.95)" />
-            <stop offset="100%" stopColor="rgba(192, 132, 252, 0.90)" />
-          </linearGradient>
-
-          {/* Reflection gradient - Multi-color shimmer */}
-          <linearGradient id={`reflectionGradient-${id}`} x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stopColor="rgba(59, 130, 246, 0.6)" />
-            <stop offset="50%" stopColor="rgba(236, 72, 153, 0.5)" />
-            <stop offset="100%" stopColor="rgba(147, 197, 253, 0.4)" />
-          </linearGradient>
-
-          {/* Top highlight gradient */}
-          <radialGradient id={`highlightGradient-${id}`} cx="50%" cy="20%">
-            <stop offset="0%" stopColor="rgba(255, 255, 255, 0.9)" />
-            <stop offset="60%" stopColor="rgba(255, 255, 255, 0.3)" />
-            <stop offset="100%" stopColor="transparent" />
-          </radialGradient>
-
-          {/* Edge glow gradient */}
-          <linearGradient id={`edgeGlow-${id}`} x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stopColor="rgba(147, 51, 234, 0.9)" />
-            <stop offset="50%" stopColor="rgba(236, 72, 153, 0.7)" />
-            <stop offset="100%" stopColor="rgba(59, 130, 246, 0.8)" />
-          </linearGradient>
-
-          {/* Glossy filter */}
-          <filter id={`glossy-${id}`}>
-            <feGaussianBlur in="SourceGraphic" stdDeviation="0.5" result="blur" />
-            <feSpecularLighting in="blur" surfaceScale="3" specularConstant="0.8" specularExponent="20" result="spec">
-              <fePointLight x="30" y="10" z="100" />
-            </feSpecularLighting>
-            <feComposite in="SourceGraphic" in2="spec" operator="arithmetic" k1="0" k2="1" k3="1" k4="0" />
-          </filter>
-
-          {/* Inner shadow */}
-          <filter id={`innerShadow-${id}`}>
-            <feGaussianBlur in="SourceAlpha" stdDeviation="2" result="blur" />
-            <feOffset in="blur" dx="0" dy="1" result="offsetBlur" />
-            <feComposite in="offsetBlur" in2="SourceAlpha" operator="arithmetic" k2="-1" k3="1" result="inverse" />
-            <feFlood floodColor="rgba(147, 51, 234, 0.5)" result="color" />
-            <feComposite in="color" in2="inverse" operator="in" result="shadow" />
-            <feComposite in="SourceGraphic" in2="shadow" operator="over" />
-          </filter>
-        </defs>
-
-        {/* Layer 1: Bottom shadow (deepest) */}
-        <polygon
-          points="50,14 86,60 50,106 14,60"
-          fill="rgba(147, 51, 234, 0.4)"
-          filter="url(#blur)"
-          opacity="0.6"
-        />
-
-        {/* Layer 2: Deep purple base */}
-        <polygon
-          points="50,12 88,60 50,108 12,60"
-          fill="rgba(107, 33, 168, 0.85)"
-          opacity="0.7"
-        />
-
-        {/* Layer 3: Main glass layer */}
-        <polygon
-          points="50,10 90,60 50,110 10,60"
-          fill={`url(#mainGradient-${id})`}
-          stroke={`url(#edgeGlow-${id})`}
+        <path
+          d="M12 2v6M12 8l-5 6M12 8l5 6M7 14v6M17 14v6"
+          stroke="white"
           strokeWidth="2"
-          filter={`url(#glossy-${id})`}
+          strokeLinecap="round"
+          strokeLinejoin="round"
         />
-
-        {/* Layer 4: Middle reflection */}
-        <polygon
-          points="50,15 83,60 50,105 17,60"
-          fill={`url(#reflectionGradient-${id})`}
-          opacity="0.5"
-        />
-
-        {/* Layer 5: Top highlight (glossy shine) */}
-        <polygon
-          points="50,18 78,60 50,102 22,60"
-          fill={`url(#highlightGradient-${id})`}
-          opacity="0.6"
-        />
-
-        {/* Layer 6: Edge inner glow */}
-        <polygon
-          points="50,10 90,60 50,110 10,60"
-          fill="none"
-          stroke="rgba(255, 255, 255, 0.4)"
-          strokeWidth="1"
-          opacity="0.8"
-        />
-
-        {/* Selected border */}
-        {isSelected && (
-          <polygon
-            points="50,10 90,60 50,110 10,60"
-            fill="none"
-            stroke="#E63946"
-            strokeWidth="3"
-          />
-        )}
-
-        {/* Content - using foreignObject */}
-        <foreignObject x="20" y="35" width="60" height="50">
-          <div
-            style={{
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center',
-              justifyContent: 'center',
-              height: '100%',
-              position: 'relative',
-            }}
-          >
-            {/* Status dot */}
-            <div
-              style={{
-                position: 'absolute',
-                top: '2px',
-                width: '8px',
-                height: '8px',
-                borderRadius: '50%',
-                background: getStatusColor(),
-                boxShadow: `
-                  0 0 8px ${getStatusColor()},
-                  0 0 12px ${getStatusColor()}80,
-                  inset 0 1px 2px rgba(255, 255, 255, 0.5)
-                `,
-                border: '1px solid rgba(255, 255, 255, 0.4)',
-              }}
-            />
-
-            {/* If/Else text */}
-            <div
-              style={{
-                fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", sans-serif',
-                fontWeight: 700,
-                fontSize: '13px',
-                color: '#FFFFFF',
-                textAlign: 'center',
-                letterSpacing: '1px',
-                textTransform: 'uppercase',
-                textShadow: `
-                  0 1px 3px rgba(0, 0, 0, 0.5),
-                  0 0 8px rgba(147, 51, 234, 0.6)
-                `,
-                marginTop: '12px',
-              }}
-            >
-              {data?.label ?? 'If/Else'}
-            </div>
-
-            {/* Question mark */}
-            {!condition && !field && (
-              <div
-                style={{
-                  fontSize: '22px',
-                  color: '#FFFFFF',
-                  marginTop: '2px',
-                  opacity: 0.8,
-                  fontWeight: 300,
-                  textShadow: `
-                    0 0 10px rgba(255, 255, 255, 0.8),
-                    0 2px 4px rgba(0, 0, 0, 0.3)
-                  `,
-                }}
-              >
-                ?
-              </div>
-            )}
-          </div>
-        </foreignObject>
+        <circle cx="12" cy="2" r="1.5" fill="white" />
+        <circle cx="7" cy="20" r="1.5" fill="white" />
+        <circle cx="17" cy="20" r="1.5" fill="white" />
       </svg>
 
-      {/* Handles positioned at diamond points */}
-
-      {/* Input Handle - Top */}
+      {/* Input Handle - Left */}
       <Handle
         type="target"
-        position={Position.Top}
+        position={Position.Left}
         id="target"
         style={{
           background: '#E84B4B',
@@ -252,16 +116,16 @@ export default function ConditionNode({ data, id }: ConditionNodeProps) {
           width: '12px',
           height: '12px',
           boxShadow: '0 2px 8px rgba(232, 75, 75, 0.4), 0 0 12px rgba(232, 75, 75, 0.3)',
-          top: '0px',
-          left: '50%',
-          transform: 'translateX(-50%)',
+          left: '0px',
+          top: '50%',
+          transform: 'translateY(-50%)',
         }}
       />
 
-      {/* Output Handle - True (Right) */}
+      {/* Output Handle - True (Top) */}
       <Handle
         type="source"
-        position={Position.Right}
+        position={Position.Top}
         id="source-true"
         style={{
           background: '#00D98E',
@@ -269,32 +133,11 @@ export default function ConditionNode({ data, id }: ConditionNodeProps) {
           width: '12px',
           height: '12px',
           boxShadow: '0 2px 8px rgba(0, 217, 142, 0.5), 0 0 12px rgba(0, 217, 142, 0.4)',
-          right: '0px',
-          top: '50%',
-          transform: 'translateY(-50%)',
+          top: '0px',
+          left: '50%',
+          transform: 'translateX(-50%)',
         }}
       />
-
-      {/* True Label */}
-      <div
-        style={{
-          position: 'absolute',
-          right: '-48px',
-          top: '50%',
-          transform: 'translateY(-50%)',
-          fontSize: '12px',
-          fontWeight: 700,
-          color: '#00D98E',
-          textShadow: '0 1px 3px rgba(0,0,0,0.3), 0 0 8px rgba(0, 217, 142, 0.6)',
-          background: 'rgba(0, 217, 142, 0.15)',
-          backdropFilter: 'blur(4px)',
-          padding: '3px 8px',
-          borderRadius: '6px',
-          border: '1px solid rgba(0, 217, 142, 0.4)',
-        }}
-      >
-        True
-      </div>
 
       {/* Output Handle - False (Bottom) */}
       <Handle
@@ -312,28 +155,6 @@ export default function ConditionNode({ data, id }: ConditionNodeProps) {
           transform: 'translateX(-50%)',
         }}
       />
-
-      {/* False Label */}
-      <div
-        style={{
-          position: 'absolute',
-          bottom: '-30px',
-          left: '50%',
-          transform: 'translateX(-50%)',
-          fontSize: '12px',
-          fontWeight: 700,
-          color: '#9E9E9E',
-          textShadow: '0 1px 3px rgba(0,0,0,0.3), 0 0 8px rgba(158, 158, 158, 0.5)',
-          background: 'rgba(158, 158, 158, 0.15)',
-          backdropFilter: 'blur(4px)',
-          padding: '3px 8px',
-          borderRadius: '6px',
-          whiteSpace: 'nowrap',
-          border: '1px solid rgba(158, 158, 158, 0.4)',
-        }}
-      >
-        False
-      </div>
     </motion.div>
   );
 }
