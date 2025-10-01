@@ -1,34 +1,41 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { motion } from 'framer-motion';
-import { useBuilderStore } from '@/core/state';
 
 interface TemplateCardProps {
   title: string;
   description: string;
-  onClick?: () => void;
+  filename: string;
 }
 
-function TemplateCard({ title, description, onClick }: TemplateCardProps) {
+function TemplateCard({ title, description, filename }: TemplateCardProps) {
+  const handleDragStart = (e: React.DragEvent) => {
+    e.dataTransfer.setData('application/template', filename);
+    e.dataTransfer.effectAllowed = 'copy';
+  };
+
   return (
-    <motion.div
-      whileHover={{
-        scale: 1.02,
-        transition: { duration: 0.2 }
-      }}
-      whileTap={{
-        scale: 0.98,
-        transition: { duration: 0.1 }
-      }}
-      onClick={onClick}
-      style={{
+    <div
+      draggable
+      onDragStart={handleDragStart}
+    >
+      <motion.div
+        whileHover={{
+          scale: 1.02,
+          transition: { duration: 0.2 }
+        }}
+        whileTap={{
+          scale: 0.98,
+          transition: { duration: 0.1 }
+        }}
+        style={{
         width: '310px',
         height: '122px',
         background: '#FFFFFF',
         borderRadius: '10px',
         padding: '14px 16px',
-        cursor: 'pointer',
+        cursor: 'grab',
         boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)',
         transition: 'all 0.2s ease',
         position: 'relative'
@@ -152,34 +159,45 @@ function TemplateCard({ title, description, onClick }: TemplateCardProps) {
           </div>
         </div>
       </div>
-    </motion.div>
+      </motion.div>
+    </div>
   );
 }
 
 interface AgentCardProps {
   title: string;
-  onClick?: () => void;
+  filename?: string;
 }
 
-function AgentCard({ title, onClick }: AgentCardProps) {
+function AgentCard({ title, filename }: AgentCardProps) {
+  const handleDragStart = (e: React.DragEvent) => {
+    if (filename) {
+      e.dataTransfer.setData('application/template', filename);
+      e.dataTransfer.effectAllowed = 'copy';
+    }
+  };
+
   return (
-    <motion.div
-      whileHover={{
-        scale: 1.02,
-        transition: { duration: 0.2 }
-      }}
-      whileTap={{
-        scale: 0.98,
-        transition: { duration: 0.1 }
-      }}
-      onClick={onClick}
-      style={{
+    <div
+      draggable={!!filename}
+      onDragStart={handleDragStart}
+    >
+      <motion.div
+        whileHover={{
+          scale: 1.02,
+          transition: { duration: 0.2 }
+        }}
+        whileTap={{
+          scale: 0.98,
+          transition: { duration: 0.1 }
+        }}
+        style={{
         width: '150px',
         height: '149px',
         background: '#FFFFFF',
         borderRadius: '10px',
         padding: '14px 10px',
-        cursor: 'pointer',
+        cursor: filename ? 'grab' : 'pointer',
         boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)',
         transition: 'all 0.2s ease',
         display: 'flex',
@@ -288,7 +306,8 @@ function AgentCard({ title, onClick }: AgentCardProps) {
           <span>Summarize text</span>
         </div>
       </div>
-    </motion.div>
+      </motion.div>
+    </div>
   );
 }
 
@@ -324,33 +343,6 @@ const AGENT_TEMPLATES: AgentTemplate[] = [
 ];
 
 export function LeftSidebar() {
-  const { setGraph } = useBuilderStore();
-  const [loading, setLoading] = useState<string | null>(null);
-
-  const loadTemplate = async (filename: string) => {
-    try {
-      setLoading(filename);
-      const response = await fetch(`/examples/${filename}`);
-      if (!response.ok) {
-        throw new Error(`Failed to load template: ${response.statusText}`);
-      }
-      const workflow = await response.json();
-
-      // Load the workflow into the canvas
-      setGraph({
-        nodes: workflow.nodes || [],
-        edges: workflow.edges || []
-      });
-
-      console.log(`Loaded template: ${filename}`);
-    } catch (error) {
-      console.error('Error loading template:', error);
-      alert('Failed to load template. Please try again.');
-    } finally {
-      setLoading(null);
-    }
-  };
-
   return (
     <motion.div
       initial={{ opacity: 0, x: -20 }}
@@ -397,7 +389,7 @@ export function LeftSidebar() {
               key={template.filename}
               title={template.name}
               description={template.description}
-              onClick={() => loadTemplate(template.filename)}
+              filename={template.filename}
             />
           ))}
         </div>
@@ -446,7 +438,7 @@ export function LeftSidebar() {
             <AgentCard
               key={template.filename}
               title={template.name}
-              onClick={() => loadTemplate(template.filename)}
+              filename={template.filename}
             />
           ))}
           <AgentCard title="Flow2" />

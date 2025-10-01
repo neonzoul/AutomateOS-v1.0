@@ -318,10 +318,49 @@ export function Canvas({
     setSelectedNode(null);
   }, [setSelectedNode]);
 
+  // Handle template drop
+  const { setGraph } = useBuilderStore();
+
+  const onDragOver = useCallback((event: React.DragEvent) => {
+    event.preventDefault();
+    event.dataTransfer.dropEffect = 'copy';
+  }, []);
+
+  const onDrop = useCallback(
+    async (event: React.DragEvent) => {
+      event.preventDefault();
+
+      const templateFilename = event.dataTransfer.getData('application/template');
+      if (!templateFilename) return;
+
+      try {
+        const response = await fetch(`/examples/${templateFilename}`);
+        if (!response.ok) {
+          throw new Error(`Failed to load template: ${response.statusText}`);
+        }
+        const workflow = await response.json();
+
+        // Load the workflow into the canvas
+        setGraph({
+          nodes: workflow.nodes || [],
+          edges: workflow.edges || []
+        });
+
+        console.log(`Loaded template via drag-drop: ${templateFilename}`);
+      } catch (error) {
+        console.error('Error loading template:', error);
+        alert('Failed to load template. Please try again.');
+      }
+    },
+    [setGraph]
+  );
+
   return (
     <div
       className="absolute inset-0"
       data-testid="canvas"
+      onDragOver={onDragOver}
+      onDrop={onDrop}
       style={{
         background: '#FCFDFF',
         width: '100%',
