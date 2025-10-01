@@ -18,7 +18,7 @@ export default function Home() {
     {
       id: '1',
       type: 'incoming',
-      text: 'สวัสดีค่ะ! มีอะไรให้ช่วยไหมคะ 😊',
+      text: 'Hello. How can I help you?',
       timestamp: 'Today 10:25 AM',
     },
   ]);
@@ -38,66 +38,38 @@ export default function Home() {
     };
 
     setMessages((prev) => [...prev, userMessage]);
-    const currentInput = inputValue;
     setInputValue('');
 
-    // Check if message contains task details
-    const lowerInput = currentInput.toLowerCase();
-    const hasTaskDetails =
-      (lowerInput.includes('task') || lowerInput.includes('งาน')) &&
-      (lowerInput.includes('notion') || lowerInput.includes('slack'));
+    // Mock response - always shows workflow automation result
+    // Acknowledgment
+    setTimeout(() => {
+      const ackMessage: Message = {
+        id: (Date.now() + 1).toString(),
+        type: 'incoming',
+        text: 'I can help you with that.',
+      };
+      setMessages((prev) => [...prev, ackMessage]);
+    }, 600);
 
-    // Extract details if present
-    const taskNameMatch = currentInput.match(/"([^"]+)"/);
-    const assignMatch = currentInput.match(/assign[^\s]*\s+[ให้]*\s*([a-zA-Zก-๙]+)/i);
-    const dateMatch = currentInput.match(/(\d{1,2}\s*(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec|มกราคม|กุมภาพันธ์|มีนาคม|เมษายน|พฤษภาคม|มิถุนายน|กรกฎาคม|สิงหาคม|กันยายน|ตุลาคม|พฤศจิกายน|ธันวาคม))/i);
+    // Processing
+    setTimeout(() => {
+      const processingMessage: Message = {
+        id: (Date.now() + 2).toString(),
+        type: 'incoming',
+        text: 'Creating task in Notion and sending notification to Slack...',
+      };
+      setMessages((prev) => [...prev, processingMessage]);
+    }, 1400);
 
-    if (hasTaskDetails && taskNameMatch && assignMatch) {
-      // Detailed task request detected
-      const taskName = taskNameMatch[1];
-      const assignTo = assignMatch[1];
-      const dueDate = dateMatch ? dateMatch[0] : 'ไม่ระบุ';
-
-      // Processing message
-      setTimeout(() => {
-        const processingMessage: Message = {
-          id: (Date.now() + 1).toString(),
-          type: 'incoming',
-          text: 'เข้าใจแล้วค่ะ! กำลังดำเนินการ...\n\n✨ สร้าง Task ใน Notion\n📱 ส่งข้อความแจ้งเตือนไปยัง Slack',
-        };
-        setMessages((prev) => [...prev, processingMessage]);
-      }, 800);
-
-      // Success confirmation
-      setTimeout(() => {
-        const successMessage: Message = {
-          id: (Date.now() + 2).toString(),
-          type: 'incoming',
-          text: `เรียบร้อยแล้วค่ะ! ✅\n\nฉันได้:\n• สร้าง Task "${taskName}" ใน Notion Database แล้ว\n• Assign ให้ ${assignTo}\n• กำหนดวันที่: ${dueDate}\n• ส่งข้อความแจ้งเตือนไปยัง ${assignTo} ทาง Slack เรียบร้อยแล้ว\n\nมีอะไรให้ช่วยอีกไหมคะ? 😊`,
-        };
-        setMessages((prev) => [...prev, successMessage]);
-      }, 2500);
-    } else if (hasTaskDetails) {
-      // Task mentioned but missing details
-      setTimeout(() => {
-        const responseMessage: Message = {
-          id: (Date.now() + 1).toString(),
-          type: 'incoming',
-          text: 'เข้าใจแล้วค่ะ! เพื่อให้ฉันสร้าง Task ใน Notion และส่งข้อความไปยัง Slack ได้\n\nโปรดระบุรายละเอียดเพิ่มเติม:\n• ชื่อ Task (ใส่ใน "...")\n• Assign ให้ใคร\n• วันที่กำหนด (ถ้ามี)\n\nตัวอย่าง: ช่วยเพิ่ม Task "Review Q4 Budget" ไปให้ใน Notion, assign ให้ Sarah, วันที่ 15 Oct แล้วส่งข้อความไปหา Sarah ใน Slack ให้ด้วย',
-        };
-        setMessages((prev) => [...prev, responseMessage]);
-      }, 1000);
-    } else {
-      // Generic response
-      setTimeout(() => {
-        const responseMessage: Message = {
-          id: (Date.now() + 1).toString(),
-          type: 'incoming',
-          text: 'ฉันสามารถช่วยคุณสร้าง workflow automation ได้นะคะ\n\nลองพิมพ์: "ช่วยเพิ่ม Task ไปให้ใน Notion แล้วส่งข้อความไปหา Slack ให้ด้วย" เพื่อดูตัวอย่างการทำงาน 😊',
-        };
-        setMessages((prev) => [...prev, responseMessage]);
-      }, 1000);
-    }
+    // Success confirmation
+    setTimeout(() => {
+      const successMessage: Message = {
+        id: (Date.now() + 3).toString(),
+        type: 'incoming',
+        text: 'Done. I\'ve created a task "Review Q4 Budget" in your Notion database, assigned it to Sarah with a due date of October 15th, and sent her a notification via Slack.',
+      };
+      setMessages((prev) => [...prev, successMessage]);
+    }, 2800);
   };
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
@@ -105,11 +77,6 @@ export default function Home() {
       e.preventDefault();
       handleSendMessage();
     }
-  };
-
-  // Quick response buttons
-  const handleQuickResponse = () => {
-    setInputValue('ช่วยเพิ่ม Task "Review Q4 Budget" ไปให้ใน Notion, assign ให้ Sarah, วันที่ 15 Oct แล้วส่งข้อความไปหา Sarah ใน Slack ให้ด้วย');
   };
 
   return (
@@ -367,16 +334,25 @@ export default function Home() {
               {messages.map((message, index) => (
                 <motion.div
                   key={message.id}
-                  initial={{ opacity: 0, x: message.type === 'incoming' ? -20 : 20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  exit={{ opacity: 0 }}
-                  transition={{ duration: 0.4 }}
+                  initial={{ opacity: 0, scale: 0.5 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.5 }}
+                  transition={{
+                    type: 'spring',
+                    stiffness: 500,
+                    damping: 30,
+                    duration: 0.3,
+                  }}
                   style={{
                     alignSelf: message.type === 'incoming' ? 'flex-start' : 'flex-end',
                     maxWidth: '70%',
+                    transformOrigin: message.type === 'incoming' ? 'left bottom' : 'right bottom',
                   }}
                 >
-                  <div
+                  <motion.div
+                    initial={{ scale: 1 }}
+                    animate={{ scale: 1 }}
+                    whileHover={{ scale: 1.02 }}
                     style={{
                       background: message.type === 'incoming' ? '#E9E9EB' : '#007AFF',
                       borderRadius: '18px',
@@ -389,7 +365,7 @@ export default function Home() {
                     }}
                   >
                     {message.text}
-                  </div>
+                  </motion.div>
                   {message.timestamp && (
                     <span
                       style={{
@@ -407,52 +383,6 @@ export default function Home() {
               ))}
             </AnimatePresence>
           </div>
-
-          {/* Quick Response Suggestion */}
-          {messages.length === 1 && (
-            <motion.div
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.5 }}
-              style={{
-                marginTop: '16px',
-                padding: '12px',
-                background: '#F2F2F7',
-                borderRadius: '12px',
-                border: '1px dashed #D1D1D6',
-              }}
-            >
-              <p
-                style={{
-                  fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Text", sans-serif',
-                  fontSize: '13px',
-                  color: '#86868B',
-                  margin: '0 0 8px 0',
-                }}
-              >
-                💡 ลองตัวอย่างคำสั่ง:
-              </p>
-              <motion.button
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
-                onClick={handleQuickResponse}
-                style={{
-                  background: '#FFFFFF',
-                  border: '1px solid #D1D1D6',
-                  borderRadius: '8px',
-                  padding: '8px 12px',
-                  fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Text", sans-serif',
-                  fontSize: '14px',
-                  color: '#007AFF',
-                  cursor: 'pointer',
-                  width: '100%',
-                  textAlign: 'left',
-                }}
-              >
-                ช่วยเพิ่ม Task ไปให้ใน Notion แล้วส่งข้อความไปหา Slack ให้ด้วย
-              </motion.button>
-            </motion.div>
-          )}
 
           {/* Input Box */}
           <div
