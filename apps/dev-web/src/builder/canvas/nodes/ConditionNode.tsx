@@ -82,7 +82,7 @@ export default function ConditionNode({ data, id }: ConditionNodeProps) {
         }}
       />
 
-      {/* Branch icon (SVG) */}
+      {/* Branch icon (SVG) - Rotated 90deg left */}
       <svg
         width="40"
         height="40"
@@ -91,6 +91,7 @@ export default function ConditionNode({ data, id }: ConditionNodeProps) {
         xmlns="http://www.w3.org/2000/svg"
         style={{
           filter: 'drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3))',
+          transform: 'rotate(-90deg)',
         }}
       >
         <path
@@ -105,10 +106,10 @@ export default function ConditionNode({ data, id }: ConditionNodeProps) {
         <circle cx="17" cy="20" r="1.5" fill="white" />
       </svg>
 
-      {/* Input Handle - Left */}
+      {/* Input Handle - Top (Red) */}
       <Handle
         type="target"
-        position={Position.Left}
+        position={Position.Top}
         id="target"
         style={{
           background: '#E84B4B',
@@ -116,16 +117,15 @@ export default function ConditionNode({ data, id }: ConditionNodeProps) {
           width: '12px',
           height: '12px',
           boxShadow: '0 2px 8px rgba(232, 75, 75, 0.4), 0 0 12px rgba(232, 75, 75, 0.3)',
-          left: '0px',
-          top: '50%',
-          transform: 'translateY(-50%)',
+          top: '0px',
+          left: '12px',
         }}
       />
 
-      {/* Output Handle - True (Top) */}
+      {/* Output Handle - True (Bottom, Green) */}
       <Handle
         type="source"
-        position={Position.Top}
+        position={Position.Bottom}
         id="source-true"
         style={{
           background: '#00D98E',
@@ -133,16 +133,15 @@ export default function ConditionNode({ data, id }: ConditionNodeProps) {
           width: '12px',
           height: '12px',
           boxShadow: '0 2px 8px rgba(0, 217, 142, 0.5), 0 0 12px rgba(0, 217, 142, 0.4)',
-          top: '0px',
-          left: '50%',
-          transform: 'translateX(-50%)',
+          bottom: '0px',
+          right: '12px',
         }}
       />
 
-      {/* Output Handle - False (Bottom) */}
+      {/* Output Handle - False (Left, Gray) */}
       <Handle
         type="source"
-        position={Position.Bottom}
+        position={Position.Left}
         id="source-false"
         style={{
           background: '#9E9E9E',
@@ -150,9 +149,8 @@ export default function ConditionNode({ data, id }: ConditionNodeProps) {
           width: '12px',
           height: '12px',
           boxShadow: '0 2px 8px rgba(158, 158, 158, 0.5), 0 0 12px rgba(158, 158, 158, 0.3)',
-          bottom: '0px',
-          left: '50%',
-          transform: 'translateX(-50%)',
+          left: '0px',
+          bottom: '12px',
         }}
       />
     </motion.div>
