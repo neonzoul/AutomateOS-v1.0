@@ -28,12 +28,16 @@ import { useCredentialStore } from '../../core/credentials';
 
 import StartNode from './nodes/StartNode';
 import HttpNode from './nodes/HttpNode';
+import AppNode from './nodes/AppNode';
+import AgentNode from './nodes/AgentNode';
 import { CanvasToolbar } from './CanvasToolbar';
 
 // Node types registry
 const nodeTypes: NodeTypes = {
   start: StartNode,
   http: HttpNode,
+  app: AppNode,
+  agent: AgentNode,
 };
 
 /**
