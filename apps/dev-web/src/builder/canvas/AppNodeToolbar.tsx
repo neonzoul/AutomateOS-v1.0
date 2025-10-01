@@ -194,14 +194,14 @@ export function AppNodeToolbar({ appNodeHandlers }: AppNodeToolbarProps) {
     { name: 'TikTok', icon: <TikTokIcon />, onClick: appNodeHandlers.tiktok },
   ];
 
-  // Control icons - HTTP, Condition, Stop, AutomateOS, Workflow, AI
+  // Control icons - HTTP, Condition, Stop, AI Agent, AutomateOS, Workflow
   const controlIcons = [
     { name: 'HTTP', icon: <HttpIcon />, isDark: true, onClick: appNodeHandlers.http },
     { name: 'Condition', icon: <ConditionIcon />, isDark: true, onClick: appNodeHandlers.condition },
     { name: 'Stop', icon: <StopIcon />, isDark: true, onClick: appNodeHandlers.stop },
+    { name: 'AI Agent', icon: <AIAgentIcon />, isDark: true, onClick: appNodeHandlers.agent },
     { name: 'AutomateOS', icon: <DNAIcon />, isDark: true },
     { name: 'Workflow', icon: <WorkflowIcon />, isDark: true },
-    { name: 'AI Agent', icon: <AIAgentIcon />, isDark: true },
   ];
 
   return (

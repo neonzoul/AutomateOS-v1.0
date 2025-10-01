@@ -192,6 +192,38 @@ export function Canvas({
     [screenToFlowPosition, addNode]
   );
 
+  // Agent node creation handler
+  const handleAgentNodeCreate = useCallback(
+    (evt: React.MouseEvent) => {
+      let position;
+      try {
+        const base = screenToFlowPosition({
+          x: evt.clientX,
+          y: evt.clientY + 40,
+        });
+        position = base;
+      } catch (error) {
+        console.warn(
+          'screenToFlowPosition failed, using fallback position:',
+          error
+        );
+        position = { x: 200, y: 200 };
+      }
+
+      const spec = NODE_SPECS['agent'];
+      addNode({
+        type: 'agent',
+        position,
+        data: {
+          ...spec.defaultData,
+          description: 'Conversational AI agent with model, memory, and tools',
+          tags: ['AI', 'Agent', 'LLM'],
+        }
+      });
+    },
+    [screenToFlowPosition, addNode]
+  );
+
   // Create handlers for all app nodes
   const appNodeHandlers = useCallback(() => {
     return {
@@ -204,8 +236,9 @@ export function Canvas({
       http: handleHttpNodeCreate,
       condition: handleConditionNodeCreate,
       stop: handleStopNodeCreate,
+      agent: handleAgentNodeCreate,
     };
-  }, [createNodeHandler, handleHttpNodeCreate, handleConditionNodeCreate, handleStopNodeCreate]);
+  }, [createNodeHandler, handleHttpNodeCreate, handleConditionNodeCreate, handleStopNodeCreate, handleAgentNodeCreate]);
 
   // Expose HTTP node creation handler to parent
   useEffect(() => {
