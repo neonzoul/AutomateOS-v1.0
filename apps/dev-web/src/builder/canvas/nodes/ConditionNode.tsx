@@ -44,106 +44,93 @@ export default function ConditionNode({ data, id }: ConditionNodeProps) {
       animate={{ opacity: 1, scale: 1 }}
       transition={{ duration: 0.3 }}
       whileHover={{
-        y: -4,
-        boxShadow: '0px 12px 32px rgba(156, 39, 176, 0.25)',
+        scale: 1.08,
+        boxShadow: '0px 8px 24px rgba(156, 39, 176, 0.3)',
         transition: { duration: 0.2 }
       }}
       style={{
-        width: '320px',
-        minHeight: '180px',
+        width: '120px',
+        height: '120px',
         background: 'linear-gradient(135deg, #F3E5F5 0%, #E1BEE7 100%)',
         border: isSelected ? `3px solid #E63946` : `3px solid #9C27B0`,
-        borderRadius: '16px',
-        padding: '24px',
-        boxShadow: '0px 6px 20px rgba(156, 39, 176, 0.15)',
+        boxShadow: '0px 4px 16px rgba(156, 39, 176, 0.2)',
         cursor: 'pointer',
         position: 'relative',
         display: 'flex',
-        flexDirection: 'column',
-        clipPath: 'polygon(20% 0%, 80% 0%, 100% 50%, 80% 100%, 20% 100%, 0% 50%)',
-      }}
-    >
-      {/* Status indicator dot */}
-      <div
-        style={{
-          position: 'absolute',
-          top: '20px',
-          left: '50%',
-          transform: 'translateX(-50%)',
-          width: '12px',
-          height: '12px',
-          borderRadius: '50%',
-          background: getStatusColor(),
-          boxShadow: `0 2px 8px rgba(156, 39, 176, 0.4)`,
-        }}
-      />
-
-      {/* Icon - Fork/Split symbol */}
-      <div style={{
-        width: '48px',
-        height: '48px',
-        borderRadius: '12px',
-        background: '#9C27B0',
-        display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        margin: '0 auto 16px',
-        boxShadow: '0 4px 12px rgba(156, 39, 176, 0.3)',
-      }}>
-        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <path d="M12 2v6M12 8l-5 6M12 8l5 6M7 14v6M17 14v6" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-          <circle cx="12" cy="2" r="2" fill="white"/>
-          <circle cx="7" cy="20" r="2" fill="white"/>
-          <circle cx="17" cy="20" r="2" fill="white"/>
-        </svg>
-      </div>
-
-      {/* Title */}
+        transform: 'rotate(45deg)',
+      }}
+    >
+      {/* Inner content - counter-rotate to keep upright */}
       <div style={{
-        fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Helvetica", "Arial", sans-serif',
-        fontWeight: 600,
-        fontSize: '20px',
-        color: '#4A148C',
-        textAlign: 'center',
-        marginBottom: '12px',
-        letterSpacing: '-0.02em'
+        transform: 'rotate(-45deg)',
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        width: '100%',
+        height: '100%',
       }}>
-        {data?.label ?? 'If/Else'}
+        {/* Status indicator dot */}
+        <div
+          style={{
+            position: 'absolute',
+            top: '8px',
+            left: '50%',
+            transform: 'translateX(-50%)',
+            width: '8px',
+            height: '8px',
+            borderRadius: '50%',
+            background: getStatusColor(),
+            boxShadow: `0 2px 6px ${getStatusColor()}40`,
+          }}
+        />
+
+        {/* Decision text */}
+        <div style={{
+          fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Helvetica", "Arial", sans-serif',
+          fontWeight: 700,
+          fontSize: '14px',
+          color: '#4A148C',
+          textAlign: 'center',
+          letterSpacing: '0.5px',
+          textTransform: 'uppercase',
+        }}>
+          {data?.label ?? 'Decision'}
+        </div>
+
+        {/* Question mark icon or condition hint */}
+        {!condition && !field && (
+          <div style={{
+            fontSize: '24px',
+            color: '#9C27B0',
+            marginTop: '4px',
+            opacity: 0.6,
+          }}>
+            ?
+          </div>
+        )}
       </div>
 
-      {/* Condition Display */}
-      <div style={{
-        fontFamily: 'monospace',
-        fontSize: '14px',
-        fontWeight: 500,
-        lineHeight: '1.5',
-        color: '#6A1B9A',
-        textAlign: 'center',
-        background: 'rgba(156, 39, 176, 0.1)',
-        borderRadius: '8px',
-        padding: '12px',
-        wordBreak: 'break-word'
-      }}>
-        {displayCondition}
-      </div>
-
-      {/* Input Handle - Left */}
+      {/* Input Handle - Top of Diamond */}
       <Handle
         type="target"
-        position={Position.Left}
+        position={Position.Top}
         id="target"
         style={{
           background: '#E84B4B',
           border: '2px solid #FFFFFF',
-          width: '14px',
-          height: '14px',
+          width: '12px',
+          height: '12px',
           boxShadow: '0 2px 8px rgba(232, 75, 75, 0.3)',
-          left: '-7px',
-          top: '50%',
+          top: '-6px',
+          left: '50%',
+          transform: 'translateX(-50%)',
         }}
       />
 
-      {/* Output Handle - True (Top Right, Green) */}
+      {/* Output Handle - True (Right side, Green) */}
       <Handle
         type="source"
         position={Position.Right}
@@ -151,52 +138,63 @@ export default function ConditionNode({ data, id }: ConditionNodeProps) {
         style={{
           background: '#00D98E',
           border: '2px solid #FFFFFF',
-          width: '16px',
-          height: '16px',
+          width: '12px',
+          height: '12px',
           boxShadow: '0 2px 8px rgba(0, 217, 142, 0.4)',
-          right: '-8px',
-          top: '35%',
+          right: '-6px',
+          top: '50%',
+          transform: 'translateY(-50%)',
         }}
       />
 
       {/* True Label */}
       <div style={{
         position: 'absolute',
-        right: '-50px',
-        top: 'calc(35% - 10px)',
-        fontSize: '12px',
-        fontWeight: 600,
+        right: '-44px',
+        top: '50%',
+        transform: 'translateY(-50%)',
+        fontSize: '11px',
+        fontWeight: 700,
         color: '#00D98E',
-        textShadow: '0 1px 2px rgba(0,0,0,0.1)'
+        textShadow: '0 1px 2px rgba(0,0,0,0.15)',
+        background: 'rgba(0, 217, 142, 0.1)',
+        padding: '2px 6px',
+        borderRadius: '4px',
       }}>
         True
       </div>
 
-      {/* Output Handle - False (Bottom Right, Gray) */}
+      {/* Output Handle - False (Bottom side, Gray) */}
       <Handle
         type="source"
-        position={Position.Right}
+        position={Position.Bottom}
         id="source-false"
         style={{
           background: '#9E9E9E',
           border: '2px solid #FFFFFF',
-          width: '16px',
-          height: '16px',
+          width: '12px',
+          height: '12px',
           boxShadow: '0 2px 8px rgba(158, 158, 158, 0.4)',
-          right: '-8px',
-          top: '65%',
+          bottom: '-6px',
+          left: '50%',
+          transform: 'translateX(-50%)',
         }}
       />
 
       {/* False Label */}
       <div style={{
         position: 'absolute',
-        right: '-54px',
-        top: 'calc(65% - 10px)',
-        fontSize: '12px',
-        fontWeight: 600,
+        bottom: '-26px',
+        left: '50%',
+        transform: 'translateX(-50%)',
+        fontSize: '11px',
+        fontWeight: 700,
         color: '#9E9E9E',
-        textShadow: '0 1px 2px rgba(0,0,0,0.1)'
+        textShadow: '0 1px 2px rgba(0,0,0,0.15)',
+        background: 'rgba(158, 158, 158, 0.1)',
+        padding: '2px 6px',
+        borderRadius: '4px',
+        whiteSpace: 'nowrap',
       }}>
         False
       </div>
