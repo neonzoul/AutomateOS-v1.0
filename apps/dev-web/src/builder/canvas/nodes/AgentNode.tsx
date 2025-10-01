@@ -118,12 +118,18 @@ export default function AgentNode({ data, id }: AgentNodeProps) {
         {/* Robot Icon */}
         <div style={{ flexShrink: 0 }}>
           <svg width="72" height="72" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <rect x="6" y="10" width="12" height="10" rx="2" fill="white" />
-            <rect x="6" y="6" width="12" height="4" rx="1" fill="white" />
-            <circle cx="10" cy="14" r="1.5" fill="#6366f1" />
-            <circle cx="14" cy="14" r="1.5" fill="#6366f1" />
-            <rect x="9" y="17" width="6" height="1" rx="0.5" fill="#6366f1" />
-            <rect x="11" y="4" width="2" height="2" rx="1" fill="white" />
+            {/* Top antenna */}
+            <rect x="11" y="4" width="2" height="3" rx="1" fill="white" />
+            {/* Main head body */}
+            <rect x="7" y="8" width="10" height="10" rx="3" fill="white" />
+            {/* Left antenna/ear */}
+            <rect x="4" y="11" width="2" height="4" rx="1" fill="white" />
+            {/* Right antenna/ear */}
+            <rect x="18" y="11" width="2" height="4" rx="1" fill="white" />
+            {/* Left eye */}
+            <circle cx="10" cy="13" r="1.5" fill="black" />
+            {/* Right eye */}
+            <circle cx="14" cy="13" r="1.5" fill="black" />
           </svg>
         </div>
 

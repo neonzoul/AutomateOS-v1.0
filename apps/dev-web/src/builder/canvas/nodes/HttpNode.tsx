@@ -200,7 +200,7 @@ export default function HttpNode({ data, id }: HttpNodeProps) {
         <div style={{
           fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Helvetica", "Arial", sans-serif',
           fontWeight: 600,
-          fontSize: '22px',
+          fontSize: '30.8px',
           color: '#1a1a1a',
           flex: 1,
           lineHeight: '1.3',
@@ -213,7 +213,7 @@ export default function HttpNode({ data, id }: HttpNodeProps) {
       {/* Description - Left aligned */}
       <div style={{
         fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Helvetica", "Arial", sans-serif',
-        fontSize: '16px',
+        fontSize: '22.4px',
         fontWeight: 400,
         lineHeight: '1.6',
         color: '#666666',

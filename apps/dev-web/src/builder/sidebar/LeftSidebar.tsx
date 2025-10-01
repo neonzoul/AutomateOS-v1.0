@@ -158,9 +158,10 @@ function TemplateCard({ title, description, onClick }: TemplateCardProps) {
 
 interface AgentCardProps {
   title: string;
+  onClick?: () => void;
 }
 
-function AgentCard({ title }: AgentCardProps) {
+function AgentCard({ title, onClick }: AgentCardProps) {
   return (
     <motion.div
       whileHover={{
@@ -171,6 +172,7 @@ function AgentCard({ title }: AgentCardProps) {
         scale: 0.98,
         transition: { duration: 0.1 }
       }}
+      onClick={onClick}
       style={{
         width: '150px',
         height: '149px',
@@ -309,6 +311,18 @@ const TEMPLATES: WorkflowTemplate[] = [
   }
 ];
 
+interface AgentTemplate {
+  name: string;
+  filename: string;
+}
+
+const AGENT_TEMPLATES: AgentTemplate[] = [
+  {
+    name: 'AI Agent Flow',
+    filename: 'ai-agent-notion-slack.json'
+  }
+];
+
 export function LeftSidebar() {
   const { setGraph } = useBuilderStore();
   const [loading, setLoading] = useState<string | null>(null);
@@ -428,7 +442,13 @@ export function LeftSidebar() {
           gridTemplateColumns: '1fr 1fr',
           gap: '10px'
         }}>
-          <AgentCard title="Flow1" />
+          {AGENT_TEMPLATES.map((template) => (
+            <AgentCard
+              key={template.filename}
+              title={template.name}
+              onClick={() => loadTemplate(template.filename)}
+            />
+          ))}
           <AgentCard title="Flow2" />
         </div>
       </motion.div>
