@@ -46,65 +46,78 @@ export default function ConditionNode({ data, id }: ConditionNodeProps) {
         transition: { duration: 0.2 }
       }}
       style={{
-        width: '80px',
-        height: '80px',
+        width: '100px',
+        height: '100px',
         position: 'relative',
         cursor: 'pointer',
-        background: 'linear-gradient(135deg, rgba(168, 85, 247, 0.95) 0%, rgba(147, 51, 234, 0.92) 100%)',
-        borderRadius: '12px',
-        border: isSelected ? '3px solid #E63946' : '2px solid rgba(147, 51, 234, 0.6)',
-        boxShadow: `
-          0 8px 24px rgba(147, 51, 234, 0.35),
-          inset 0 1px 0 rgba(255, 255, 255, 0.3),
-          inset 0 -2px 8px rgba(0, 0, 0, 0.2)
-        `,
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
       }}
     >
-      {/* Status dot */}
+      {/* Diamond shape container */}
       <div
         style={{
+          width: '100%',
+          height: '100%',
           position: 'absolute',
-          top: '6px',
-          right: '6px',
-          width: '8px',
-          height: '8px',
-          borderRadius: '50%',
-          background: getStatusColor(),
+          top: 0,
+          left: 0,
+          background: 'linear-gradient(135deg, rgba(168, 85, 247, 0.95) 0%, rgba(147, 51, 234, 0.92) 100%)',
+          transform: 'rotate(45deg)',
+          borderRadius: '12px',
+          border: isSelected ? '3px solid #E63946' : '2px solid rgba(147, 51, 234, 0.6)',
           boxShadow: `
-            0 0 8px ${getStatusColor()},
-            0 0 12px ${getStatusColor()}80,
-            inset 0 1px 2px rgba(255, 255, 255, 0.5)
+            0 8px 24px rgba(147, 51, 234, 0.35),
+            inset 0 1px 0 rgba(255, 255, 255, 0.3),
+            inset 0 -2px 8px rgba(0, 0, 0, 0.2)
           `,
-          border: '1px solid rgba(255, 255, 255, 0.4)',
-        }}
-      />
-
-      {/* Branch icon (SVG) - Rotated 90deg left */}
-      <svg
-        width="40"
-        height="40"
-        viewBox="0 0 24 24"
-        fill="none"
-        xmlns="http://www.w3.org/2000/svg"
-        style={{
-          filter: 'drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3))',
-          transform: 'rotate(-90deg)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
         }}
       >
-        <path
-          d="M12 2v6M12 8l-5 6M12 8l5 6M7 14v6M17 14v6"
-          stroke="white"
-          strokeWidth="2"
-          strokeLinecap="round"
-          strokeLinejoin="round"
+        {/* Status dot - counter-rotated */}
+        <div
+          style={{
+            position: 'absolute',
+            top: '8px',
+            right: '8px',
+            width: '8px',
+            height: '8px',
+            borderRadius: '50%',
+            background: getStatusColor(),
+            boxShadow: `
+              0 0 8px ${getStatusColor()},
+              0 0 12px ${getStatusColor()}80,
+              inset 0 1px 2px rgba(255, 255, 255, 0.5)
+            `,
+            border: '1px solid rgba(255, 255, 255, 0.4)',
+            transform: 'rotate(-45deg)',
+          }}
         />
-        <circle cx="12" cy="2" r="1.5" fill="white" />
-        <circle cx="7" cy="20" r="1.5" fill="white" />
-        <circle cx="17" cy="20" r="1.5" fill="white" />
-      </svg>
+
+        {/* Branch icon (SVG) - Counter-rotated and rotated left */}
+        <svg
+          width="40"
+          height="40"
+          viewBox="0 0 24 24"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+          style={{
+            filter: 'drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3))',
+            transform: 'rotate(-135deg)',
+          }}
+        >
+          <path
+            d="M12 2v6M12 8l-5 6M12 8l5 6M7 14v6M17 14v6"
+            stroke="white"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+          <circle cx="12" cy="2" r="1.5" fill="white" />
+          <circle cx="7" cy="20" r="1.5" fill="white" />
+          <circle cx="17" cy="20" r="1.5" fill="white" />
+        </svg>
+      </div>
 
       {/* Input Handle - Top (Red) */}
       <Handle
@@ -118,14 +131,15 @@ export default function ConditionNode({ data, id }: ConditionNodeProps) {
           height: '12px',
           boxShadow: '0 2px 8px rgba(232, 75, 75, 0.4), 0 0 12px rgba(232, 75, 75, 0.3)',
           top: '0px',
-          left: '12px',
+          left: '50%',
+          transform: 'translateX(-50%)',
         }}
       />
 
-      {/* Output Handle - True (Bottom, Green) */}
+      {/* Output Handle - True (Right, Green) */}
       <Handle
         type="source"
-        position={Position.Bottom}
+        position={Position.Right}
         id="source-true"
         style={{
           background: '#00D98E',
@@ -133,8 +147,9 @@ export default function ConditionNode({ data, id }: ConditionNodeProps) {
           width: '12px',
           height: '12px',
           boxShadow: '0 2px 8px rgba(0, 217, 142, 0.5), 0 0 12px rgba(0, 217, 142, 0.4)',
-          bottom: '0px',
-          right: '12px',
+          right: '0px',
+          top: '50%',
+          transform: 'translateY(-50%)',
         }}
       />
 
@@ -150,7 +165,8 @@ export default function ConditionNode({ data, id }: ConditionNodeProps) {
           height: '12px',
           boxShadow: '0 2px 8px rgba(158, 158, 158, 0.5), 0 0 12px rgba(158, 158, 158, 0.3)',
           left: '0px',
-          bottom: '12px',
+          top: '50%',
+          transform: 'translateY(-50%)',
         }}
       />
     </motion.div>
