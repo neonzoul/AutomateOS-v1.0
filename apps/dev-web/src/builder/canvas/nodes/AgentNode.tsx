@@ -70,51 +70,59 @@ export default function AgentNode({ data, id }: AgentNodeProps) {
           transition: { duration: 0.2 }
         }}
         style={{
-          minWidth: '280px',
-          height: '90px',
+          minWidth: '420px',
+          height: '140px',
           position: 'relative',
           cursor: 'pointer',
-          background: 'linear-gradient(135deg, rgba(41, 128, 185, 0.95) 0%, rgba(52, 152, 219, 0.98) 50%, rgba(93, 173, 226, 0.95) 100%)',
-          borderRadius: '45px',
-          border: isSelected ? '3px solid #E63946' : '2px solid rgba(41, 128, 185, 0.4)',
+          background: `
+            linear-gradient(135deg,
+              rgba(255, 158, 64, 0.95) 0%,
+              rgba(255, 102, 196, 0.95) 25%,
+              rgba(168, 85, 247, 0.95) 50%,
+              rgba(99, 102, 241, 0.95) 75%,
+              rgba(59, 130, 246, 0.95) 100%)
+          `,
+          borderRadius: '70px',
+          border: isSelected ? '4px solid #E63946' : '3px solid rgba(255, 255, 255, 0.3)',
           boxShadow: `
-            0 8px 32px rgba(41, 128, 185, 0.35),
-            inset 0 2px 0 rgba(255, 255, 255, 0.4),
-            inset 0 -3px 10px rgba(0, 0, 0, 0.15)
+            0 12px 48px rgba(168, 85, 247, 0.4),
+            0 0 80px rgba(255, 102, 196, 0.3),
+            inset 0 3px 0 rgba(255, 255, 255, 0.5),
+            inset 0 -4px 15px rgba(0, 0, 0, 0.2)
           `,
           display: 'flex',
           alignItems: 'center',
-          padding: '0 24px',
-          gap: '16px',
+          padding: '0 36px',
+          gap: '24px',
         }}
       >
         {/* Status dot */}
         <div
           style={{
             position: 'absolute',
-            top: '8px',
-            right: '8px',
-            width: '8px',
-            height: '8px',
+            top: '12px',
+            right: '12px',
+            width: '12px',
+            height: '12px',
             borderRadius: '50%',
             background: getStatusColor(),
             boxShadow: `
-              0 0 8px ${getStatusColor()},
-              0 0 12px ${getStatusColor()}80,
-              inset 0 1px 2px rgba(255, 255, 255, 0.5)
+              0 0 12px ${getStatusColor()},
+              0 0 18px ${getStatusColor()}80,
+              inset 0 1px 3px rgba(255, 255, 255, 0.5)
             `,
-            border: '1px solid rgba(255, 255, 255, 0.4)',
+            border: '2px solid rgba(255, 255, 255, 0.6)',
           }}
         />
 
         {/* Robot Icon */}
         <div style={{ flexShrink: 0 }}>
-          <svg width="44" height="44" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <svg width="72" height="72" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
             <rect x="6" y="10" width="12" height="10" rx="2" fill="white" />
             <rect x="6" y="6" width="12" height="4" rx="1" fill="white" />
-            <circle cx="10" cy="14" r="1.5" fill="#2980b9" />
-            <circle cx="14" cy="14" r="1.5" fill="#2980b9" />
-            <rect x="9" y="17" width="6" height="1" rx="0.5" fill="#2980b9" />
+            <circle cx="10" cy="14" r="1.5" fill="#6366f1" />
+            <circle cx="14" cy="14" r="1.5" fill="#6366f1" />
+            <rect x="9" y="17" width="6" height="1" rx="0.5" fill="#6366f1" />
             <rect x="11" y="4" width="2" height="2" rx="1" fill="white" />
           </svg>
         </div>
@@ -123,11 +131,12 @@ export default function AgentNode({ data, id }: AgentNodeProps) {
         <div
           style={{
             fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", sans-serif',
-            fontWeight: 600,
-            fontSize: '20px',
+            fontWeight: 700,
+            fontSize: '32px',
             color: '#FFFFFF',
-            textShadow: '0 2px 4px rgba(0, 0, 0, 0.2)',
+            textShadow: '0 3px 8px rgba(0, 0, 0, 0.3), 0 0 20px rgba(255, 255, 255, 0.2)',
             flex: 1,
+            letterSpacing: '0.5px',
           }}
         >
           {data?.label || 'AI Agent'}
@@ -139,25 +148,25 @@ export default function AgentNode({ data, id }: AgentNodeProps) {
             e.stopPropagation();
             toggleCollapse();
           }}
-          whileHover={{ scale: 1.1 }}
+          whileHover={{ scale: 1.1, boxShadow: '0 4px 12px rgba(255, 255, 255, 0.3)' }}
           whileTap={{ scale: 0.9 }}
           style={{
-            width: '28px',
-            height: '28px',
+            width: '44px',
+            height: '44px',
             borderRadius: '50%',
-            background: 'rgba(255, 255, 255, 0.25)',
-            border: '1px solid rgba(255, 255, 255, 0.4)',
+            background: 'rgba(255, 255, 255, 0.2)',
+            border: '2px solid rgba(255, 255, 255, 0.5)',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
             cursor: 'pointer',
             flexShrink: 0,
-            backdropFilter: 'blur(4px)',
+            backdropFilter: 'blur(8px)',
           }}
         >
           <svg
-            width="14"
-            height="14"
+            width="22"
+            height="22"
             viewBox="0 0 12 12"
             fill="none"
             style={{
@@ -168,7 +177,7 @@ export default function AgentNode({ data, id }: AgentNodeProps) {
             <path
               d="M2 4L6 8L10 4"
               stroke="#FFFFFF"
-              strokeWidth="2"
+              strokeWidth="2.5"
               strokeLinecap="round"
               strokeLinejoin="round"
             />
@@ -219,9 +228,9 @@ export default function AgentNode({ data, id }: AgentNodeProps) {
             exit={{ opacity: 0, height: 0 }}
             transition={{ duration: 0.3, ease: 'easeInOut' }}
             style={{
-              marginTop: '32px',
+              marginTop: '48px',
               display: 'flex',
-              gap: '20px',
+              gap: '32px',
               justifyContent: 'center',
             }}
           >
@@ -254,34 +263,34 @@ export default function AgentNode({ data, id }: AgentNodeProps) {
         <svg
           style={{
             position: 'absolute',
-            top: '90px',
+            top: '140px',
             left: '50%',
             transform: 'translateX(-50%)',
-            width: '320px',
-            height: '32px',
+            width: '480px',
+            height: '48px',
             pointerEvents: 'none',
           }}
-          viewBox="0 0 320 32"
+          viewBox="0 0 480 48"
         >
           {/* Line to Chat Model */}
           <path
-            d="M 160 0 L 70 32"
-            stroke="rgba(52, 152, 219, 0.4)"
-            strokeWidth="2"
+            d="M 240 0 L 105 48"
+            stroke="rgba(168, 85, 247, 0.5)"
+            strokeWidth="3"
             fill="none"
           />
           {/* Line to Memory */}
           <path
-            d="M 160 0 L 160 32"
-            stroke="rgba(52, 152, 219, 0.4)"
-            strokeWidth="2"
+            d="M 240 0 L 240 48"
+            stroke="rgba(168, 85, 247, 0.5)"
+            strokeWidth="3"
             fill="none"
           />
           {/* Line to Tool */}
           <path
-            d="M 160 0 L 250 32"
-            stroke="rgba(52, 152, 219, 0.4)"
-            strokeWidth="2"
+            d="M 240 0 L 375 48"
+            stroke="rgba(168, 85, 247, 0.5)"
+            strokeWidth="3"
             fill="none"
           />
         </svg>
