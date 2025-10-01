@@ -70,22 +70,22 @@ export default function AgentNode({ data, id }: AgentNodeProps) {
           transition: { duration: 0.2 }
         }}
         style={{
-          minWidth: '220px',
-          height: '70px',
+          minWidth: '280px',
+          height: '90px',
           position: 'relative',
           cursor: 'pointer',
-          background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(240, 240, 245, 0.98) 100%)',
-          borderRadius: '35px',
-          border: isSelected ? '3px solid #E63946' : '2px solid rgba(29, 53, 87, 0.15)',
+          background: 'linear-gradient(135deg, rgba(41, 128, 185, 0.95) 0%, rgba(52, 152, 219, 0.98) 50%, rgba(93, 173, 226, 0.95) 100%)',
+          borderRadius: '45px',
+          border: isSelected ? '3px solid #E63946' : '2px solid rgba(41, 128, 185, 0.4)',
           boxShadow: `
-            0 8px 24px rgba(0, 0, 0, 0.12),
-            inset 0 1px 0 rgba(255, 255, 255, 0.8),
-            inset 0 -2px 6px rgba(0, 0, 0, 0.05)
+            0 8px 32px rgba(41, 128, 185, 0.35),
+            inset 0 2px 0 rgba(255, 255, 255, 0.4),
+            inset 0 -3px 10px rgba(0, 0, 0, 0.15)
           `,
           display: 'flex',
           alignItems: 'center',
-          padding: '0 20px',
-          gap: '12px',
+          padding: '0 24px',
+          gap: '16px',
         }}
       >
         {/* Status dot */}
@@ -109,13 +109,13 @@ export default function AgentNode({ data, id }: AgentNodeProps) {
 
         {/* Robot Icon */}
         <div style={{ flexShrink: 0 }}>
-          <svg width="36" height="36" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <rect x="6" y="10" width="12" height="10" rx="2" fill="#1D3557" />
-            <rect x="6" y="6" width="12" height="4" rx="1" fill="#1D3557" />
-            <circle cx="10" cy="14" r="1.5" fill="white" />
-            <circle cx="14" cy="14" r="1.5" fill="white" />
-            <rect x="9" y="17" width="6" height="1" rx="0.5" fill="white" />
-            <rect x="11" y="4" width="2" height="2" rx="1" fill="#1D3557" />
+          <svg width="44" height="44" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect x="6" y="10" width="12" height="10" rx="2" fill="white" />
+            <rect x="6" y="6" width="12" height="4" rx="1" fill="white" />
+            <circle cx="10" cy="14" r="1.5" fill="#2980b9" />
+            <circle cx="14" cy="14" r="1.5" fill="#2980b9" />
+            <rect x="9" y="17" width="6" height="1" rx="0.5" fill="#2980b9" />
+            <rect x="11" y="4" width="2" height="2" rx="1" fill="white" />
           </svg>
         </div>
 
@@ -124,8 +124,9 @@ export default function AgentNode({ data, id }: AgentNodeProps) {
           style={{
             fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", sans-serif',
             fontWeight: 600,
-            fontSize: '18px',
-            color: '#0D0D0D',
+            fontSize: '20px',
+            color: '#FFFFFF',
+            textShadow: '0 2px 4px rgba(0, 0, 0, 0.2)',
             flex: 1,
           }}
         >
@@ -141,21 +142,22 @@ export default function AgentNode({ data, id }: AgentNodeProps) {
           whileHover={{ scale: 1.1 }}
           whileTap={{ scale: 0.9 }}
           style={{
-            width: '24px',
-            height: '24px',
+            width: '28px',
+            height: '28px',
             borderRadius: '50%',
-            background: 'rgba(158, 158, 158, 0.2)',
-            border: '1px solid rgba(0, 0, 0, 0.1)',
+            background: 'rgba(255, 255, 255, 0.25)',
+            border: '1px solid rgba(255, 255, 255, 0.4)',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
             cursor: 'pointer',
             flexShrink: 0,
+            backdropFilter: 'blur(4px)',
           }}
         >
           <svg
-            width="12"
-            height="12"
+            width="14"
+            height="14"
             viewBox="0 0 12 12"
             fill="none"
             style={{
@@ -165,7 +167,7 @@ export default function AgentNode({ data, id }: AgentNodeProps) {
           >
             <path
               d="M2 4L6 8L10 4"
-              stroke="#1D3557"
+              stroke="#FFFFFF"
               strokeWidth="2"
               strokeLinecap="round"
               strokeLinejoin="round"
@@ -217,9 +219,9 @@ export default function AgentNode({ data, id }: AgentNodeProps) {
             exit={{ opacity: 0, height: 0 }}
             transition={{ duration: 0.3, ease: 'easeInOut' }}
             style={{
-              marginTop: '24px',
+              marginTop: '32px',
               display: 'flex',
-              gap: '16px',
+              gap: '20px',
               justifyContent: 'center',
             }}
           >
@@ -252,37 +254,34 @@ export default function AgentNode({ data, id }: AgentNodeProps) {
         <svg
           style={{
             position: 'absolute',
-            top: '70px',
+            top: '90px',
             left: '50%',
             transform: 'translateX(-50%)',
-            width: '280px',
-            height: '24px',
+            width: '320px',
+            height: '32px',
             pointerEvents: 'none',
           }}
-          viewBox="0 0 280 24"
+          viewBox="0 0 320 32"
         >
           {/* Line to Chat Model */}
           <path
-            d="M 140 0 L 60 24"
-            stroke="rgba(147, 51, 234, 0.3)"
+            d="M 160 0 L 70 32"
+            stroke="rgba(52, 152, 219, 0.4)"
             strokeWidth="2"
-            strokeDasharray="4 4"
             fill="none"
           />
           {/* Line to Memory */}
           <path
-            d="M 140 0 L 140 24"
-            stroke="rgba(147, 51, 234, 0.3)"
+            d="M 160 0 L 160 32"
+            stroke="rgba(52, 152, 219, 0.4)"
             strokeWidth="2"
-            strokeDasharray="4 4"
             fill="none"
           />
           {/* Line to Tool */}
           <path
-            d="M 140 0 L 220 24"
-            stroke="rgba(147, 51, 234, 0.3)"
+            d="M 160 0 L 250 32"
+            stroke="rgba(52, 152, 219, 0.4)"
             strokeWidth="2"
-            strokeDasharray="4 4"
             fill="none"
           />
         </svg>
@@ -305,28 +304,31 @@ function SubNode({ icon, label, sublabel }: SubNodeProps) {
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3 }}
       style={{
-        width: '80px',
+        width: '90px',
         background: '#FFFFFF',
-        border: '1px solid rgba(29, 53, 87, 0.1)',
-        borderRadius: '8px',
-        padding: '8px',
-        boxShadow: '0 2px 8px rgba(0, 0, 0, 0.08)',
+        border: '2px solid rgba(52, 152, 219, 0.2)',
+        borderRadius: '12px',
+        padding: '12px 8px',
+        boxShadow: `
+          0 4px 12px rgba(41, 128, 185, 0.15),
+          inset 0 1px 0 rgba(255, 255, 255, 0.8)
+        `,
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
-        gap: '4px',
+        gap: '6px',
         position: 'relative',
       }}
     >
       {/* Icon */}
-      <div style={{ width: '24px', height: '24px' }}>{icon}</div>
+      <div style={{ width: '28px', height: '28px' }}>{icon}</div>
 
       {/* Label */}
       <div
         style={{
-          fontSize: '10px',
+          fontSize: '11px',
           fontWeight: 600,
-          color: '#1D3557',
+          color: '#2980b9',
           textAlign: 'center',
         }}
       >
@@ -336,9 +338,9 @@ function SubNode({ icon, label, sublabel }: SubNodeProps) {
       {/* Sublabel */}
       <div
         style={{
-          fontSize: '9px',
+          fontSize: '10px',
           fontWeight: 400,
-          color: '#9E9E9E',
+          color: '#7f8c8d',
           textAlign: 'center',
         }}
       >
@@ -347,39 +349,40 @@ function SubNode({ icon, label, sublabel }: SubNodeProps) {
 
       {/* Add Button */}
       <motion.button
-        whileHover={{ scale: 1.1 }}
+        whileHover={{ scale: 1.15, boxShadow: '0 4px 8px rgba(52, 152, 219, 0.3)' }}
         whileTap={{ scale: 0.9 }}
         style={{
           position: 'absolute',
-          bottom: '-8px',
-          width: '16px',
-          height: '16px',
+          bottom: '-10px',
+          width: '20px',
+          height: '20px',
           borderRadius: '50%',
-          background: '#FFFFFF',
-          border: '1px solid rgba(0, 0, 0, 0.1)',
+          background: '#3498db',
+          border: '2px solid #FFFFFF',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          fontSize: '12px',
-          fontWeight: '600',
-          color: '#1D3557',
+          fontSize: '14px',
+          fontWeight: '700',
+          color: '#FFFFFF',
           cursor: 'pointer',
-          boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
+          boxShadow: '0 2px 6px rgba(52, 152, 219, 0.4)',
         }}
       >
         +
       </motion.button>
 
-      {/* Connection Point (Diamond) */}
+      {/* Connection Point (Circle) */}
       <div
         style={{
           position: 'absolute',
-          top: '-8px',
-          width: '8px',
-          height: '8px',
-          background: 'rgba(147, 51, 234, 0.5)',
-          transform: 'rotate(45deg)',
-          border: '1px solid rgba(147, 51, 234, 0.8)',
+          top: '-6px',
+          width: '12px',
+          height: '12px',
+          background: '#3498db',
+          borderRadius: '50%',
+          border: '2px solid #FFFFFF',
+          boxShadow: '0 2px 4px rgba(52, 152, 219, 0.3)',
         }}
       />
     </motion.div>
@@ -389,28 +392,28 @@ function SubNode({ icon, label, sublabel }: SubNodeProps) {
 // Icon Components
 function ChatModelIcon() {
   return (
-    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <circle cx="12" cy="12" r="10" stroke="#1D3557" strokeWidth="2" fill="none" />
-      <path d="M8 10h8M8 14h6" stroke="#1D3557" strokeWidth="2" strokeLinecap="round" />
+    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="12" cy="12" r="10" stroke="#3498db" strokeWidth="2" fill="none" />
+      <path d="M8 10h8M8 14h6" stroke="#3498db" strokeWidth="2" strokeLinecap="round" />
     </svg>
   );
 }
 
 function MemoryIcon() {
   return (
-    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <rect x="5" y="7" width="14" height="10" rx="2" stroke="#1D3557" strokeWidth="2" fill="none" />
-      <line x1="9" y1="11" x2="15" y2="11" stroke="#1D3557" strokeWidth="2" strokeLinecap="round" />
-      <line x1="9" y1="14" x2="15" y2="14" stroke="#1D3557" strokeWidth="2" strokeLinecap="round" />
+    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <rect x="5" y="7" width="14" height="10" rx="2" stroke="#3498db" strokeWidth="2" fill="none" />
+      <line x1="9" y1="11" x2="15" y2="11" stroke="#3498db" strokeWidth="2" strokeLinecap="round" />
+      <line x1="9" y1="14" x2="15" y2="14" stroke="#3498db" strokeWidth="2" strokeLinecap="round" />
     </svg>
   );
 }
 
 function ToolIcon() {
   return (
-    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <path d="M10 10L14 14M14 10L10 14" stroke="#1D3557" strokeWidth="2" strokeLinecap="round" />
-      <circle cx="12" cy="12" r="8" stroke="#1D3557" strokeWidth="2" fill="none" />
+    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M10 10L14 14M14 10L10 14" stroke="#3498db" strokeWidth="2" strokeLinecap="round" />
+      <circle cx="12" cy="12" r="8" stroke="#3498db" strokeWidth="2" fill="none" />
     </svg>
   );
 }
