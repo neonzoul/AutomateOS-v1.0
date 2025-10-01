@@ -13,6 +13,7 @@ interface Message {
 
 export default function Home() {
   const chatSectionRef = useRef<HTMLDivElement>(null);
+  const chatMessagesRef = useRef<HTMLDivElement>(null);
   const [inputValue, setInputValue] = useState('');
   const [messages, setMessages] = useState<Message[]>([
     {
@@ -27,6 +28,12 @@ export default function Home() {
     chatSectionRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
 
+  const scrollToBottom = () => {
+    if (chatMessagesRef.current) {
+      chatMessagesRef.current.scrollTop = chatMessagesRef.current.scrollHeight;
+    }
+  };
+
   const handleSendMessage = () => {
     if (!inputValue.trim()) return;
 
@@ -39,6 +46,7 @@ export default function Home() {
 
     setMessages((prev) => [...prev, userMessage]);
     setInputValue('');
+    setTimeout(scrollToBottom, 100);
 
     // Mock response - always shows workflow automation result
     // Acknowledgment
@@ -49,6 +57,7 @@ export default function Home() {
         text: 'I can help you with that.',
       };
       setMessages((prev) => [...prev, ackMessage]);
+      setTimeout(scrollToBottom, 100);
     }, 600);
 
     // Processing
@@ -59,6 +68,7 @@ export default function Home() {
         text: 'Creating task in Notion and sending notification to Slack...',
       };
       setMessages((prev) => [...prev, processingMessage]);
+      setTimeout(scrollToBottom, 100);
     }, 1400);
 
     // Success confirmation
@@ -69,6 +79,7 @@ export default function Home() {
         text: 'Done. I\'ve created a task "Review Q4 Budget" in your Notion database, assigned it to Sarah with a due date of October 15th, and sent her a notification via Slack.',
       };
       setMessages((prev) => [...prev, successMessage]);
+      setTimeout(scrollToBottom, 100);
     }, 2800);
   };
 
@@ -80,7 +91,14 @@ export default function Home() {
   };
 
   return (
-    <div style={{ width: '100%', height: '100vh', overflow: 'auto', scrollBehavior: 'smooth' }}>
+    <div
+      style={{
+        width: '100%',
+        height: '100vh',
+        overflow: 'auto',
+        scrollBehavior: 'smooth',
+      }}
+    >
       {/* Hero Section */}
       <section
         style={{
@@ -128,12 +146,29 @@ export default function Home() {
             fontSize: '130px',
             lineHeight: '149px',
             color: '#FFFFFF',
-            marginBottom: '32px',
+            marginBottom: '16px',
             maxWidth: '1000px',
           }}
         >
-          Your Agent OS
+          AutomateOS
         </motion.h1>
+
+        {/* Tagline */}
+        <motion.p
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, delay: 0.3 }}
+          style={{
+            fontFamily: 'Helvetica, sans-serif',
+            fontWeight: 400,
+            fontSize: '36px',
+            lineHeight: '1.4',
+            color: 'rgba(255, 255, 255, 0.8)',
+            marginBottom: '32px',
+          }}
+        >
+          Your Agent OS
+        </motion.p>
 
         {/* Buttons */}
         <motion.div
@@ -149,7 +184,10 @@ export default function Home() {
           {/* Builder Button */}
           <Link href="/builder" style={{ textDecoration: 'none' }}>
             <motion.button
-              whileHover={{ scale: 1.05, boxShadow: '0px 8px 24px rgba(0, 0, 0, 0.15)' }}
+              whileHover={{
+                scale: 1.05,
+                boxShadow: '0px 8px 24px rgba(0, 0, 0, 0.15)',
+              }}
               whileTap={{ scale: 0.95 }}
               style={{
                 display: 'flex',
@@ -182,7 +220,10 @@ export default function Home() {
           {/* Samantha Button */}
           <motion.button
             onClick={scrollToChat}
-            whileHover={{ scale: 1.05, boxShadow: '0px 8px 24px rgba(0, 0, 0, 0.15)' }}
+            whileHover={{
+              scale: 1.05,
+              boxShadow: '0px 8px 24px rgba(0, 0, 0, 0.15)',
+            }}
             whileTap={{ scale: 0.95 }}
             style={{
               display: 'flex',
@@ -219,77 +260,51 @@ export default function Home() {
         style={{
           width: '100%',
           minHeight: '100vh',
-          background: 'linear-gradient(135deg, #F0F0F0 0%, #E8E8E8 100%)',
+          background: '#1D1D1F',
           display: 'flex',
           flexDirection: 'column',
           alignItems: 'center',
           justifyContent: 'center',
-          padding: '80px 20px',
+          padding: '40px 20px',
           position: 'relative',
         }}
       >
-        {/* Watermark Ribbon Logo */}
+        {/* Chat Container - Centered Content */}
         <div
           style={{
-            position: 'absolute',
-            top: '50%',
-            left: '50%',
-            transform: 'translate(-50%, -50%)',
-            pointerEvents: 'none',
-            userSelect: 'none',
-            opacity: 0.03,
-            width: '800px',
-            height: '250px',
-          }}
-        >
-          <img
-            src="/assets/ribbon_logo.svg"
-            alt="Watermark"
-            style={{
-              width: '100%',
-              height: '100%',
-              objectFit: 'contain',
-            }}
-          />
-        </div>
-
-        {/* Chat Container */}
-        <motion.div
-          initial={{ opacity: 0, scale: 0.95 }}
-          whileInView={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.6 }}
-          style={{
             width: '100%',
-            maxWidth: '800px',
-            background: '#FFFFFF',
-            borderRadius: '24px',
-            padding: '24px',
-            boxShadow: '0 8px 32px rgba(0, 0, 0, 0.08)',
+            maxWidth: '1040px',
+            display: 'flex',
+            flexDirection: 'column',
+            gap: '24px',
             position: 'relative',
             zIndex: 1,
           }}
         >
-          {/* Chat Header */}
-          <div
+          {/* Minimal Header */}
+          <motion.div
+            initial={{ opacity: 0, y: -20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
             style={{
               display: 'flex',
               alignItems: 'center',
+              justifyContent: 'center',
               gap: '12px',
               paddingBottom: '20px',
-              borderBottom: '1px solid #E8E8E8',
-              marginBottom: '24px',
             }}
           >
             <div
               style={{
-                width: '48px',
-                height: '48px',
+                width: '36px',
+                height: '36px',
                 borderRadius: '50%',
-                background: 'linear-gradient(135deg, #FF9A8B 0%, #FF6A88 55%, #FF99AC 100%)',
+                background:
+                  'linear-gradient(135deg, #FF9A8B 0%, #FF6A88 55%, #FF99AC 100%)',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                padding: '8px',
+                padding: '6px',
                 overflow: 'hidden',
               }}
             >
@@ -303,139 +318,384 @@ export default function Home() {
                 }}
               />
             </div>
-            <div>
-              <h3
-                style={{
-                  fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Display", sans-serif',
-                  fontWeight: 600,
-                  fontSize: '20px',
-                  color: '#1D1D1F',
-                  margin: 0,
-                }}
-              >
-                Samantha
-              </h3>
-              <p
-                style={{
-                  fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Text", sans-serif',
-                  fontSize: '14px',
-                  color: '#86868B',
-                  margin: 0,
-                }}
-              >
-                AI Assistant
-              </p>
-            </div>
-          </div>
+            <h3
+              style={{
+                fontFamily:
+                  '-apple-system, BlinkMacSystemFont, "SF Pro Display", sans-serif',
+                fontWeight: 500,
+                fontSize: '18px',
+                color: '#ECECF1',
+                margin: 0,
+              }}
+            >
+              Samantha
+            </h3>
+          </motion.div>
 
-          {/* Chat Messages */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', minHeight: '400px', maxHeight: '500px', overflowY: 'auto' }}>
+          {/* Chat Messages - Centered like GPT */}
+          <motion.div
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            transition={{ duration: 0.6, delay: 0.2 }}
+            style={{
+              width: '100%',
+              display: 'flex',
+              flexDirection: 'column',
+              gap: '24px',
+              maxHeight: '500px',
+              overflowY: 'auto',
+              paddingRight: '12px',
+            }}
+            className="chat-messages-container"
+            ref={chatMessagesRef}
+          >
             <AnimatePresence>
-              {messages.map((message, index) => (
+              {messages.map((message) => (
                 <motion.div
                   key={message.id}
-                  initial={{ opacity: 0, scale: 0.5 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  exit={{ opacity: 0, scale: 0.5 }}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -20 }}
                   transition={{
-                    type: 'spring',
-                    stiffness: 500,
-                    damping: 30,
-                    duration: 0.3,
+                    duration: 0.4,
+                    ease: [0.23, 1, 0.32, 1],
                   }}
                   style={{
-                    alignSelf: message.type === 'incoming' ? 'flex-start' : 'flex-end',
-                    maxWidth: '70%',
-                    transformOrigin: message.type === 'incoming' ? 'left bottom' : 'right bottom',
+                    width: '100%',
+                    maxWidth: '520px',
+                    alignSelf:
+                      message.type === 'incoming' ? 'flex-start' : 'flex-end',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: '8px',
                   }}
                 >
-                  <motion.div
-                    initial={{ scale: 1 }}
-                    animate={{ scale: 1 }}
-                    whileHover={{ scale: 1.02 }}
-                    style={{
-                      background: message.type === 'incoming' ? '#E9E9EB' : '#007AFF',
-                      borderRadius: '18px',
-                      padding: '12px 16px',
-                      fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Text", sans-serif',
-                      fontSize: '16px',
-                      lineHeight: '1.5',
-                      color: message.type === 'incoming' ? '#1D1D1F' : '#FFFFFF',
-                      whiteSpace: 'pre-wrap',
-                    }}
-                  >
-                    {message.text}
-                  </motion.div>
-                  {message.timestamp && (
-                    <span
-                      style={{
-                        display: 'block',
-                        marginTop: '4px',
-                        fontSize: '12px',
-                        color: '#86868B',
-                        fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Text", sans-serif',
-                      }}
-                    >
-                      {message.timestamp}
-                    </span>
+                  {message.type === 'incoming' ? (
+                    <>
+                      {/* Samantha Message - Left Side */}
+                      <div
+                        style={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: '8px',
+                        }}
+                      >
+                        <div
+                          style={{
+                            width: '24px',
+                            height: '24px',
+                            borderRadius: '50%',
+                            background:
+                              'linear-gradient(135deg, #FF9A8B 0%, #FF6A88 55%, #FF99AC 100%)',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            padding: '4px',
+                            flexShrink: 0,
+                          }}
+                        >
+                          <img
+                            src="/assets/ribbon_logo.svg"
+                            alt="Samantha"
+                            style={{
+                              width: '100%',
+                              height: '100%',
+                              objectFit: 'contain',
+                            }}
+                          />
+                        </div>
+                        <span
+                          style={{
+                            fontFamily:
+                              '-apple-system, BlinkMacSystemFont, "SF Pro Text", sans-serif',
+                            fontSize: '18px',
+                            fontWeight: 600,
+                            color: '#ECECF1',
+                          }}
+                        >
+                          Samantha
+                        </span>
+                        {message.timestamp && (
+                          <span
+                            style={{
+                              fontFamily:
+                                '-apple-system, BlinkMacSystemFont, "SF Pro Text", sans-serif',
+                              fontSize: '16px',
+                              color: '#565869',
+                            }}
+                          >
+                            {message.timestamp}
+                          </span>
+                        )}
+                      </div>
+                      <div
+                        style={{
+                          paddingLeft: '32px',
+                          fontFamily:
+                            '-apple-system, BlinkMacSystemFont, "SF Pro Text", sans-serif',
+                          fontSize: '20px',
+                          lineHeight: '1.6',
+                          color: '#ECECF1',
+                          whiteSpace: 'pre-wrap',
+                        }}
+                      >
+                        {message.text}
+                      </div>
+                    </>
+                  ) : (
+                    <>
+                      {/* User Message - Right Side */}
+                      <div
+                        style={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: '8px',
+                          justifyContent: 'flex-end',
+                        }}
+                      >
+                        <span
+                          style={{
+                            fontFamily:
+                              '-apple-system, BlinkMacSystemFont, "SF Pro Text", sans-serif',
+                            fontSize: '18px',
+                            fontWeight: 600,
+                            color: '#8E8EA0',
+                          }}
+                        >
+                          You
+                        </span>
+                      </div>
+                      <div
+                        style={{
+                          background: '#2D2D30',
+                          borderRadius: '16px',
+                          padding: '16px 20px',
+                          textAlign: 'left',
+                          fontFamily:
+                            '-apple-system, BlinkMacSystemFont, "SF Pro Text", sans-serif',
+                          fontSize: '20px',
+                          lineHeight: '1.6',
+                          color: '#ECECF1',
+                          whiteSpace: 'pre-wrap',
+                          border: '1px solid #3E3E42',
+                        }}
+                      >
+                        {message.text}
+                      </div>
+                    </>
                   )}
                 </motion.div>
               ))}
             </AnimatePresence>
-          </div>
+          </motion.div>
 
-          {/* Input Box */}
-          <div
+          {/* Input Box - Centered at Bottom like GPT */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.3 }}
             style={{
-              marginTop: '24px',
-              paddingTop: '20px',
-              borderTop: '1px solid #E8E8E8',
+              width: '100%',
               display: 'flex',
               gap: '12px',
               alignItems: 'center',
+              paddingTop: '20px',
             }}
           >
-            <input
-              type="text"
-              placeholder="Message Samantha..."
-              value={inputValue}
-              onChange={(e) => setInputValue(e.target.value)}
-              onKeyPress={handleKeyPress}
+            {/* Left Icons */}
+            <div
               style={{
-                flex: 1,
-                padding: '12px 18px',
-                borderRadius: '20px',
-                border: '1px solid #D1D1D6',
-                background: '#F2F2F7',
-                fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Text", sans-serif',
-                fontSize: '16px',
-                color: '#1D1D1F',
-                outline: 'none',
-              }}
-            />
-            <motion.button
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              onClick={handleSendMessage}
-              style={{
-                width: '44px',
-                height: '44px',
-                borderRadius: '50%',
-                background: inputValue.trim() ? '#007AFF' : '#D1D1D6',
-                border: 'none',
                 display: 'flex',
+                gap: '10px',
                 alignItems: 'center',
-                justifyContent: 'center',
-                cursor: inputValue.trim() ? 'pointer' : 'not-allowed',
-                fontSize: '20px',
-                color: '#FFFFFF',
-                transition: 'background 0.2s ease',
               }}
             >
-              ↑
-            </motion.button>
-          </div>
-        </motion.div>
+              {/* Camera Icon */}
+              <motion.button
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.9 }}
+                style={{
+                  width: '32px',
+                  height: '32px',
+                  borderRadius: '50%',
+                  background: 'transparent',
+                  border: 'none',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  cursor: 'pointer',
+                  transition: 'all 0.2s ease',
+                }}
+              >
+                <svg
+                  width="20"
+                  height="20"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  style={{ color: '#8E8EA0', transition: 'color 0.2s ease' }}
+                  onMouseEnter={(e) =>
+                    (e.currentTarget.style.color = '#ECECF1')
+                  }
+                  onMouseLeave={(e) =>
+                    (e.currentTarget.style.color = '#8E8EA0')
+                  }
+                >
+                  <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z" />
+                  <circle cx="12" cy="13" r="4" />
+                </svg>
+              </motion.button>
+
+              {/* Image/Attach Icon */}
+              <motion.button
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.9 }}
+                style={{
+                  width: '32px',
+                  height: '32px',
+                  borderRadius: '50%',
+                  background: 'transparent',
+                  border: 'none',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  cursor: 'pointer',
+                  transition: 'all 0.2s ease',
+                }}
+              >
+                <svg
+                  width="20"
+                  height="20"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  style={{ color: '#8E8EA0', transition: 'color 0.2s ease' }}
+                  onMouseEnter={(e) =>
+                    (e.currentTarget.style.color = '#ECECF1')
+                  }
+                  onMouseLeave={(e) =>
+                    (e.currentTarget.style.color = '#8E8EA0')
+                  }
+                >
+                  <rect x="3" y="3" width="18" height="18" rx="2" ry="2" />
+                  <circle cx="8.5" cy="8.5" r="1.5" />
+                  <polyline points="21 15 16 10 5 21" />
+                </svg>
+              </motion.button>
+
+              {/* Microphone Icon */}
+              <motion.button
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.9 }}
+                style={{
+                  width: '32px',
+                  height: '32px',
+                  borderRadius: '50%',
+                  background: 'transparent',
+                  border: 'none',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  cursor: 'pointer',
+                  transition: 'all 0.2s ease',
+                }}
+              >
+                <svg
+                  width="20"
+                  height="20"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  style={{ color: '#8E8EA0', transition: 'color 0.2s ease' }}
+                  onMouseEnter={(e) =>
+                    (e.currentTarget.style.color = '#ECECF1')
+                  }
+                  onMouseLeave={(e) =>
+                    (e.currentTarget.style.color = '#8E8EA0')
+                  }
+                >
+                  <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z" />
+                  <path d="M19 10v2a7 7 0 0 1-14 0v-2" />
+                  <line x1="12" y1="19" x2="12" y2="23" />
+                  <line x1="8" y1="23" x2="16" y2="23" />
+                </svg>
+              </motion.button>
+            </div>
+
+            {/* Input Box */}
+            <div
+              style={{
+                flex: 1,
+                position: 'relative',
+                display: 'flex',
+                alignItems: 'center',
+              }}
+            >
+              <input
+                type="text"
+                placeholder="Message Samantha..."
+                value={inputValue}
+                onChange={(e) => setInputValue(e.target.value)}
+                onKeyPress={handleKeyPress}
+                style={{
+                  width: '100%',
+                  padding: '16px 60px 16px 20px',
+                  borderRadius: '12px',
+                  border: '1px solid #40414F',
+                  background: '#40414F',
+                  fontFamily:
+                    '-apple-system, BlinkMacSystemFont, "SF Pro Text", sans-serif',
+                  fontSize: '20px',
+                  color: '#ECECF1',
+                  outline: 'none',
+                  transition: 'all 0.2s ease',
+                  boxSizing: 'border-box',
+                }}
+                onFocus={(e) => {
+                  e.target.style.background = '#4A4B5F';
+                  e.target.style.borderColor = '#565869';
+                }}
+                onBlur={(e) => {
+                  e.target.style.background = '#40414F';
+                  e.target.style.borderColor = '#40414F';
+                }}
+              />
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                onClick={handleSendMessage}
+                disabled={!inputValue.trim()}
+                style={{
+                  position: 'absolute',
+                  right: '12px',
+                  width: '36px',
+                  height: '36px',
+                  borderRadius: '8px',
+                  background: inputValue.trim() ? '#ECECF1' : '#565869',
+                  border: 'none',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  cursor: inputValue.trim() ? 'pointer' : 'not-allowed',
+                  fontSize: '18px',
+                  color: inputValue.trim() ? '#1D1D1F' : '#8E8EA0',
+                  transition: 'all 0.2s ease',
+                }}
+              >
+                ↑
+              </motion.button>
+            </div>
+          </motion.div>
+        </div>
       </section>
     </div>
   );

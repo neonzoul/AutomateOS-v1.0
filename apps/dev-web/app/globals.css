@@ -539,3 +539,28 @@ select.custom-dropdown::before {
     display: none !important;
   }
 }
+
+/* Dark Theme Chat Scrollbar */
+.chat-messages-container {
+  scrollbar-width: thin;
+  scrollbar-color: #565869 #2D2D2F;
+}
+
+.chat-messages-container::-webkit-scrollbar {
+  width: 8px;
+}
+
+.chat-messages-container::-webkit-scrollbar-track {
+  background: #2D2D2F;
+  border-radius: 4px;
+}
+
+.chat-messages-container::-webkit-scrollbar-thumb {
+  background: #565869;
+  border-radius: 4px;
+  transition: background 0.2s ease;
+}
+
+.chat-messages-container::-webkit-scrollbar-thumb:hover {
+  background: #6B6D81;
+}
