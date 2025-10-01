@@ -44,25 +44,56 @@ export default function ConditionNode({ data, id }: ConditionNodeProps) {
       animate={{ opacity: 1, scale: 1 }}
       transition={{ duration: 0.3 }}
       whileHover={{
-        scale: 1.08,
-        boxShadow: '0px 8px 24px rgba(156, 39, 176, 0.3)',
+        scale: 1.05,
+        filter: 'brightness(1.05)',
         transition: { duration: 0.2 }
       }}
       style={{
-        width: '160px',
-        height: '160px',
-        background: 'linear-gradient(135deg, #F3E5F5 0%, #E1BEE7 100%)',
-        border: isSelected ? `3px solid #E63946` : `3px solid #9C27B0`,
-        boxShadow: '0px 4px 16px rgba(156, 39, 176, 0.2)',
+        width: '140px',
+        height: '180px',
+        background: 'linear-gradient(135deg, rgba(243, 229, 245, 0.95) 0%, rgba(225, 190, 231, 0.98) 100%)',
+        backdropFilter: 'blur(10px) saturate(180%)',
+        WebkitBackdropFilter: 'blur(10px) saturate(180%)',
+        border: isSelected
+          ? `3px solid #E63946`
+          : `2px solid rgba(156, 39, 176, 0.4)`,
+        boxShadow: `
+          0px 8px 32px rgba(156, 39, 176, 0.25),
+          inset 0px 1px 0px rgba(255, 255, 255, 0.5),
+          inset 0px -1px 0px rgba(156, 39, 176, 0.2)
+        `,
         cursor: 'pointer',
         position: 'relative',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
         transform: 'rotate(45deg)',
-        borderRadius: '8px',
+        borderRadius: '12px',
+        overflow: 'hidden',
       }}
     >
+      {/* Glass shine overlay */}
+      <div style={{
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.4) 0%, transparent 50%, rgba(156, 39, 176, 0.1) 100%)',
+        pointerEvents: 'none',
+      }} />
+
+      {/* Glossy highlight */}
+      <div style={{
+        position: 'absolute',
+        top: '-20%',
+        left: '-20%',
+        width: '60%',
+        height: '60%',
+        background: 'radial-gradient(circle, rgba(255, 255, 255, 0.6) 0%, transparent 70%)',
+        filter: 'blur(20px)',
+        pointerEvents: 'none',
+      }} />
       {/* Inner content - counter-rotate to keep upright */}
       <div style={{
         transform: 'rotate(-45deg)',
@@ -73,42 +104,48 @@ export default function ConditionNode({ data, id }: ConditionNodeProps) {
         width: '100%',
         height: '100%',
       }}>
-        {/* Status indicator dot */}
+        {/* Status indicator dot - with glass effect */}
         <div
           style={{
             position: 'absolute',
-            top: '8px',
+            top: '10px',
             left: '50%',
             transform: 'translateX(-50%)',
-            width: '8px',
-            height: '8px',
+            width: '10px',
+            height: '10px',
             borderRadius: '50%',
             background: getStatusColor(),
-            boxShadow: `0 2px 6px ${getStatusColor()}40`,
+            boxShadow: `
+              0 2px 8px ${getStatusColor()}60,
+              inset 0 1px 2px rgba(255, 255, 255, 0.5)
+            `,
+            border: '1px solid rgba(255, 255, 255, 0.3)',
           }}
         />
 
-        {/* Decision text */}
+        {/* Decision text with text shadow for depth */}
         <div style={{
           fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Helvetica", "Arial", sans-serif',
           fontWeight: 700,
-          fontSize: '16px',
+          fontSize: '15px',
           color: '#4A148C',
           textAlign: 'center',
-          letterSpacing: '0.5px',
+          letterSpacing: '0.8px',
           textTransform: 'uppercase',
+          textShadow: '0 1px 2px rgba(255, 255, 255, 0.8), 0 2px 4px rgba(74, 20, 140, 0.2)',
         }}>
           {data?.label ?? 'If/Else'}
         </div>
 
-        {/* Question mark icon or condition hint */}
+        {/* Question mark icon with glass effect */}
         {!condition && !field && (
           <div style={{
-            fontSize: '32px',
+            fontSize: '28px',
             color: '#9C27B0',
-            marginTop: '6px',
-            opacity: 0.6,
-            fontWeight: 300,
+            marginTop: '4px',
+            opacity: 0.7,
+            fontWeight: 400,
+            textShadow: '0 1px 3px rgba(255, 255, 255, 0.5)',
           }}>
             ?
           </div>
