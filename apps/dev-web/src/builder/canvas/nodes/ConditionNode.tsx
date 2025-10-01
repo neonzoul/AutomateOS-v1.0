@@ -119,10 +119,10 @@ export default function ConditionNode({ data, id }: ConditionNodeProps) {
         </svg>
       </div>
 
-      {/* Input Handle - Top (Red) */}
+      {/* Input Handle - Left (Red) */}
       <Handle
         type="target"
-        position={Position.Top}
+        position={Position.Left}
         id="target"
         style={{
           background: '#E84B4B',
@@ -130,9 +130,9 @@ export default function ConditionNode({ data, id }: ConditionNodeProps) {
           width: '12px',
           height: '12px',
           boxShadow: '0 2px 8px rgba(232, 75, 75, 0.4), 0 0 12px rgba(232, 75, 75, 0.3)',
-          top: '0px',
-          left: '50%',
-          transform: 'translateX(-50%)',
+          left: '0px',
+          top: '50%',
+          transform: 'translateY(-50%)',
         }}
       />
 
@@ -153,10 +153,10 @@ export default function ConditionNode({ data, id }: ConditionNodeProps) {
         }}
       />
 
-      {/* Output Handle - False (Left, Gray) */}
+      {/* Output Handle - False (Bottom, Gray) */}
       <Handle
         type="source"
-        position={Position.Left}
+        position={Position.Bottom}
         id="source-false"
         style={{
           background: '#9E9E9E',
@@ -164,9 +164,9 @@ export default function ConditionNode({ data, id }: ConditionNodeProps) {
           width: '12px',
           height: '12px',
           boxShadow: '0 2px 8px rgba(158, 158, 158, 0.5), 0 0 12px rgba(158, 158, 158, 0.3)',
-          left: '0px',
-          top: '50%',
-          transform: 'translateY(-50%)',
+          bottom: '0px',
+          left: '50%',
+          transform: 'translateX(-50%)',
         }}
       />
     </motion.div>
