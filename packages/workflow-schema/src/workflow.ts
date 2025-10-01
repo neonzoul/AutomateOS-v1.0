@@ -28,6 +28,16 @@ export const HttpConfigSchema = z
   })
   .strict();
 
+// Condition node config schema
+export const ConditionConfigSchema = z
+  .object({
+    condition: z.string().default(''),
+    field: z.string().optional(),
+    operator: z.enum(['==', '!=', '>', '<', '>=', '<=', 'contains', 'not_contains']).optional(),
+    value: z.string().optional(),
+  })
+  .strict();
+
 // Base node data structure
 export const BaseNodeDataSchema = z.object({
   label: z.string().optional(),
@@ -64,10 +74,23 @@ export const HttpNodeSchema = z.object({
   }),
 });
 
+export const ConditionNodeSchema = z.object({
+  id: z.string(),
+  type: z.literal('condition'),
+  position: z.object({
+    x: z.number(),
+    y: z.number(),
+  }),
+  data: BaseNodeDataSchema.extend({
+    config: ConditionConfigSchema.optional(),
+  }),
+});
+
 // Union of all node types - ensures type safety across the platform
 export const NodeSchema = z.discriminatedUnion('type', [
   StartNodeSchema,
   HttpNodeSchema,
+  ConditionNodeSchema,
 ]);
 
 // === Edge Schema ===
@@ -122,9 +145,11 @@ export const WorkflowSchema = z
 
 export type StartConfig = z.infer<typeof StartConfigSchema>;
 export type HttpConfig = z.output<typeof HttpConfigSchema>;
+export type ConditionConfig = z.output<typeof ConditionConfigSchema>;
 export type BaseNodeData = z.infer<typeof BaseNodeDataSchema>;
 export type StartNode = z.infer<typeof StartNodeSchema>;
 export type HttpNode = z.infer<typeof HttpNodeSchema>;
+export type ConditionNode = z.infer<typeof ConditionNodeSchema>;
 export type WorkflowNode = z.infer<typeof NodeSchema>;
 export type WorkflowEdge = z.infer<typeof EdgeSchema>;
 export type WorkflowMeta = z.infer<typeof WorkflowMetaSchema>;

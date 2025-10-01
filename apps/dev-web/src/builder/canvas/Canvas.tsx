@@ -30,6 +30,7 @@ import StartNode from './nodes/StartNode';
 import HttpNode from './nodes/HttpNode';
 import AppNode from './nodes/AppNode';
 import AgentNode from './nodes/AgentNode';
+import ConditionNode from './nodes/ConditionNode';
 import { NODE_SPECS } from '../registry/nodeSpecs';
 import { AppNodeToolbar } from './AppNodeToolbar';
 import { LeftSidebar } from '../sidebar/LeftSidebar';
@@ -45,6 +46,7 @@ const nodeTypes: NodeTypes = {
   http: HttpNode,
   app: AppNode,
   agent: AgentNode,
+  condition: ConditionNode,
 };
 
 interface CanvasProps {
@@ -124,6 +126,38 @@ export function Canvas({
     [createNodeHandler]
   );
 
+  // Condition node creation handler
+  const handleConditionNodeCreate = useCallback(
+    (evt: React.MouseEvent) => {
+      let position;
+      try {
+        const base = screenToFlowPosition({
+          x: evt.clientX,
+          y: evt.clientY + 40,
+        });
+        position = base;
+      } catch (error) {
+        console.warn(
+          'screenToFlowPosition failed, using fallback position:',
+          error
+        );
+        position = { x: 200, y: 200 };
+      }
+
+      const spec = NODE_SPECS['condition'];
+      addNode({
+        type: 'condition',
+        position,
+        data: {
+          ...spec.defaultData,
+          description: 'Branch your workflow based on a condition',
+          tags: ['Logic', 'Control', 'Branch'],
+        }
+      });
+    },
+    [screenToFlowPosition, addNode]
+  );
+
   // Create handlers for all app nodes
   const appNodeHandlers = useCallback(() => {
     return {
@@ -134,8 +168,9 @@ export function Canvas({
       facebook: createNodeHandler('Facebook'),
       tiktok: createNodeHandler('TikTok'),
       http: handleHttpNodeCreate,
+      condition: handleConditionNodeCreate,
     };
-  }, [createNodeHandler, handleHttpNodeCreate]);
+  }, [createNodeHandler, handleHttpNodeCreate, handleConditionNodeCreate]);
 
   // Expose HTTP node creation handler to parent
   useEffect(() => {

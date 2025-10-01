@@ -8,8 +8,10 @@ import { z } from 'zod';
 import {
   StartConfigSchema,
   HttpConfigSchema,
+  ConditionConfigSchema,
   type StartConfig,
   type HttpConfig,
+  type ConditionConfig,
   type NodeSpec as BaseNodeSpec,
 } from '@automateos/workflow-schema';
 
@@ -36,6 +38,18 @@ export const NODE_SPECS = {
       config: { method: 'GET', url: 'https://api.example.com' },
     },
   } satisfies NodeSpec<HttpConfig>,
+
+  condition: {
+    type: 'condition',
+    label: 'Condition',
+    description: 'Branch workflow based on condition',
+    configSchema: ConditionConfigSchema,
+    runtime: { adapter: 'condition' as const },
+    defaultData: {
+      label: 'If/Else',
+      config: { condition: '' },
+    },
+  } satisfies NodeSpec<ConditionConfig>,
 } as const;
 
-export type NodeTypeKey = keyof typeof NODE_SPECS; // 'start' | 'http'
+export type NodeTypeKey = keyof typeof NODE_SPECS; // 'start' | 'http' | 'condition'

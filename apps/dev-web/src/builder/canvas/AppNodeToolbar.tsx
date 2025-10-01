@@ -161,6 +161,18 @@ function AIAgentIcon() {
   );
 }
 
+// Condition/Branch Icon Component
+function ConditionIcon() {
+  return (
+    <svg width="32" height="32" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="none">
+      <path d="M12 2v6M12 8l-5 6M12 8l5 6M7 14v6M17 14v6" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+      <circle cx="12" cy="2" r="1.5" fill="white"/>
+      <circle cx="7" cy="20" r="1.5" fill="white"/>
+      <circle cx="17" cy="20" r="1.5" fill="white"/>
+    </svg>
+  );
+}
+
 export function AppNodeToolbar({ appNodeHandlers }: AppNodeToolbarProps) {
   // App icons - Google, Slack, LINE, Notion, Facebook, TikTok
   const appIcons = [
@@ -172,9 +184,10 @@ export function AppNodeToolbar({ appNodeHandlers }: AppNodeToolbarProps) {
     { name: 'TikTok', icon: <TikTokIcon />, onClick: appNodeHandlers.tiktok },
   ];
 
-  // Control icons - AutomateOS, Workflow, AI, HTTP
+  // Control icons - HTTP, Condition, AutomateOS, Workflow, AI
   const controlIcons = [
     { name: 'HTTP', icon: <HttpIcon />, isDark: true, onClick: appNodeHandlers.http },
+    { name: 'Condition', icon: <ConditionIcon />, isDark: true, onClick: appNodeHandlers.condition },
     { name: 'AutomateOS', icon: <DNAIcon />, isDark: true },
     { name: 'Workflow', icon: <WorkflowIcon />, isDark: true },
     { name: 'AI Agent', icon: <AIAgentIcon />, isDark: true },
