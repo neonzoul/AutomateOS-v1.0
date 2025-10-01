@@ -23,10 +23,11 @@ import { WorkflowSchema } from '@automateos/workflow-schema';
  * - Right Panel: Inspector + RunPanel (placeholder for now)
  */
 export default function BuilderPage() {
-  const { nodes, edges, clearWorkflow } = useBuilderStore();
+  const { nodes, edges, clearWorkflow, selectedNodeId } = useBuilderStore();
   const [leftPanelOpen, setLeftPanelOpen] = React.useState(false);
   const [rightPanelOpen, setRightPanelOpen] = React.useState(false);
   const [httpNodeHandler, setHttpNodeHandler] = React.useState<((e: React.MouseEvent) => void) | null>(null);
+  const [appNodeHandlers, setAppNodeHandlers] = React.useState<Record<string, (e: React.MouseEvent) => void>>({});
 
   const handleRun = async () => {
     // Clean workflow data for validation - remove React Flow specific properties
@@ -63,6 +64,15 @@ export default function BuilderPage() {
       clearWorkflow();
     }
   };
+
+  // Auto open/close Inspector panel based on node selection
+  React.useEffect(() => {
+    if (selectedNodeId && !rightPanelOpen) {
+      setRightPanelOpen(true);
+    } else if (!selectedNodeId && rightPanelOpen) {
+      setRightPanelOpen(false);
+    }
+  }, [selectedNodeId, rightPanelOpen]);
 
   return (
     <div className="canvas-layout"
@@ -106,6 +116,7 @@ export default function BuilderPage() {
             onToggleLeftPanel={() => setLeftPanelOpen(!leftPanelOpen)}
             onToggleRightPanel={() => setRightPanelOpen(!rightPanelOpen)}
             onClear={handleClear}
+            onAppNodeHandlersReady={setAppNodeHandlers}
           />
         </ReactFlowProvider>
       </div>

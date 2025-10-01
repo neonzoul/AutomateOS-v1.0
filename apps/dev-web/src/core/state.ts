@@ -25,6 +25,10 @@ import { WorkflowSchema, type Workflow } from '@automateos/workflow-schema';
 export type NodeData = {
   label?: string;
   config?: Record<string, unknown>;
+  // UI-only fields (not used by engine, safe to ignore during execution)
+  description?: string;
+  tags?: string[];
+  icon?: string;
 };
 
 export interface BuilderState {

@@ -4,7 +4,7 @@ import React from 'react';
 import { motion } from 'framer-motion';
 
 interface AppNodeToolbarProps {
-  onHttpClick?: (e: React.MouseEvent) => void;
+  appNodeHandlers: Record<string, (e: React.MouseEvent) => void>;
 }
 
 interface AppIconProps {
@@ -161,20 +161,20 @@ function AIAgentIcon() {
   );
 }
 
-export function AppNodeToolbar({ onHttpClick }: AppNodeToolbarProps) {
+export function AppNodeToolbar({ appNodeHandlers }: AppNodeToolbarProps) {
   // App icons - Google, Slack, LINE, Notion, Facebook, TikTok
   const appIcons = [
-    { name: 'Google', icon: <GoogleIcon /> },
-    { name: 'Slack', icon: <SlackIcon /> },
-    { name: 'LINE', icon: <LineIcon /> },
-    { name: 'Notion', icon: <NotionIcon /> },
-    { name: 'Facebook', icon: <FacebookIcon /> },
-    { name: 'TikTok', icon: <TikTokIcon /> },
+    { name: 'Google', icon: <GoogleIcon />, onClick: appNodeHandlers.google },
+    { name: 'Slack', icon: <SlackIcon />, onClick: appNodeHandlers.slack },
+    { name: 'LINE', icon: <LineIcon />, onClick: appNodeHandlers.line },
+    { name: 'Notion', icon: <NotionIcon />, onClick: appNodeHandlers.notion },
+    { name: 'Facebook', icon: <FacebookIcon />, onClick: appNodeHandlers.facebook },
+    { name: 'TikTok', icon: <TikTokIcon />, onClick: appNodeHandlers.tiktok },
   ];
 
   // Control icons - AutomateOS, Workflow, AI, HTTP
   const controlIcons = [
-    { name: 'HTTP', icon: <HttpIcon />, isDark: true, onClick: onHttpClick },
+    { name: 'HTTP', icon: <HttpIcon />, isDark: true, onClick: appNodeHandlers.http },
     { name: 'AutomateOS', icon: <DNAIcon />, isDark: true },
     { name: 'Workflow', icon: <WorkflowIcon />, isDark: true },
     { name: 'AI Agent', icon: <AIAgentIcon />, isDark: true },
@@ -219,6 +219,7 @@ export function AppNodeToolbar({ onHttpClick }: AppNodeToolbarProps) {
               iconContent={item.icon}
               index={index}
               isDark={false}
+              onClick={item.onClick}
             />
           ))}
         </div>

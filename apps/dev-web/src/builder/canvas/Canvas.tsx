@@ -55,6 +55,7 @@ interface CanvasProps {
   onToggleLeftPanel: () => void;
   onToggleRightPanel: () => void;
   onClear: () => void;
+  onAppNodeHandlersReady?: (handlers: Record<string, (e: React.MouseEvent) => void>) => void;
 }
 
 /**
@@ -71,7 +72,8 @@ export function Canvas({
   rightPanelOpen,
   onToggleLeftPanel,
   onToggleRightPanel,
-  onClear
+  onClear,
+  onAppNodeHandlersReady
 }: CanvasProps) {
   const nodes = useNodes();
   const edges = useEdges();
@@ -81,9 +83,9 @@ export function Canvas({
   const { addNode, removeNode, duplicateNode } = useGraphActions();
   const { screenToFlowPosition } = useReactFlow();
 
-  // HTTP node creation handler - expose to parent
-  const handleHttpNodeCreate = useCallback(
-    (evt: React.MouseEvent) => {
+  // Generic node creation handler factory
+  const createNodeHandler = useCallback(
+    (appName: string, icon?: string) => (evt: React.MouseEvent) => {
       let position;
       try {
         const base = screenToFlowPosition({
@@ -100,10 +102,40 @@ export function Canvas({
       }
 
       const spec = NODE_SPECS['http'];
-      addNode({ type: 'http', position, data: spec.defaultData });
+      addNode({
+        type: 'http',
+        position,
+        data: {
+          ...spec.defaultData,
+          label: appName,
+          icon: icon || appName.toLowerCase(),
+          description: `Amet minim mollit non deserunt ullamco est sit aliqua dolor do amet sint. Velit officia consequat duis enim velit mollit.`,
+          tags: ['Tag', 'Tag', 'Tag'],
+          config: { method: 'POST', url: `https://api.${appName.toLowerCase()}.com` }
+        }
+      });
     },
     [screenToFlowPosition, addNode]
   );
+
+  // HTTP node creation handler - expose to parent
+  const handleHttpNodeCreate = useCallback(
+    (evt: React.MouseEvent) => createNodeHandler('HTTP', 'http')(evt),
+    [createNodeHandler]
+  );
+
+  // Create handlers for all app nodes
+  const appNodeHandlers = useCallback(() => {
+    return {
+      google: createNodeHandler('Google'),
+      slack: createNodeHandler('Slack'),
+      line: createNodeHandler('LINE'),
+      notion: createNodeHandler('Notion'),
+      facebook: createNodeHandler('Facebook'),
+      tiktok: createNodeHandler('TikTok'),
+      http: handleHttpNodeCreate,
+    };
+  }, [createNodeHandler, handleHttpNodeCreate]);
 
   // Expose HTTP node creation handler to parent
   useEffect(() => {
@@ -111,6 +143,13 @@ export function Canvas({
       onHttpNodeCreate(handleHttpNodeCreate);
     }
   }, [onHttpNodeCreate, handleHttpNodeCreate]);
+
+  // Expose all app node handlers to parent
+  useEffect(() => {
+    if (onAppNodeHandlersReady) {
+      onAppNodeHandlersReady(appNodeHandlers());
+    }
+  }, [onAppNodeHandlersReady, appNodeHandlers]);
 
   // Keyboard shortcuts handler
   useEffect(() => {
@@ -344,7 +383,7 @@ export function Canvas({
 
         {/* Floating App Node Toolbar */}
         <Panel position="top-center" style={{ marginTop: '8px', zIndex: 100 }}>
-          <AppNodeToolbar onHttpClick={httpNodeHandler || undefined} />
+          <AppNodeToolbar appNodeHandlers={appNodeHandlers()} />
         </Panel>
 
         {/* Floating Controller Bar */}

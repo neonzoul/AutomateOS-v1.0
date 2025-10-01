@@ -32,6 +32,10 @@ export const HttpConfigSchema = z
 export const BaseNodeDataSchema = z.object({
   label: z.string().optional(),
   config: z.record(z.string(), z.unknown()).optional(),
+  // UI-only fields (not used by engine, safe to ignore during execution)
+  description: z.string().optional(),
+  tags: z.array(z.string()).optional(),
+  icon: z.string().optional(),
 });
 
 // === Node Type Schemas ===
