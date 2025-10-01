@@ -1,0 +1,101 @@
+/**
+ * AutomateOS Design Tokens
+ * Extracted from Figma mockup specifications
+ */
+
+:root {
+  /* ===== PRIMARY COLORS ===== */
+  --color-coral-primary: #E63946;
+  --color-coral-gradient-start: #E84B4B;
+  --color-coral-gradient-end: #FF6B6B;
+
+  /* ===== BACKGROUND COLORS ===== */
+  --color-bg-dark: #1D1C1D;              /* Left sidebar & Inspector */
+  --color-bg-canvas: #F7FAFC;            /* Canvas light zen blue */
+  --color-bg-white: #FFFFFF;             /* Node cards */
+  --color-bg-gray-matte: #B0B0B0;        /* Controller bar */
+  --color-bg-gray-matte-gradient-start: #B8B8B8;
+  --color-bg-gray-matte-gradient-end: #A0A0A0;
+
+  /* ===== TEXT COLORS ===== */
+  --color-text-primary: #1D3557;         /* Dark navy blue */
+  --color-text-secondary: #454545;       /* Medium gray */
+  --color-text-light: #FFFFFF;
+  --color-text-dark: #0D0D0D;
+  --color-text-cream: #FEE7DB;           /* Nav bar text */
+
+  /* ===== TAG COLORS ===== */
+  --color-tag-purple: #7949FF;
+  --color-tag-blue: #494FFF;
+  --color-tag-red: #FF494C;
+
+  /* ===== TYPOGRAPHY ===== */
+  --font-family-display: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-family-body: 'Inter', system-ui, sans-serif;
+  --font-family-helvetica: 'Helvetica', sans-serif;
+
+  /* Font Sizes */
+  --text-2xs: 1.75px;      /* Micro text in previews */
+  --text-xs: 8px;          /* Small labels */
+  --text-sm: 14px;         /* Body text */
+  --text-base: 16px;       /* Base text */
+  --text-lg: 22px;         /* Large text */
+  --text-xl: 28px;         /* Section headers */
+  --text-2xl: 28.49px;     /* Nav bar AutomateOS */
+  --text-3xl: 34px;        /* Large headers */
+
+  /* Font Weights */
+  --font-weight-normal: 400;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+
+  /* ===== SPACING (8pt Grid) ===== */
+  --space-0-5: 4px;
+  --space-1: 8px;
+  --space-2: 16px;
+  --space-3: 24px;
+  --space-4: 32px;
+  --space-5: 40px;
+
+  /* ===== COMPONENT DIMENSIONS ===== */
+  --navbar-height: 80px;
+  --apps-toolbar-height: 64px;
+  --controller-height: 70px;
+  --sidebar-width: 350px;
+
+  /* Button Sizes */
+  --button-height: 52px;
+  --button-width: 150px;
+  --button-padding-x: 40px;
+  --button-padding-y: 16px;
+
+  /* App Icons */
+  --app-icon-size: 56px;
+  --app-icon-gap: 16px;
+
+  /* ===== BORDER RADIUS ===== */
+  --radius-sm: 8px;
+  --radius-md: 10px;
+  --radius-lg: 12px;
+  --radius-xl: 20px;
+  --radius-2xl: 28px;
+  --radius-full: 9999px;
+
+  /* ===== SHADOWS ===== */
+  --shadow-card: 0px 4px 12px rgba(0, 0, 0, 0.1);
+  --shadow-card-hover: 0px 8px 24px rgba(0, 0, 0, 0.15);
+  --shadow-panel: 0px 0px 50px rgba(0, 0, 0, 0.15);
+  --shadow-button: 0px 2px 8px rgba(0, 0, 0, 0.08);
+  --shadow-controller: 0px 2px 4px rgba(0, 0, 0, 0.2);
+
+  /* ===== BORDERS ===== */
+  --border-width: 1px;
+  --border-width-thick: 2px;
+  --border-color: rgba(29, 53, 87, 0.1);
+  --border-color-white: rgba(255, 255, 255, 0.3);
+
+  /* ===== TRANSITIONS ===== */
+  --transition-fast: 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+  --transition-normal: 0.3s cubic-bezier(0.23, 1, 0.32, 1);
+  --transition-slow: 0.6s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
