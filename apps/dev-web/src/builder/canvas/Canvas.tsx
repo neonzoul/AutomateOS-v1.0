@@ -30,7 +30,14 @@ import StartNode from './nodes/StartNode';
 import HttpNode from './nodes/HttpNode';
 import AppNode from './nodes/AppNode';
 import AgentNode from './nodes/AgentNode';
-import { CanvasToolbar } from './CanvasToolbar';
+import { NODE_SPECS } from '../registry/nodeSpecs';
+import { AppNodeToolbar } from './AppNodeToolbar';
+import { LeftSidebar } from '../sidebar/LeftSidebar';
+import { ControllerBar } from '../controls/ControllerBar';
+import { Inspector } from '../inspector/Inspector';
+import { RunPanel } from '../run/RunPanel';
+import { PanelToggle } from '../../components/ui/PanelToggle';
+import { startRun } from '../run/runActions';
 
 // Node types registry
 const nodeTypes: NodeTypes = {
@@ -40,19 +47,70 @@ const nodeTypes: NodeTypes = {
   agent: AgentNode,
 };
 
+interface CanvasProps {
+  onHttpNodeCreate?: (handler: (e: React.MouseEvent) => void) => void;
+  httpNodeHandler: ((e: React.MouseEvent) => void) | null;
+  leftPanelOpen: boolean;
+  rightPanelOpen: boolean;
+  onToggleLeftPanel: () => void;
+  onToggleRightPanel: () => void;
+  onClear: () => void;
+}
+
 /**
  * Canvas: Main React Flow workflow builder canvas
  * - Integrates with Zustand store for state management
  * - Provides pan, zoom, selection capabilities
  * - Ready for custom node types
+ * - Contains all floating UI panels as absolute positioned overlays
  */
-export function Canvas() {
+export function Canvas({
+  onHttpNodeCreate,
+  httpNodeHandler,
+  leftPanelOpen,
+  rightPanelOpen,
+  onToggleLeftPanel,
+  onToggleRightPanel,
+  onClear
+}: CanvasProps) {
   const nodes = useNodes();
   const edges = useEdges();
   const selectedNodeId = useSelectedNodeId();
   const { onNodesChange, onEdgesChange, onConnect } = useReactFlowHandlers();
   const { setSelectedNode } = useSelectionActions();
   const { addNode, removeNode, duplicateNode } = useGraphActions();
+  const { screenToFlowPosition } = useReactFlow();
+
+  // HTTP node creation handler - expose to parent
+  const handleHttpNodeCreate = useCallback(
+    (evt: React.MouseEvent) => {
+      let position;
+      try {
+        const base = screenToFlowPosition({
+          x: evt.clientX,
+          y: evt.clientY + 40,
+        });
+        position = base;
+      } catch (error) {
+        console.warn(
+          'screenToFlowPosition failed, using fallback position:',
+          error
+        );
+        position = { x: 200, y: 200 };
+      }
+
+      const spec = NODE_SPECS['http'];
+      addNode({ type: 'http', position, data: spec.defaultData });
+    },
+    [screenToFlowPosition, addNode]
+  );
+
+  // Expose HTTP node creation handler to parent
+  useEffect(() => {
+    if (onHttpNodeCreate) {
+      onHttpNodeCreate(handleHttpNodeCreate);
+    }
+  }, [onHttpNodeCreate, handleHttpNodeCreate]);
 
   // Keyboard shortcuts handler
   useEffect(() => {
@@ -123,7 +181,7 @@ export function Canvas() {
       className="absolute inset-0"
       data-testid="canvas"
       style={{
-        background: '#FCDCD6FF',
+        background: '#FCFDFF',
         width: '100%',
         height: '100%',
       }}
@@ -144,13 +202,11 @@ export function Canvas() {
         selectionOnDrag
         defaultEdgeOptions={{
           style: {
-            strokeWidth: 4,
+            strokeWidth: 2,
             stroke: '#FF6B6B',
             strokeLinecap: 'round',
-            strokeDasharray: '12,8',
-            filter: 'drop-shadow(0 2px 4px rgba(255,107,107,0.2))',
           },
-          animated: true,
+          animated: false,
         }}
         proOptions={{ hideAttribution: true }}
         style={{
@@ -159,8 +215,6 @@ export function Canvas() {
           height: '100%',
         }}
       >
-        <CanvasToolbar />
-
         <Background
           variant={BackgroundVariant.Dots}
           gap={40}
@@ -183,6 +237,8 @@ export function Canvas() {
             borderRadius: '16px',
             boxShadow: '0 8px 32px rgba(255, 107, 107, 0.08)',
             padding: '8px',
+            marginRight: rightPanelOpen ? '400px' : '16px',
+            transition: 'margin-right 0.3s ease',
           }}
         />
 
@@ -202,6 +258,8 @@ export function Canvas() {
             borderRadius: '16px',
             boxShadow: '0 8px 32px rgba(255, 107, 107, 0.08)',
             overflow: 'hidden',
+            marginLeft: leftPanelOpen ? '364px' : '16px',
+            transition: 'margin-left 0.3s ease',
           }}
         />
 
@@ -283,7 +341,132 @@ export function Canvas() {
             </div>
           </Panel>
         )}
+
+        {/* Floating App Node Toolbar */}
+        <Panel position="top-center" style={{ marginTop: '8px', zIndex: 100 }}>
+          <AppNodeToolbar onHttpClick={httpNodeHandler || undefined} />
+        </Panel>
+
+        {/* Floating Controller Bar */}
+        <Panel position="bottom-center" style={{ marginBottom: '8px', zIndex: 100 }}>
+          <ControllerBar
+            onRun={async () => {
+              const cleanNodes = nodes.map(({ style, animated, ...node }: any) => node);
+              const cleanEdges = edges.map(({ style, animated, ...edge }: any) => edge);
+              await startRun({ nodes: cleanNodes, edges: cleanEdges });
+            }}
+            onStop={() => console.log('Stop workflow')}
+            onClear={onClear}
+            isRunning={useBuilderStore((s) => s.runStatus === 'running')}
+          />
+        </Panel>
       </ReactFlow>
+
+      {/* Left Sidebar - Floating panel */}
+      <div
+        style={{
+          position: 'absolute',
+          left: 0,
+          top: 0,
+          bottom: 0,
+          width: leftPanelOpen ? '350px' : '0px',
+          background: 'rgba(255, 255, 255, 0.82)',
+          backdropFilter: 'blur(40px)',
+          borderRight: '1px solid rgba(255, 255, 255, 0.4)',
+          transition: 'width 0.3s ease',
+          overflow: 'hidden',
+          zIndex: 50,
+        }}
+      >
+        {leftPanelOpen && <LeftSidebar />}
+      </div>
+
+      {/* Left Panel Toggle - Always visible */}
+      <div
+        style={{
+          position: 'absolute',
+          left: leftPanelOpen ? '350px' : '0px',
+          top: '50%',
+          transform: 'translateY(-50%)',
+          zIndex: 100,
+          transition: 'left 0.3s ease',
+        }}
+      >
+        <PanelToggle
+          isOpen={leftPanelOpen}
+          onClick={onToggleLeftPanel}
+          side="left"
+        />
+      </div>
+
+      {/* Right Inspector + Run Panel - Floating panel */}
+      <div
+        style={{
+          position: 'absolute',
+          right: 0,
+          top: 0,
+          bottom: 0,
+          width: rightPanelOpen ? '386px' : '0px',
+          background: 'rgba(255, 255, 255, 0.82)',
+          backdropFilter: 'blur(40px)',
+          borderLeft: '1px solid rgba(255, 255, 255, 0.4)',
+          display: 'flex',
+          flexDirection: 'column',
+          transition: 'width 0.3s ease',
+          overflow: 'hidden',
+          zIndex: 50,
+        }}
+      >
+        {rightPanelOpen && (
+          <>
+            {/* Inspector Panel - Flexible height with scroll */}
+            <div
+              className="custom-scrollbar"
+              style={{
+                flex: 1,
+                overflowY: 'scroll',
+                overflowX: 'auto',
+                borderBottom: '1px solid rgba(255, 255, 255, 0.4)',
+              }}
+            >
+              <Inspector />
+            </div>
+
+            {/* Run Panel - Fixed height */}
+            <div
+              className="custom-scrollbar"
+              style={{
+                height: '300px',
+                overflowY: 'scroll',
+                overflowX: 'auto',
+                background:
+                  'linear-gradient(135deg, rgba(255, 255, 255, 0.9) 0%, rgba(255, 248, 240, 0.72) 100%)',
+                backdropFilter: 'blur(40px)',
+              }}
+            >
+              <RunPanel />
+            </div>
+          </>
+        )}
+      </div>
+
+      {/* Right Panel Toggle - Always visible */}
+      <div
+        style={{
+          position: 'absolute',
+          right: rightPanelOpen ? '386px' : '0px',
+          top: '50%',
+          transform: 'translateY(-50%)',
+          zIndex: 100,
+          transition: 'right 0.3s ease',
+        }}
+      >
+        <PanelToggle
+          isOpen={rightPanelOpen}
+          onClick={onToggleRightPanel}
+          side="right"
+        />
+      </div>
     </div>
   );
 }

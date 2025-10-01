@@ -152,7 +152,7 @@ export function RunPanel() {
       aria-label="Run Panel"
       data-testid="run-panel"
     >
-      {/* Header Section - Primary controls with generous spacing */}
+      {/* Header Section - Controller Bar Style */}
       <header className="space-y-8">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-4">
@@ -175,92 +175,103 @@ export function RunPanel() {
           </div>
         </div>
 
-        {/* Primary Action Buttons */}
-
-        <div className="flex gap-4">
+        {/* Controller Bar Style Buttons */}
+        <div style={{
+          background: '#AEAEAE',
+          borderRadius: '20px',
+          padding: '12px 20px',
+          display: 'inline-flex',
+          alignItems: 'center',
+          gap: '8px',
+          boxShadow: '0 4px 16px rgba(0, 0, 0, 0.15)'
+        }}>
+          {/* Play/Run Button */}
           <button
             type="button"
-            style={{
-              padding: '18px 36px',
-              borderRadius: '20px',
-              border: 'none',
-              fontSize: '16px',
-              fontWeight: '600',
-              letterSpacing: '-0.01em',
-              cursor: canRun ? 'pointer' : 'not-allowed',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '14px',
-              background: runStatus === 'running'
-                ? 'linear-gradient(135deg, #FFD93D 0%, #F4C430 100%)'
-                : !canRun
-                  ? 'linear-gradient(135deg, #E5E7EB 0%, #D1D5DB 100%)'
-                  : 'linear-gradient(135deg, #00DFA2 0%, #06D6A0 100%)',
-              color: runStatus === 'running' || canRun ? 'white' : '#6B7280',
-              boxShadow: canRun ? '0 8px 32px rgba(0, 223, 162, 0.15), 0 2px 8px rgba(0, 0, 0, 0.04)' : '0 2px 8px rgba(0, 0, 0, 0.04)',
-              transition: 'all 0.4s cubic-bezier(0.23, 1, 0.32, 1)',
-              transform: 'scale(1)',
-            }}
-            disabled={!canRun}
             onClick={handleRunClick}
+            disabled={!canRun}
             title={canRun ? 'Start workflow' : 'Add nodes to run'}
             data-testid="run-button"
-            onMouseEnter={(e) => {
-              if (canRun) {
-                e.currentTarget.style.transform = 'scale(1.02) translateY(-1px)';
-                e.currentTarget.style.boxShadow = '0 12px 40px rgba(0, 223, 162, 0.25), 0 4px 16px rgba(0, 0, 0, 0.08)';
-              }
-            }}
-            onMouseLeave={(e) => {
-              if (canRun) {
-                e.currentTarget.style.transform = 'scale(1)';
-                e.currentTarget.style.boxShadow = '0 8px 32px rgba(0, 223, 162, 0.15), 0 2px 8px rgba(0, 0, 0, 0.04)';
-              }
+            style={{
+              width: '48px',
+              height: '48px',
+              borderRadius: '8px',
+              background: '#3D3D3D',
+              border: 'none',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              cursor: canRun ? 'pointer' : 'not-allowed',
+              color: '#FFFFFF',
+              opacity: canRun ? 1 : 0.5,
+              boxShadow: '0 2px 4px rgba(0, 0, 0, 0.2)',
+              transition: 'all 0.2s ease'
             }}
           >
-            {runStatus === 'running' ? (
-              <>
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="white">
-                  <path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>
-                </svg>
-                <span style={{ color: 'white' }}>Running...</span>
-              </>
-            ) : (
-              <>
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="white">
-                  <path d="M8 5v14l11-7z"/>
-                </svg>
-                <span style={{ color: 'white' }}>Run Workflow</span>
-              </>
-            )}
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+              <path d="M8 5.14v13.72L19 12 8 5.14z" fill="white"/>
+            </svg>
           </button>
 
-          {(runStatus === 'queued' || runStatus === 'running') && currentRunId && (
-            <button
-              type="button"
-              className="group relative px-8 py-4 rounded-2xl bg-gradient-to-r from-coral-sunset to-coral-sunset/90 text-white text-body font-semibold hover:shadow-xl hover:scale-105 active:scale-95 transition-all duration-400 ease-out"
-              style={{
-                boxShadow: '0 8px 32px rgba(232, 75, 75, 0.15), 0 2px 8px rgba(0, 0, 0, 0.04)',
-              }}
-              onClick={handleCancelClick}
-              title="Stop workflow"
-              data-testid="cancel-button"
-            >
-              <div className="flex items-center gap-3">
-                <StopIcon className="w-4 h-4" />
-                <span>Stop</span>
-              </div>
-            </button>
-          )}
-
-          {/* Temporary Debug Button */}
+          {/* Pause Button */}
           <button
             type="button"
-            className="px-4 py-2 rounded-lg bg-red-500 text-white text-sm hover:bg-red-600 transition-colors"
+            onClick={handleCancelClick}
+            disabled={runStatus !== 'running' && runStatus !== 'queued'}
+            title="Stop workflow"
+            data-testid="cancel-button"
+            style={{
+              width: '48px',
+              height: '48px',
+              borderRadius: '8px',
+              background: '#3D3D3D',
+              border: 'none',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              cursor: (runStatus === 'running' || runStatus === 'queued') ? 'pointer' : 'not-allowed',
+              color: '#FFFFFF',
+              opacity: (runStatus === 'running' || runStatus === 'queued') ? 1 : 0.5,
+              boxShadow: '0 2px 4px rgba(0, 0, 0, 0.2)',
+              transition: 'all 0.2s ease'
+            }}
+          >
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+              <rect x="6" y="5" width="4" height="14" rx="1" fill="white"/>
+              <rect x="14" y="5" width="4" height="14" rx="1" fill="white"/>
+            </svg>
+          </button>
+
+          {/* Divider */}
+          <div style={{
+            width: '1px',
+            height: '48px',
+            background: 'rgba(255, 255, 255, 0.2)'
+          }} />
+
+          {/* Clear Cache Button */}
+          <button
+            type="button"
             onClick={handleClearCache}
             title="Clear workflow cache and refresh"
+            style={{
+              width: '48px',
+              height: '48px',
+              borderRadius: '8px',
+              background: '#4D4D4D',
+              border: 'none',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              cursor: 'pointer',
+              color: '#FFFFFF',
+              boxShadow: '0 2px 4px rgba(0, 0, 0, 0.2)',
+              transition: 'all 0.2s ease'
+            }}
           >
-            Clear Cache
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+              <path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z" fill="white"/>
+            </svg>
           </button>
         </div>
 

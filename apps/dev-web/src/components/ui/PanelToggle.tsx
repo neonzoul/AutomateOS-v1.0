@@ -32,13 +32,9 @@ export function PanelToggle({ isOpen, onClick, side, style }: PanelToggleProps) 
       }}
       onClick={onClick}
       style={{
-        position: 'absolute',
-        top: '50%',
-        transform: 'translateY(-50%)',
-        [side]: 0,
         width: '36px',
         height: '111px',
-        background: '#E63946',
+        background: '#CED9E6',
         borderRadius: side === 'left' ? '0px 10px 10px 0px' : '10px 0px 0px 10px',
         border: 'none',
         cursor: 'pointer',
@@ -48,7 +44,6 @@ export function PanelToggle({ isOpen, onClick, side, style }: PanelToggleProps) 
         boxShadow: side === 'left'
           ? '4px 0 12px rgba(230, 57, 70, 0.3)'
           : '-4px 0 12px rgba(230, 57, 70, 0.3)',
-        zIndex: 100,
         transition: 'all 0.3s ease',
         ...style
       }}
@@ -67,7 +62,7 @@ export function PanelToggle({ isOpen, onClick, side, style }: PanelToggleProps) 
       >
         <path
           d="M14 2L4 12L14 22"
-          stroke="white"
+          stroke={side === 'left' ? '#E63946' : '#3998E6'}
           strokeWidth="3"
           strokeLinecap="round"
           strokeLinejoin="round"
