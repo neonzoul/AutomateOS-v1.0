@@ -45,7 +45,14 @@
       "Bash(set NEXT_PUBLIC_API_BASE=http://localhost:8080)",
       "Bash(gh pr create:*)",
       "Bash(gh pr edit:*)",
-      "WebFetch(domain:github.com)"
+      "WebFetch(domain:github.com)",
+      "WebFetch(domain:www.figma.com)",
+      "Bash(cat:*)",
+      "Bash(grep:*)",
+      "Bash(dir:*)",
+      "Bash(copy \"F:\\Coding-Area\\Projects\\4-automateOS-v1\\docs\\_business\\figma_mock_v0\\penel_toggle_button.svg\" \"F:\\Coding-Area\\Projects\\4-automateOS-v1\\apps\\dev-web\\public\\assets\\panel_toggle.svg\")",
+      "Bash(del /f \"F:\\Coding-Area\\Projects\\4-automateOS-v1\\apps\\dev-web\\src\\builder\\canvas\\CanvasToolbarPanel.tsx\")",
+      "Bash(copy \"F:\\Coding-Area\\Projects\\4-automateOS-v1\\examples\\slack-notification.json\" \"F:\\Coding-Area\\Projects\\4-automateOS-v1\\apps\\dev-web\\public\\examples\\slack-notification.json\")"
     ],
     "deny": [],
     "ask": []

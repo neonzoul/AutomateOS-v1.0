@@ -21,70 +21,40 @@ export default function StartNode({ data, id }: StartNodeProps) {
       animate={{ opacity: 1, scale: 1 }}
       transition={{ duration: 0.3 }}
       whileHover={{
-        y: -4,
-        boxShadow: '0px 8px 24px rgba(0, 0, 0, 0.15)',
+        scale: 1.05,
+        boxShadow: '0px 8px 24px rgba(0, 200, 100, 0.3)',
         transition: { duration: 0.2 }
       }}
       style={{
-        background: '#FFFFFF',
-        borderRadius: '28px',
-        padding: '20px 28px',
-        minWidth: '220px',
+        width: '80px',
+        height: '80px',
+        borderRadius: '50%',
+        background: 'linear-gradient(135deg, #00D98E 0%, #00C87A 100%)',
         border: isSelected
-          ? '2px solid #E63946'
-          : '1px solid rgba(29, 53, 87, 0.1)',
-        boxShadow: '0px 4px 12px rgba(0, 0, 0, 0.1)',
+          ? '3px solid #E63946'
+          : 'none',
+        boxShadow: '0px 4px 16px rgba(0, 200, 100, 0.25)',
         cursor: 'pointer',
         transition: 'all 0.3s ease',
-        position: 'relative'
+        position: 'relative',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center'
       }}
     >
-      {/* Status Indicator Dot */}
-      <div
-        style={{
-          position: 'absolute',
-          top: '16px',
-          left: '16px',
-          width: '12px',
-          height: '12px',
-          borderRadius: '50%',
-          background: '#E63946',
-          boxShadow: '0 2px 4px rgba(230, 57, 70, 0.3)',
-        }}
-      />
-
-      {/* Content */}
-      <div style={{ textAlign: 'center', marginTop: '8px' }}>
-        {/* Icon and Title */}
-        <div
-          style={{
-            fontFamily: 'Inter',
-            fontStyle: 'normal',
-            fontWeight: 600,
-            fontSize: '24px',
-            lineHeight: '29px',
-            color: '#1D3557',
-            marginBottom: '8px'
-          }}
-        >
-          ✨ {data?.label ?? 'Start'}
-        </div>
-
-        {/* Subtitle */}
-        <div
-          style={{
-            fontFamily: 'Inter',
-            fontStyle: 'normal',
-            fontWeight: 400,
-            fontSize: '14px',
-            lineHeight: '17px',
-            color: '#1D3557',
-            opacity: 0.6
-          }}
-        >
-          Begin your creative journey
-        </div>
-      </div>
+      {/* Play Icon */}
+      <svg
+        width="32"
+        height="32"
+        viewBox="0 0 24 24"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path
+          d="M8 5.14v13.72L19 12 8 5.14z"
+          fill="white"
+        />
+      </svg>
 
       {/* Output Handle */}
       <Handle
@@ -92,10 +62,11 @@ export default function StartNode({ data, id }: StartNodeProps) {
         position={Position.Right}
         style={{
           background: '#E63946',
-          border: '1px solid rgba(29, 53, 87, 0.1)',
+          border: '2px solid white',
           width: '12px',
           height: '12px',
-          boxShadow: '0px 2px 4px rgba(0, 0, 0, 0.1)',
+          boxShadow: '0px 2px 4px rgba(0, 0, 0, 0.15)',
+          right: '-6px',
         }}
       />
     </motion.div>

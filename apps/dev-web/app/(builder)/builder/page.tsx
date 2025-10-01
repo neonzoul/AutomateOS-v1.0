@@ -23,9 +23,10 @@ import { WorkflowSchema } from '@automateos/workflow-schema';
  * - Right Panel: Inspector + RunPanel (placeholder for now)
  */
 export default function BuilderPage() {
-  const { nodes, edges } = useBuilderStore();
-  const [leftPanelOpen, setLeftPanelOpen] = React.useState(true);
-  const [rightPanelOpen, setRightPanelOpen] = React.useState(true);
+  const { nodes, edges, clearWorkflow } = useBuilderStore();
+  const [leftPanelOpen, setLeftPanelOpen] = React.useState(false);
+  const [rightPanelOpen, setRightPanelOpen] = React.useState(false);
+  const [httpNodeHandler, setHttpNodeHandler] = React.useState<((e: React.MouseEvent) => void) | null>(null);
 
   const handleRun = async () => {
     // Clean workflow data for validation - remove React Flow specific properties
@@ -53,19 +54,33 @@ export default function BuilderPage() {
     }
   };
 
+  const handleClear = () => {
+    if (
+      confirm(
+        'Are you sure you want to clear the entire workflow? This action cannot be undone.'
+      )
+    ) {
+      clearWorkflow();
+    }
+  };
+
   return (
     <div className="canvas-layout"
       style={{
         height: '100vh',
         overflow: 'hidden',
-        display: 'grid',
-        gridTemplateRows: '80px 64px 1fr 70px',
-        gridTemplateColumns: `${leftPanelOpen ? '350px' : '0px'} 1fr ${rightPanelOpen ? '386px' : '0px'}`,
-        transition: 'grid-template-columns 0.3s ease'
+        position: 'relative'
       }}
     >
-      {/* Main Header - Spans all columns */}
-      <div style={{ gridColumn: '1 / -1', gridRow: '1' }}>
+      {/* Main Header - Fixed at top */}
+      <div style={{
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        right: 0,
+        height: '80px',
+        zIndex: 1000
+      }}>
         <MainHeader
           onRun={handleRun}
           onExport={handleExport}
@@ -73,94 +88,26 @@ export default function BuilderPage() {
         />
       </div>
 
-      {/* App Node Toolbar - Spans all columns */}
-      <div style={{ gridColumn: '1 / -1', gridRow: '2' }}>
-        <AppNodeToolbar />
-      </div>
-
-      {/* Left Sidebar */}
+      {/* Canvas - Full screen background layer */}
       <div style={{
-        gridColumn: '1',
-        gridRow: '3',
-        position: 'relative',
-        overflow: 'hidden',
-        width: leftPanelOpen ? '350px' : '0px',
-        transition: 'width 0.3s ease'
+        position: 'fixed',
+        top: '80px',
+        left: 0,
+        right: 0,
+        bottom: 0,
+        zIndex: 1
       }}>
-        {leftPanelOpen && <LeftSidebar />}
-        <PanelToggle
-          isOpen={leftPanelOpen}
-          onClick={() => setLeftPanelOpen(!leftPanelOpen)}
-          side="left"
-        />
-      </div>
-
-      {/* Center Canvas */}
-      <div style={{ gridColumn: '2', gridRow: '3', position: 'relative' }}>
         <ReactFlowProvider>
-          <Canvas />
+          <Canvas
+            onHttpNodeCreate={(handler) => setHttpNodeHandler(() => handler)}
+            httpNodeHandler={httpNodeHandler}
+            leftPanelOpen={leftPanelOpen}
+            rightPanelOpen={rightPanelOpen}
+            onToggleLeftPanel={() => setLeftPanelOpen(!leftPanelOpen)}
+            onToggleRightPanel={() => setRightPanelOpen(!rightPanelOpen)}
+            onClear={handleClear}
+          />
         </ReactFlowProvider>
-      </div>
-
-      {/* Right Inspector Panel */}
-      <div style={{
-        gridColumn: '3',
-        gridRow: '3',
-        background: 'rgba(255, 255, 255, 0.82)',
-        backdropFilter: 'blur(40px)',
-        borderLeft: '1px solid rgba(255, 255, 255, 0.4)',
-        display: 'flex',
-        flexDirection: 'column',
-        position: 'relative',
-        overflow: 'hidden',
-        width: rightPanelOpen ? '386px' : '0px',
-        transition: 'width 0.3s ease'
-      }}>
-        {rightPanelOpen && (
-          <>
-            {/* Inspector Panel - Flexible height with scroll */}
-            <div
-              className="custom-scrollbar"
-              style={{
-                flex: 1,
-                overflowY: 'scroll',
-                overflowX: 'auto',
-                borderBottom: '1px solid rgba(255, 255, 255, 0.4)'
-              }}
-            >
-              <Inspector />
-            </div>
-
-            {/* Run Panel - Fixed height */}
-            <div
-              className="custom-scrollbar"
-              style={{
-                height: '300px',
-                overflowY: 'scroll',
-                overflowX: 'auto',
-                background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.9) 0%, rgba(255, 248, 240, 0.72) 100%)',
-                backdropFilter: 'blur(40px)'
-              }}
-            >
-              <RunPanel />
-            </div>
-          </>
-        )}
-        <PanelToggle
-          isOpen={rightPanelOpen}
-          onClick={() => setRightPanelOpen(!rightPanelOpen)}
-          side="right"
-        />
-      </div>
-
-      {/* Bottom Controller Bar - Spans all columns */}
-      <div style={{ gridColumn: '1 / -1', gridRow: '4' }}>
-        <ControllerBar
-          onRun={handleRun}
-          onStop={() => console.log('Stop workflow')}
-          onStep={() => console.log('Step through workflow')}
-          isRunning={useBuilderStore((s) => s.runStatus === 'running')}
-        />
       </div>
     </div>
   );

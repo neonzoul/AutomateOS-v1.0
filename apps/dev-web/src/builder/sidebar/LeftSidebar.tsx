@@ -1,14 +1,16 @@
 'use client';
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
+import { useBuilderStore } from '@/core/state';
 
 interface TemplateCardProps {
   title: string;
   description: string;
+  onClick?: () => void;
 }
 
-function TemplateCard({ title, description }: TemplateCardProps) {
+function TemplateCard({ title, description, onClick }: TemplateCardProps) {
   return (
     <motion.div
       whileHover={{
@@ -19,6 +21,7 @@ function TemplateCard({ title, description }: TemplateCardProps) {
         scale: 0.98,
         transition: { duration: 0.1 }
       }}
+      onClick={onClick}
       style={{
         width: '310px',
         height: '122px',
@@ -287,7 +290,53 @@ function AgentCard({ title }: AgentCardProps) {
   );
 }
 
+interface WorkflowTemplate {
+  name: string;
+  description: string;
+  filename: string;
+}
+
+const TEMPLATES: WorkflowTemplate[] = [
+  {
+    name: 'Notion Database Entry',
+    description: 'Create a new entry in a Notion database with automated data',
+    filename: 'notion-automation.json'
+  },
+  {
+    name: 'Slack Notification',
+    description: 'Send automated notifications to Slack channels via webhook',
+    filename: 'slack-notification.json'
+  }
+];
+
 export function LeftSidebar() {
+  const { setGraph } = useBuilderStore();
+  const [loading, setLoading] = useState<string | null>(null);
+
+  const loadTemplate = async (filename: string) => {
+    try {
+      setLoading(filename);
+      const response = await fetch(`/examples/${filename}`);
+      if (!response.ok) {
+        throw new Error(`Failed to load template: ${response.statusText}`);
+      }
+      const workflow = await response.json();
+
+      // Load the workflow into the canvas
+      setGraph({
+        nodes: workflow.nodes || [],
+        edges: workflow.edges || []
+      });
+
+      console.log(`Loaded template: ${filename}`);
+    } catch (error) {
+      console.error('Error loading template:', error);
+      alert('Failed to load template. Please try again.');
+    } finally {
+      setLoading(null);
+    }
+  };
+
   return (
     <motion.div
       initial={{ opacity: 0, x: -20 }}
@@ -324,10 +373,20 @@ export function LeftSidebar() {
           Sample Template
         </h2>
 
-        <TemplateCard
-          title="AI Workflow Demo"
-          description="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."
-        />
+        <div style={{
+          display: 'flex',
+          flexDirection: 'column',
+          gap: '12px'
+        }}>
+          {TEMPLATES.map((template, index) => (
+            <TemplateCard
+              key={template.filename}
+              title={template.name}
+              description={template.description}
+              onClick={() => loadTemplate(template.filename)}
+            />
+          ))}
+        </div>
       </motion.div>
 
       {/* Divider */}
