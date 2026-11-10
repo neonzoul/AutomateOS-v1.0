@@ -1,89 +1,72 @@
 # AutomateOS v1.0
 
-🚀 **Visual Workflow Automation Platform** — Build, share, and run workflows without code.
+> **I stopped asking AI to write more code, and started asking how the whole project should work.**
 
-## Quick Start
+**Archived — no longer maintained.**
 
-### Prerequisites
+AutomateOS v1.0 was a second attempt at building a visual workflow automation platform.
 
-- Node.js 20+
-- PNPM (`corepack enable`)
-- Docker (optional for local stack)
-- Python 3.11+ (for engine development)
+The product idea was still familiar: a visual builder where people could create, share, and run automated workflows.
 
-### Local Development
+But the experiment had changed.
 
-```bash
-# Install dependencies
-pnpm i
+I was becoming less interested in how quickly AI could generate features and more interested in whether an entire project could be structured so AI could work inside it consistently.
 
-# Start development servers
-pnpm dev
+## What this project explored
 
-# Or start specific apps/services
-pnpm -C apps/dev-web dev
-pnpm -C services/api-gateway dev
-```
+AutomateOS v1.0 became a monorepo containing experiments around:
 
-### Run Stack with Orchestrator + Engine (Sprint 2)
+- visual workflow building
+- shared workflow schemas
+- API contracts
+- orchestration and execution
+- frontend/backend boundaries
+- reusable packages
+- Docker-based development
+- automated testing and CI
+- project documentation
+- persistent instructions for AI coding assistants
 
-Workflow execution prototype services can be started via Docker (Engine, Orchestrator, API Gateway) while running the builder locally:
+The repository included dedicated instructions for Claude and GitHub Copilot describing architecture, coding conventions, testing expectations, security rules, UX principles, and where different kinds of code should live.
 
-```bash
-# Terminal 1: start backend stack
-docker compose -f infra/docker-compose.dev.yml up --build
+Today this sounds fairly normal.
 
-# Terminal 2: start builder UI (ensure env)
-set NEXT_PUBLIC_API_BASE=http://localhost:8080 # Windows PowerShell use: $env:NEXT_PUBLIC_API_BASE="http://localhost:8080"
-pnpm -C apps/dev-web dev
-```
+At the time, I was experimenting with a different way of working:
 
-Services exposed:
+instead of explaining the project to an AI every time, make the repository itself carry enough context for the AI to understand how it should work.
 
-- API Gateway: http://localhost:8080 (/v1/runs)
-- Engine (mock v0.1): http://localhost:8081
-- Orchestrator (internal): http://localhost:3002
+## What I got wrong
 
-Click the Run button in the builder to post the current graph to the gateway and execute via Engine (Start + HTTP supported).
+The project was often more architecturally ambitious than the product required.
 
-### With Docker
+Some services existed because they seemed like the correct future architecture rather than because the current system had proven they were necessary.
 
-```bash
-cd infra
-docker compose -f docker-compose.dev.yml up --build
-```
+Documentation sometimes described the intended system more clearly than the implemented one.
 
-## Project Structure
+And many “rules” were still just instructions written in Markdown rather than constraints enforced by software.
 
-```
-automateos-v1/
-├─ apps/                         # Frontend apps (Next.js)
-│  ├─ dev-web/                   # AutomateOS.dev — Creator Studio
-│  └─ app-web/                   # AutomateOS.app — User Dashboard
-│
-├─ services/                     # Backend services (Node.js)
-│  ├─ api-gateway/               # API Gateway (Auth, RBAC, Templates)
-│  ├─ orchestrator/              # Workflow orchestration
-│  ├─ webhook/                   # External triggers
-│  └─ worker/                    # Workflow execution worker
-│
-├─ external/                     # External Engine (Python)
-│  └─ engine/                    # Workflow execution runtime
-│
-├─ packages/                     # Shared libraries
-│  ├─ ui/                        # UI component library
-│  ├─ workflow-schema/           # Workflow schemas
-│  ├─ logger/                    # Logging utilities
-│  └─ config/                    # Shared configurations
-│
-├─ infra/                        # Infrastructure & deployment
-└─ docs/                         # Documentation
-```
+Those limitations are visible throughout the repository.
 
-## Contributing
+I am leaving them visible.
 
-See [CONTRIBUTING.md](./CONTRIBUTING.md) for development guidelines.
+## Why it is public
 
-## License
+This repository documents a shift in how I approached AI-assisted development.
 
-MIT
+The question was no longer simply:
+
+**“Can AI build this feature?”**
+
+It had become:
+
+**“Can I design the environment in which AI builds?”**
+
+AutomateOS v1.0 was my attempt to answer that question with the tools and understanding I had at the time.
+
+---
+
+**Status:** Archived  
+**Period:** September–October 2025  
+**Maintenance:** None planned  
+**Production use:** Not recommended  
+**Purpose:** Historical experiment in AI-assisted software architecture
